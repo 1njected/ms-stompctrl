@@ -2,8 +2,8 @@
 
 A browser-only editor and backup tool for the **ZOOM MS-100BT** guitar pedal.
 
-ZOOM's own StompShare app is discontinued, requires an iPad, and is no longer
-available. This replaces it with a static web page: no server, no install, no
+ZOOM's own StompShare app clunky, requires an iPad/iOSand and is no longer
+updated. This replaces it with a static web page: no server, no install, no
 account. Your pedal talks to Chrome over Bluetooth and nothing leaves your
 machine.
 
@@ -28,10 +28,20 @@ The last read is kept in your browser's local storage, so the patch list and
 the editor keep working with no pedal attached.
 
 ## Running it
+Available here:
+https://1njected.github.io/ms-stompctrl/
 
 Chrome is required — it is the only browser that implements Web Serial over
 Bluetooth RFCOMM, which is how this talks to the pedal.
 
+Pick the entry whose service UUID is `00000000-deca-fade-deca-deafdecacaff`.
+The pedal advertises a second, plain serial port that never answers.
+
+Pairing still happens in your operating system's Bluetooth settings. A hosted
+page cannot pair a device for you — it can only open a port you have already
+paired and then chosen in Chrome's picker.
+
+Self-host the webbapp:
 ```sh
 ./serve.sh              # python3 -m http.server on 127.0.0.1:8765
 ```
@@ -39,39 +49,6 @@ Bluetooth RFCOMM, which is how this talks to the pedal.
 Then open <http://127.0.0.1:8765>, pair the pedal in your OS Bluetooth
 settings, and press **Connect pedal**.
 
-Pick the entry whose service UUID is `00000000-deca-fade-deca-deafdecacaff`.
-The pedal advertises a second, plain serial port that never answers.
-
-## Hosting it on GitHub Pages
-
-A workflow is included. In the repository, go to **Settings → Pages** and set
-**Source** to **GitHub Actions**; the next push to `main` runs the tests and
-publishes. The site lands at `https://<user>.github.io/<repo>/`.
-
-Only `app/` is deployed, so the site root is the page itself and every relative
-path resolves exactly as it does locally — verified by serving the app from a
-subpath, which is how project Pages are addressed.
-
-Two things worth knowing:
-
-- **HTTPS is required.** Web Serial does not exist in an insecure context, so
-  this cannot be hosted over plain HTTP. Pages provides HTTPS, and `localhost`
-  counts as secure for local development.
-- **Permission is per-origin.** Granting a pedal to `localhost:8765` does not
-  grant it to your Pages site; each origin asks once and remembers separately.
-
-Pairing still happens in your operating system's Bluetooth settings. A hosted
-page cannot pair a device for you — it can only open a port you have already
-paired and then chosen in Chrome's picker.
-
-## Tests
-
-```sh
-cd app && for t in *.test.cjs; do node "$t" || break; done
-```
-
-No dependencies; Node only. Tests that need captured hardware fixtures skip
-themselves when the fixtures are absent, so a fresh clone runs green.
 
 ## Documentation
 
