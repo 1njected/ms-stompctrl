@@ -27,6 +27,12 @@ machine.
 The last read is kept in your browser's local storage, so the patch list and
 the editor keep working with no pedal attached.
 
+![](docs/screenshots/app-fx.png)
+![](docs/screenshots/app-patches.png)
+![](docs/screenshots/app-patchedit.png)
+
+
+
 ## Running it
 Available here:
 https://1njected.github.io/ms-stompctrl/
