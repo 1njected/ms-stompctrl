@@ -1,0 +1,2812 @@
+{
+  "source": "protocol-20260908T150705Z.jsonl",
+  "fragments": {
+    "tx": 115,
+    "rx": 115
+  },
+  "frames": [
+    {
+      "index": 0,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:06.889Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 06 f7",
+      "command": "06"
+    },
+    {
+      "index": 1,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:06.997Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 05 00 f7",
+      "command": "05"
+    },
+    {
+      "index": 2,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.086Z",
+      "length": 6,
+      "hex": "f0 7e 00 06 01 f7"
+    },
+    {
+      "index": 3,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.107Z",
+      "length": 15,
+      "hex": "f0 7e 00 06 02 52 5e 00 01 00 31 2e 33 30 f7",
+      "kind": "identity_reply",
+      "manufacturer": 82,
+      "device_id": 94,
+      "firmware": "1.30"
+    },
+    {
+      "index": 4,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.188Z",
+      "length": 6,
+      "hex": "f0 7e 00 06 01 f7"
+    },
+    {
+      "index": 5,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.206Z",
+      "length": 15,
+      "hex": "f0 7e 00 06 02 52 5e 00 01 00 31 2e 33 30 f7",
+      "kind": "identity_reply",
+      "manufacturer": 82,
+      "device_id": 94,
+      "firmware": "1.30"
+    },
+    {
+      "index": 6,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.211Z",
+      "length": 22,
+      "hex": "f0 52 00 5e 60 25 00 00 2a 2e 2a 00 00 00 00 00 00 00 00 00 00 f7",
+      "command": "25"
+    },
+    {
+      "index": 7,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.257Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 43 4f 53 49 4d 2e 5a 44 4c 00 00 28 00 00 0d 4f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ACOSIM.ZDL",
+        "size": 10125
+      }
+    },
+    {
+      "index": 8,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.258Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 9,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.277Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 49 52 2e 5a 44 4c 00 00 00 00 00 28 00 00 7c 6c 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "AIR.ZDL",
+        "size": 13948
+      }
+    },
+    {
+      "index": 10,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.278Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 11,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.296Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 4c 49 45 4e 2e 5a 44 4c 00 00 00 28 00 00 2b 73 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ALIEN.ZDL",
+        "size": 14763
+      }
+    },
+    {
+      "index": 12,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.300Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 13,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.317Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 4e 4c 47 44 4c 59 2e 5a 44 4c 00 28 00 00 2c 02 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ANLGDLY.ZDL",
+        "size": 16684
+      }
+    },
+    {
+      "index": 14,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.323Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 15,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.342Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 52 45 4e 41 2e 5a 44 4c 00 00 00 28 00 00 69 7f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ARENA.ZDL",
+        "size": 16361
+      }
+    },
+    {
+      "index": 16,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.343Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 17,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.366Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 55 54 4f 50 41 4e 2e 5a 44 4c 00 28 00 00 0a 6c 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "AUTOPAN.ZDL",
+        "size": 13834
+      }
+    },
+    {
+      "index": 18,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.367Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 19,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.389Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 55 54 4f 57 41 48 2e 5a 44 4c 00 28 00 00 29 66 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "AUTOWAH.ZDL",
+        "size": 13097
+      }
+    },
+    {
+      "index": 20,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.391Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 21,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.414Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 42 45 4e 44 43 48 4f 2e 5a 44 4c 00 28 00 00 43 5f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "BENDCHO.ZDL",
+        "size": 12227
+      }
+    },
+    {
+      "index": 22,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.415Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 23,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.433Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 42 49 54 43 52 55 53 48 2e 5a 44 4c 28 00 00 6f 5b 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "BITCRUSH.ZDL",
+        "size": 11759
+      }
+    },
+    {
+      "index": 24,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.440Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 25,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.457Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 42 4f 4d 42 45 52 2e 5a 44 4c 00 00 28 00 00 4f 06 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "BOMBER.ZDL",
+        "size": 17231
+      }
+    },
+    {
+      "index": 26,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.458Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 27,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.490Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 42 4f 4f 53 54 45 52 2e 5a 44 4c 00 28 00 00 01 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "BOOSTER.ZDL",
+        "size": 9985
+      }
+    },
+    {
+      "index": 28,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.491Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 29,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.514Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 43 48 4f 52 55 53 2e 5a 44 4c 00 00 28 00 00 4e 64 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "CHORUS.ZDL",
+        "size": 12878
+      }
+    },
+    {
+      "index": 30,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.515Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 31,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.534Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 43 4d 4e 5f 44 52 56 2e 5a 44 4c 00 28 00 00 15 33 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "CMN_DRV.ZDL",
+        "size": 22933
+      }
+    },
+    {
+      "index": 32,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.536Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 33,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.556Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 43 4f 4d 42 46 4c 54 52 2e 5a 44 4c 28 00 00 73 76 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "COMBFLTR.ZDL",
+        "size": 15219
+      }
+    },
+    {
+      "index": 34,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.556Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 35,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.586Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 43 4f 4d 50 2e 5a 44 4c 00 00 00 00 28 00 00 27 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "COMP.ZDL",
+        "size": 11303
+      }
+    },
+    {
+      "index": 36,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.587Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 37,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.606Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 43 52 59 2e 5a 44 4c 00 00 00 00 00 28 00 00 40 69 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "CRY.ZDL",
+        "size": 13504
+      }
+    },
+    {
+      "index": 38,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.610Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 39,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.631Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 45 4c 41 59 2e 5a 44 4c 00 00 00 28 00 00 2d 01 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DELAY.ZDL",
+        "size": 16557
+      }
+    },
+    {
+      "index": 40,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.632Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 41,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.653Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 45 4c 55 58 45 5f 52 2e 5a 44 4c 28 00 00 7e 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DELUXE_R.ZDL",
+        "size": 15742
+      }
+    },
+    {
+      "index": 42,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.657Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 43,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.707Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 45 54 55 4e 45 2e 5a 44 4c 00 00 28 00 00 23 6b 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DETUNE.ZDL",
+        "size": 13731
+      }
+    },
+    {
+      "index": 44,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.708Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 45,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.745Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 49 53 54 4f 4e 45 2e 5a 44 4c 00 28 00 00 32 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DISTONE.ZDL",
+        "size": 11314
+      }
+    },
+    {
+      "index": 46,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.746Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 47,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.768Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 49 53 54 50 4c 55 53 2e 5a 44 4c 28 00 00 5b 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DISTPLUS.ZDL",
+        "size": 11355
+      }
+    },
+    {
+      "index": 48,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.771Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 49,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.792Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 55 4f 50 48 41 53 45 2e 5a 44 4c 28 00 00 00 7c 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DUOPHASE.ZDL",
+        "size": 15872
+      }
+    },
+    {
+      "index": 50,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.793Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 51,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.811Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 59 4e 41 44 4c 59 2e 5a 44 4c 00 28 00 00 49 02 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DYNADLY.ZDL",
+        "size": 16713
+      }
+    },
+    {
+      "index": 52,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.812Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 53,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.836Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 59 4e 46 4c 4e 47 52 2e 5a 44 4c 28 00 00 3b 09 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DYNFLNGR.ZDL",
+        "size": 17595
+      }
+    },
+    {
+      "index": 54,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.837Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 55,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.864Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 44 5a 5f 44 52 49 56 45 2e 5a 44 4c 28 00 00 26 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "DZ_DRIVE.ZDL",
+        "size": 15654
+      }
+    },
+    {
+      "index": 56,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.868Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 57,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.924Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 45 41 52 4c 59 52 45 46 2e 5a 44 4c 28 00 00 76 0c 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "EARLYREF.ZDL",
+        "size": 18038
+      }
+    },
+    {
+      "index": 58,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.928Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 59,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.951Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 45 4e 53 45 4d 42 4c 45 2e 5a 44 4c 28 00 00 00 6e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ENSEMBLE.ZDL",
+        "size": 14080
+      }
+    },
+    {
+      "index": 60,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.952Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 61,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.973Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 45 58 43 49 54 45 52 2e 5a 44 4c 00 28 00 00 21 4b 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "EXCITER.ZDL",
+        "size": 9633
+      }
+    },
+    {
+      "index": 62,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.979Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 63,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:07.998Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 45 58 54 52 4d 44 53 2e 5a 44 4c 00 28 00 00 41 51 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "EXTRMDS.ZDL",
+        "size": 10433
+      }
+    },
+    {
+      "index": 64,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:07.999Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 65,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.021Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 43 59 43 4c 45 2e 5a 44 4c 00 00 28 00 00 61 6e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FCYCLE.ZDL",
+        "size": 14177
+      }
+    },
+    {
+      "index": 66,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.022Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 67,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.043Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 44 43 4f 4d 42 4f 2e 5a 44 4c 00 28 00 00 4c 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FDCOMBO.ZDL",
+        "size": 15692
+      }
+    },
+    {
+      "index": 68,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.044Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 69,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.089Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 4c 41 4e 47 45 52 2e 5a 44 4c 00 28 00 00 5e 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FLANGER.ZDL",
+        "size": 15710
+      }
+    },
+    {
+      "index": 70,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.093Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 71,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.134Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 4c 54 52 44 4c 59 2e 5a 44 4c 00 28 00 00 62 02 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FLTRDLY.ZDL",
+        "size": 16738
+      }
+    },
+    {
+      "index": 72,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.137Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 73,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.157Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 55 5a 5a 53 4d 4c 2e 5a 44 4c 00 28 00 00 2b 59 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FUZZSML.ZDL",
+        "size": 11435
+      }
+    },
+    {
+      "index": 74,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.158Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 75,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.179Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 47 45 51 2e 5a 44 4c 00 00 00 00 00 28 00 00 17 6d 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "GEQ.ZDL",
+        "size": 13975
+      }
+    },
+    {
+      "index": 76,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.180Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 77,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.201Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 47 4f 56 45 52 4e 4f 52 2e 5a 44 4c 28 00 00 2e 59 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "GOVERNOR.ZDL",
+        "size": 11438
+      }
+    },
+    {
+      "index": 78,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.203Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 79,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.224Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 47 52 54 4d 55 46 46 2e 5a 44 4c 00 28 00 00 62 59 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "GRTMUFF.ZDL",
+        "size": 11490
+      }
+    },
+    {
+      "index": 80,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.225Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 81,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.244Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 48 41 4c 4c 2e 5a 44 4c 00 00 00 00 28 00 00 1f 7f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "HALL.ZDL",
+        "size": 16287
+      }
+    },
+    {
+      "index": 82,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.249Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 83,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.268Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 48 44 48 41 4c 4c 2e 5a 44 4c 00 00 28 00 00 46 17 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "HDHALL.ZDL",
+        "size": 19398
+      }
+    },
+    {
+      "index": 84,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.269Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 85,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.288Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 48 44 5f 52 45 56 2e 5a 44 4c 00 00 28 00 00 2f 15 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "HD_REV.ZDL",
+        "size": 19119
+      }
+    },
+    {
+      "index": 86,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.289Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 87,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.330Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 48 4f 54 42 4f 58 2e 5a 44 4c 00 00 28 00 00 4b 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "HOTBOX.ZDL",
+        "size": 11339
+      }
+    },
+    {
+      "index": 88,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.331Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 89,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.351Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 48 50 53 2e 5a 44 4c 00 00 00 00 00 28 00 00 27 6e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "HPS.ZDL",
+        "size": 14119
+      }
+    },
+    {
+      "index": 90,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.352Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 91,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.374Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4c 45 41 44 2e 5a 44 4c 00 00 00 00 28 00 00 15 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "LEAD.ZDL",
+        "size": 10005
+      }
+    },
+    {
+      "index": 92,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.375Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 93,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.394Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4c 49 4e 45 53 45 4c 2e 5a 44 4c 00 28 00 00 01 48 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "LINESEL.ZDL",
+        "size": 9217
+      }
+    },
+    {
+      "index": 94,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.400Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 95,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.418Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 4a 52 4f 4c 4c 45 2e 5a 44 4c 00 28 00 00 28 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MJROLLE.ZDL",
+        "size": 15656
+      }
+    },
+    {
+      "index": 96,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.419Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 97,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.437Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 4c 54 54 50 44 4c 59 2e 5a 44 4c 28 00 00 3c 08 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MLTTPDLY.ZDL",
+        "size": 17468
+      }
+    },
+    {
+      "index": 98,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.446Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 99,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.468Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 4e 50 49 54 2e 5a 44 4c 00 00 00 28 00 00 0a 27 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MNPIT.ZDL",
+        "size": 21386
+      }
+    },
+    {
+      "index": 100,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.469Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 101,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.523Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 4f 44 44 4c 59 2e 5a 44 4c 00 00 28 00 00 5c 76 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MODDLY.ZDL",
+        "size": 15196
+      }
+    },
+    {
+      "index": 102,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.524Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 103,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.543Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 4f 4e 4f 53 59 4e 2e 5a 44 4c 00 28 00 00 1d 68 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MONOSYN.ZDL",
+        "size": 13341
+      }
+    },
+    {
+      "index": 104,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.549Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 105,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.576Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 53 5f 31 39 35 39 2e 5a 44 4c 00 28 00 00 3e 74 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MS_1959.ZDL",
+        "size": 14910
+      }
+    },
+    {
+      "index": 106,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.577Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 107,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.598Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 54 4c 57 52 4c 44 2e 5a 44 4c 00 28 00 00 0f 59 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "MTLWRLD.ZDL",
+        "size": 11407
+      }
+    },
+    {
+      "index": 108,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.600Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 109,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.646Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 5f 43 4f 4d 50 2e 5a 44 4c 00 00 28 00 00 4e 5d 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "M_COMP.ZDL",
+        "size": 11982
+      }
+    },
+    {
+      "index": 110,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.649Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 111,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.669Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4d 5f 46 49 4c 54 45 52 2e 5a 44 4c 28 00 00 05 70 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "M_FILTER.ZDL",
+        "size": 14341
+      }
+    },
+    {
+      "index": 112,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.670Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 113,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.688Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4e 4f 49 53 45 47 54 45 2e 5a 44 4c 28 00 00 17 4c 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "NOISEGTE.ZDL",
+        "size": 9751
+      }
+    },
+    {
+      "index": 114,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.689Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 115,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.709Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4f 43 54 41 56 45 2e 5a 44 4c 00 00 28 00 00 5c 53 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "OCTAVE.ZDL",
+        "size": 10716
+      }
+    },
+    {
+      "index": 116,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.716Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 117,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.733Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4f 50 54 43 4f 4d 50 2e 5a 44 4c 00 28 00 00 04 64 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "OPTCOMP.ZDL",
+        "size": 12804
+      }
+    },
+    {
+      "index": 118,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.741Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 119,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.761Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 4f 56 52 44 52 56 2e 5a 44 4c 00 00 28 00 00 64 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "OVRDRV.ZDL",
+        "size": 11364
+      }
+    },
+    {
+      "index": 120,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.764Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 121,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.782Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 45 51 2e 5a 44 4c 00 00 00 00 00 28 00 00 2c 67 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PEQ.ZDL",
+        "size": 13228
+      }
+    },
+    {
+      "index": 122,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.789Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 123,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.810Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 48 41 53 45 44 4c 59 2e 5a 44 4c 28 00 00 6d 0f 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PHASEDLY.ZDL",
+        "size": 18413
+      }
+    },
+    {
+      "index": 124,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.816Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 125,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.836Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 48 41 53 45 52 2e 5a 44 4c 00 00 28 00 00 1f 67 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PHASER.ZDL",
+        "size": 13215
+      }
+    },
+    {
+      "index": 126,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.839Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 127,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.889Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 49 54 43 48 44 4c 59 2e 5a 44 4c 28 00 00 2e 7c 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PITCHDLY.ZDL",
+        "size": 15918
+      }
+    },
+    {
+      "index": 128,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.890Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 129,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.908Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 54 43 48 53 48 46 54 2e 5a 44 4c 28 00 00 18 21 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PTCHSHFT.ZDL",
+        "size": 20632
+      }
+    },
+    {
+      "index": 130,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.909Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 131,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.934Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 41 43 4b 43 4f 4d 50 2e 5a 44 4c 28 00 00 5f 74 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RACKCOMP.ZDL",
+        "size": 14943
+      }
+    },
+    {
+      "index": 132,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.937Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 133,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:08.980Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 45 53 4f 4e 53 2e 5a 44 4c 00 00 28 00 00 72 68 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RESONS.ZDL",
+        "size": 13426
+      }
+    },
+    {
+      "index": 134,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:08.982Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 135,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.001Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 49 4e 47 4d 4f 44 2e 5a 44 4c 00 28 00 00 68 61 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RINGMOD.ZDL",
+        "size": 12520
+      }
+    },
+    {
+      "index": 136,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.004Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 137,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.028Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 4e 44 4d 46 4c 54 52 2e 5a 44 4c 28 00 00 4b 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RNDMFLTR.ZDL",
+        "size": 15691
+      }
+    },
+    {
+      "index": 138,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.029Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 139,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.048Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 4f 4f 4d 2e 5a 44 4c 00 00 00 00 28 00 00 0f 7f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ROOM.ZDL",
+        "size": 16271
+      }
+    },
+    {
+      "index": 140,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.054Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 141,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.076Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 54 43 4c 4f 53 45 54 2e 5a 44 4c 28 00 00 3c 28 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RTCLOSET.ZDL",
+        "size": 21564
+      }
+    },
+    {
+      "index": 142,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.079Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 143,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.100Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 56 52 53 44 4c 59 2e 5a 44 4c 00 28 00 00 21 78 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "RVRSDLY.ZDL",
+        "size": 15393
+      }
+    },
+    {
+      "index": 144,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.106Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 145,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.151Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 45 51 46 4c 54 52 2e 5a 44 4c 00 28 00 00 4c 0d 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SEQFLTR.ZDL",
+        "size": 18124
+      }
+    },
+    {
+      "index": 146,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.152Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 147,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.173Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 4c 49 43 45 52 2e 5a 44 4c 00 00 28 00 00 74 7d 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SLICER.ZDL",
+        "size": 16116
+      }
+    },
+    {
+      "index": 148,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.177Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 149,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.196Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 4c 57 41 54 4b 2e 5a 44 4c 00 00 28 00 00 0b 63 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SLWATK.ZDL",
+        "size": 12683
+      }
+    },
+    {
+      "index": 150,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.202Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 151,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.223Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 50 52 49 4e 47 2e 5a 44 4c 00 00 28 00 00 25 01 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SPRING.ZDL",
+        "size": 16549
+      }
+    },
+    {
+      "index": 152,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.224Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 153,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.243Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 51 55 45 41 4b 2e 5a 44 4c 00 00 28 00 00 59 58 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SQUEAK.ZDL",
+        "size": 11353
+      }
+    },
+    {
+      "index": 154,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.251Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 155,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.272Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 54 43 48 4f 2e 5a 44 4c 00 00 00 28 00 00 1e 6b 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "STCHO.ZDL",
+        "size": 13726
+      }
+    },
+    {
+      "index": 156,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.273Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 157,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.327Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 54 44 45 4c 41 59 2e 5a 44 4c 00 28 00 00 11 08 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "STDELAY.ZDL",
+        "size": 17425
+      }
+    },
+    {
+      "index": 158,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.329Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 159,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.348Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 54 45 50 2e 5a 44 4c 00 00 00 00 28 00 00 03 6a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "STEP.ZDL",
+        "size": 13571
+      }
+    },
+    {
+      "index": 160,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.356Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 161,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.381Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 54 4f 4d 50 44 4c 59 2e 5a 44 4c 28 00 00 3a 03 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "STOMPDLY.ZDL",
+        "size": 16826
+      }
+    },
+    {
+      "index": 162,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.382Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 163,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.408Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 55 50 45 52 43 48 4f 2e 5a 44 4c 28 00 00 6f 6f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SUPERCHO.ZDL",
+        "size": 14319
+      }
+    },
+    {
+      "index": 164,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.409Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 165,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.432Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 41 50 45 45 43 48 4f 2e 5a 44 4c 28 00 00 49 78 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "TAPEECHO.ZDL",
+        "size": 15433
+      }
+    },
+    {
+      "index": 166,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.434Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 167,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.453Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 47 48 4c 44 44 4c 59 2e 5a 44 4c 28 00 00 48 73 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "TGHLDDLY.ZDL",
+        "size": 14792
+      }
+    },
+    {
+      "index": 168,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.454Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 169,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.477Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 48 45 56 49 42 45 2e 5a 44 4c 00 28 00 00 44 5f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "THEVIBE.ZDL",
+        "size": 12228
+      }
+    },
+    {
+      "index": 170,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.481Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 171,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.503Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 4c 44 52 4f 4f 4d 2e 5a 44 4c 00 28 00 00 21 01 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "TLDROOM.ZDL",
+        "size": 16545
+      }
+    },
+    {
+      "index": 172,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.506Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 173,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.524Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 52 45 4d 4f 4c 4f 2e 5a 44 4c 00 28 00 00 2b 6e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "TREMOLO.ZDL",
+        "size": 14123
+      }
+    },
+    {
+      "index": 174,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.526Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 175,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.551Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 57 5f 52 4f 43 4b 2e 5a 44 4c 00 28 00 00 2c 7a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "TW_ROCK.ZDL",
+        "size": 15660
+      }
+    },
+    {
+      "index": 176,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.552Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 177,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.573Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 54 5f 53 43 52 45 41 4d 2e 5a 44 4c 28 00 00 0d 59 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "T_SCREAM.ZDL",
+        "size": 11405
+      }
+    },
+    {
+      "index": 178,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.577Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 179,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.594Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 55 53 5f 42 4c 55 45 53 2e 5a 44 4c 28 00 00 06 7b 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "US_BLUES.ZDL",
+        "size": 15750
+      }
+    },
+    {
+      "index": 180,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.602Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 181,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.623Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 56 49 42 52 41 54 4f 2e 5a 44 4c 00 28 00 00 21 68 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "VIBRATO.ZDL",
+        "size": 13345
+      }
+    },
+    {
+      "index": 182,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.624Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 183,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.646Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 56 49 4e 46 4c 4e 47 52 2e 5a 44 4c 28 00 00 3e 76 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "VINFLNGR.ZDL",
+        "size": 15166
+      }
+    },
+    {
+      "index": 184,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.649Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 185,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.669Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 56 54 47 43 45 2e 5a 44 4c 00 00 00 28 00 00 28 61 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "VTGCE.ZDL",
+        "size": 12456
+      }
+    },
+    {
+      "index": 186,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.670Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 187,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.691Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 56 58 5f 4a 4d 49 2e 5a 44 4c 00 00 28 00 00 5f 73 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "VX_JMI.ZDL",
+        "size": 14815
+      }
+    },
+    {
+      "index": 188,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.692Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 189,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.713Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 57 52 50 50 48 41 53 45 2e 5a 44 4c 28 00 00 47 67 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "WRPPHASE.ZDL",
+        "size": 13255
+      }
+    },
+    {
+      "index": 190,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.717Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 191,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.734Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 4e 52 2e 5a 44 4c 00 00 00 00 00 28 00 00 08 5a 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ZNR.ZDL",
+        "size": 11528
+      }
+    },
+    {
+      "index": 192,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.740Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 193,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.796Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 42 4f 54 54 4f 4d 2e 5a 44 4c 28 00 00 13 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_BOTTOM.ZDL",
+        "size": 10003
+      }
+    },
+    {
+      "index": 194,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.797Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 195,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.853Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 43 4c 45 41 4e 2e 5a 44 4c 00 28 00 00 11 4f 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_CLEAN.ZDL",
+        "size": 10129
+      }
+    },
+    {
+      "index": 196,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.854Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 197,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.876Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 44 52 45 41 4d 2e 5a 44 4c 00 28 00 00 3a 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_DREAM.ZDL",
+        "size": 10042
+      }
+    },
+    {
+      "index": 198,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.878Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 199,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.898Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 4d 50 31 2e 5a 44 4c 00 00 00 28 00 00 48 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_MP1.ZDL",
+        "size": 10056
+      }
+    },
+    {
+      "index": 200,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.899Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 201,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.924Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 4e 45 4f 53 2e 5a 44 4c 00 00 28 00 00 05 50 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_NEOS.ZDL",
+        "size": 10245
+      }
+    },
+    {
+      "index": 202,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.925Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 203,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.944Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 4f 52 47 41 4e 2e 5a 44 4c 00 28 00 00 05 79 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_ORGAN.ZDL",
+        "size": 15493
+      }
+    },
+    {
+      "index": 204,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.950Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 205,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.971Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 53 43 52 45 41 4d 2e 5a 44 4c 28 00 00 53 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_SCREAM.ZDL",
+        "size": 10067
+      }
+    },
+    {
+      "index": 206,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.972Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 207,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:09.993Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 5a 5f 57 49 4c 44 2e 5a 44 4c 00 00 28 00 00 35 4e 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "Z_WILD.ZDL",
+        "size": 10037
+      }
+    },
+    {
+      "index": 208,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:09.994Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 209,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.017Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 46 4c 53 54 5f 53 45 51 2e 5a 44 54 28 00 00 0c 20 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "FLST_SEQ.ZDT",
+        "size": 4108
+      }
+    },
+    {
+      "index": 210,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.018Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 211,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.044Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 50 41 49 52 2e 44 41 54 00 00 00 00 28 00 00 00 08 00 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "PAIR.DAT",
+        "size": 1024
+      }
+    },
+    {
+      "index": 212,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.047Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 213,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.088Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 53 48 49 4d 4d 45 52 2e 5a 44 4c 00 28 00 00 66 04 02 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "SHIMMER.ZDL",
+        "size": 33382
+      }
+    },
+    {
+      "index": 214,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.089Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 215,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.123Z",
+      "length": 41,
+      "hex": "f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 52 4f 55 47 48 56 45 52 2e 5a 44 4c 28 00 00 49 5a 01 00 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "directory_entry",
+      "entry": {
+        "name": "ROUGHVER.ZDL",
+        "size": 27977
+      }
+    },
+    {
+      "index": 216,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.124Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 26 f7",
+      "command": "26"
+    },
+    {
+      "index": 217,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.149Z",
+      "length": 12,
+      "hex": "f0 52 00 5e 60 03 7a 7f 7f 7f 0f f7",
+      "command": "03",
+      "kind": "filesystem_result",
+      "result": -6
+    },
+    {
+      "index": 218,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.152Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 27 f7",
+      "command": "27"
+    },
+    {
+      "index": 219,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.177Z",
+      "length": 12,
+      "hex": "f0 52 00 5e 60 03 00 00 00 00 00 f7",
+      "command": "03",
+      "kind": "filesystem_result",
+      "result": 0
+    },
+    {
+      "index": 220,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.213Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 29 00 f7",
+      "command": "29"
+    },
+    {
+      "index": 221,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.260Z",
+      "length": 27,
+      "hex": "f0 52 00 5e 60 04 29 01 00 08 00 42 70 7c 01 00 08 64 14 01 00 00 00 00 00 00 f7",
+      "command": "04",
+      "kind": "disk_space",
+      "total": 4143170,
+      "free": 2437640
+    },
+    {
+      "index": 222,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.262Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 05 00 f7",
+      "command": "05"
+    },
+    {
+      "index": 223,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.284Z",
+      "length": 12,
+      "hex": "f0 52 00 5e 60 03 00 00 00 00 00 f7",
+      "command": "03",
+      "kind": "filesystem_result",
+      "result": 0
+    },
+    {
+      "index": 224,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.470Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 01 00 f7",
+      "command": "01"
+    },
+    {
+      "index": 225,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.492Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 05 00 f7",
+      "command": "05"
+    },
+    {
+      "index": 226,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.570Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 61 06 f7"
+    },
+    {
+      "index": 227,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.588Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 00 00 f7"
+    },
+    {
+      "index": 228,
+      "direction": "tx",
+      "time": "2026-09-08T15:07:10.671Z",
+      "length": 7,
+      "hex": "f0 52 00 5e 60 07 f7",
+      "command": "07"
+    },
+    {
+      "index": 229,
+      "direction": "rx",
+      "time": "2026-09-08T15:07:10.693Z",
+      "length": 8,
+      "hex": "f0 52 00 5e 60 05 00 f7",
+      "command": "05"
+    }
+  ],
+  "installed_files": [
+    {
+      "name": "ACOSIM.ZDL",
+      "size": 10125
+    },
+    {
+      "name": "AIR.ZDL",
+      "size": 13948
+    },
+    {
+      "name": "ALIEN.ZDL",
+      "size": 14763
+    },
+    {
+      "name": "ANLGDLY.ZDL",
+      "size": 16684
+    },
+    {
+      "name": "ARENA.ZDL",
+      "size": 16361
+    },
+    {
+      "name": "AUTOPAN.ZDL",
+      "size": 13834
+    },
+    {
+      "name": "AUTOWAH.ZDL",
+      "size": 13097
+    },
+    {
+      "name": "BENDCHO.ZDL",
+      "size": 12227
+    },
+    {
+      "name": "BITCRUSH.ZDL",
+      "size": 11759
+    },
+    {
+      "name": "BOMBER.ZDL",
+      "size": 17231
+    },
+    {
+      "name": "BOOSTER.ZDL",
+      "size": 9985
+    },
+    {
+      "name": "CHORUS.ZDL",
+      "size": 12878
+    },
+    {
+      "name": "CMN_DRV.ZDL",
+      "size": 22933
+    },
+    {
+      "name": "COMBFLTR.ZDL",
+      "size": 15219
+    },
+    {
+      "name": "COMP.ZDL",
+      "size": 11303
+    },
+    {
+      "name": "CRY.ZDL",
+      "size": 13504
+    },
+    {
+      "name": "DELAY.ZDL",
+      "size": 16557
+    },
+    {
+      "name": "DELUXE_R.ZDL",
+      "size": 15742
+    },
+    {
+      "name": "DETUNE.ZDL",
+      "size": 13731
+    },
+    {
+      "name": "DISTONE.ZDL",
+      "size": 11314
+    },
+    {
+      "name": "DISTPLUS.ZDL",
+      "size": 11355
+    },
+    {
+      "name": "DUOPHASE.ZDL",
+      "size": 15872
+    },
+    {
+      "name": "DYNADLY.ZDL",
+      "size": 16713
+    },
+    {
+      "name": "DYNFLNGR.ZDL",
+      "size": 17595
+    },
+    {
+      "name": "DZ_DRIVE.ZDL",
+      "size": 15654
+    },
+    {
+      "name": "EARLYREF.ZDL",
+      "size": 18038
+    },
+    {
+      "name": "ENSEMBLE.ZDL",
+      "size": 14080
+    },
+    {
+      "name": "EXCITER.ZDL",
+      "size": 9633
+    },
+    {
+      "name": "EXTRMDS.ZDL",
+      "size": 10433
+    },
+    {
+      "name": "FCYCLE.ZDL",
+      "size": 14177
+    },
+    {
+      "name": "FDCOMBO.ZDL",
+      "size": 15692
+    },
+    {
+      "name": "FLANGER.ZDL",
+      "size": 15710
+    },
+    {
+      "name": "FLTRDLY.ZDL",
+      "size": 16738
+    },
+    {
+      "name": "FUZZSML.ZDL",
+      "size": 11435
+    },
+    {
+      "name": "GEQ.ZDL",
+      "size": 13975
+    },
+    {
+      "name": "GOVERNOR.ZDL",
+      "size": 11438
+    },
+    {
+      "name": "GRTMUFF.ZDL",
+      "size": 11490
+    },
+    {
+      "name": "HALL.ZDL",
+      "size": 16287
+    },
+    {
+      "name": "HDHALL.ZDL",
+      "size": 19398
+    },
+    {
+      "name": "HD_REV.ZDL",
+      "size": 19119
+    },
+    {
+      "name": "HOTBOX.ZDL",
+      "size": 11339
+    },
+    {
+      "name": "HPS.ZDL",
+      "size": 14119
+    },
+    {
+      "name": "LEAD.ZDL",
+      "size": 10005
+    },
+    {
+      "name": "LINESEL.ZDL",
+      "size": 9217
+    },
+    {
+      "name": "MJROLLE.ZDL",
+      "size": 15656
+    },
+    {
+      "name": "MLTTPDLY.ZDL",
+      "size": 17468
+    },
+    {
+      "name": "MNPIT.ZDL",
+      "size": 21386
+    },
+    {
+      "name": "MODDLY.ZDL",
+      "size": 15196
+    },
+    {
+      "name": "MONOSYN.ZDL",
+      "size": 13341
+    },
+    {
+      "name": "MS_1959.ZDL",
+      "size": 14910
+    },
+    {
+      "name": "MTLWRLD.ZDL",
+      "size": 11407
+    },
+    {
+      "name": "M_COMP.ZDL",
+      "size": 11982
+    },
+    {
+      "name": "M_FILTER.ZDL",
+      "size": 14341
+    },
+    {
+      "name": "NOISEGTE.ZDL",
+      "size": 9751
+    },
+    {
+      "name": "OCTAVE.ZDL",
+      "size": 10716
+    },
+    {
+      "name": "OPTCOMP.ZDL",
+      "size": 12804
+    },
+    {
+      "name": "OVRDRV.ZDL",
+      "size": 11364
+    },
+    {
+      "name": "PEQ.ZDL",
+      "size": 13228
+    },
+    {
+      "name": "PHASEDLY.ZDL",
+      "size": 18413
+    },
+    {
+      "name": "PHASER.ZDL",
+      "size": 13215
+    },
+    {
+      "name": "PITCHDLY.ZDL",
+      "size": 15918
+    },
+    {
+      "name": "PTCHSHFT.ZDL",
+      "size": 20632
+    },
+    {
+      "name": "RACKCOMP.ZDL",
+      "size": 14943
+    },
+    {
+      "name": "RESONS.ZDL",
+      "size": 13426
+    },
+    {
+      "name": "RINGMOD.ZDL",
+      "size": 12520
+    },
+    {
+      "name": "RNDMFLTR.ZDL",
+      "size": 15691
+    },
+    {
+      "name": "ROOM.ZDL",
+      "size": 16271
+    },
+    {
+      "name": "RTCLOSET.ZDL",
+      "size": 21564
+    },
+    {
+      "name": "RVRSDLY.ZDL",
+      "size": 15393
+    },
+    {
+      "name": "SEQFLTR.ZDL",
+      "size": 18124
+    },
+    {
+      "name": "SLICER.ZDL",
+      "size": 16116
+    },
+    {
+      "name": "SLWATK.ZDL",
+      "size": 12683
+    },
+    {
+      "name": "SPRING.ZDL",
+      "size": 16549
+    },
+    {
+      "name": "SQUEAK.ZDL",
+      "size": 11353
+    },
+    {
+      "name": "STCHO.ZDL",
+      "size": 13726
+    },
+    {
+      "name": "STDELAY.ZDL",
+      "size": 17425
+    },
+    {
+      "name": "STEP.ZDL",
+      "size": 13571
+    },
+    {
+      "name": "STOMPDLY.ZDL",
+      "size": 16826
+    },
+    {
+      "name": "SUPERCHO.ZDL",
+      "size": 14319
+    },
+    {
+      "name": "TAPEECHO.ZDL",
+      "size": 15433
+    },
+    {
+      "name": "TGHLDDLY.ZDL",
+      "size": 14792
+    },
+    {
+      "name": "THEVIBE.ZDL",
+      "size": 12228
+    },
+    {
+      "name": "TLDROOM.ZDL",
+      "size": 16545
+    },
+    {
+      "name": "TREMOLO.ZDL",
+      "size": 14123
+    },
+    {
+      "name": "TW_ROCK.ZDL",
+      "size": 15660
+    },
+    {
+      "name": "T_SCREAM.ZDL",
+      "size": 11405
+    },
+    {
+      "name": "US_BLUES.ZDL",
+      "size": 15750
+    },
+    {
+      "name": "VIBRATO.ZDL",
+      "size": 13345
+    },
+    {
+      "name": "VINFLNGR.ZDL",
+      "size": 15166
+    },
+    {
+      "name": "VTGCE.ZDL",
+      "size": 12456
+    },
+    {
+      "name": "VX_JMI.ZDL",
+      "size": 14815
+    },
+    {
+      "name": "WRPPHASE.ZDL",
+      "size": 13255
+    },
+    {
+      "name": "ZNR.ZDL",
+      "size": 11528
+    },
+    {
+      "name": "Z_BOTTOM.ZDL",
+      "size": 10003
+    },
+    {
+      "name": "Z_CLEAN.ZDL",
+      "size": 10129
+    },
+    {
+      "name": "Z_DREAM.ZDL",
+      "size": 10042
+    },
+    {
+      "name": "Z_MP1.ZDL",
+      "size": 10056
+    },
+    {
+      "name": "Z_NEOS.ZDL",
+      "size": 10245
+    },
+    {
+      "name": "Z_ORGAN.ZDL",
+      "size": 15493
+    },
+    {
+      "name": "Z_SCREAM.ZDL",
+      "size": 10067
+    },
+    {
+      "name": "Z_WILD.ZDL",
+      "size": 10037
+    },
+    {
+      "name": "FLST_SEQ.ZDT",
+      "size": 4108
+    },
+    {
+      "name": "PAIR.DAT",
+      "size": 1024
+    },
+    {
+      "name": "SHIMMER.ZDL",
+      "size": 33382
+    },
+    {
+      "name": "ROUGHVER.ZDL",
+      "size": 27977
+    }
+  ],
+  "disk": {
+    "total": 4143170,
+    "free": 2437640
+  },
+  "validation": "Decoded directory and disk values exactly match app query results."
+}

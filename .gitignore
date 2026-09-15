@@ -1,0 +1,24 @@
+# Effect binaries are ZOOM's and are not redistributed here. Fetch them with
+# tools/download-effects.py, or point the app at your own library.
+app/bundle-assets/
+app/artwork/
+*.ZDL
+*.zip
+
+# Your pedal's contents are yours.
+*-patches-*.json
+backups/
+
+# Captured hardware fixtures the tests use when present.
+app/browser-handshake-success-*.json
+app/*.bin
+
+# Built probes
+tools/macos-bt-probe/sdp-dump
+tools/macos-bt-probe/rfcomm-listen
+tools/macos-bt-probe/bt-kick
+tools/macos-bt-probe/bt-release
+
+.DS_Store
+__pycache__/
+*.pyc

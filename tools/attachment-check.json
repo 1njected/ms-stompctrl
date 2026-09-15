@@ -1,0 +1,25 @@
+[
+  {
+    "host_time": "2026-09-08T11:49:55.615568+00:00",
+    "attached_pid": 957
+  },
+  {
+    "host_time": "2026-09-08T11:49:55.674365+00:00",
+    "message": {
+      "type": "send",
+      "payload": {
+        "pid": 957,
+        "base": "0x1007a8000",
+        "objc": true,
+        "home": "/var/mobile/Containers/Data/Application/BEE6C666-9F1F-436C-8049-D534B1D3CA69",
+        "version": "1.1.0.36",
+        "sendData": "0x1007e92b4",
+        "sendDataOffset": "0x412b4"
+      }
+    }
+  },
+  {
+    "host_time": "2026-09-08T11:49:55.693693+00:00",
+    "detached": true
+  }
+]

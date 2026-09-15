@@ -1,0 +1,82 @@
+.effect-item { overflow: hidden; background: #20251e; padding: 10px; }
+.effect-art { display: block; width: 100%; height: 112px; object-fit: cover; object-position: center; border-radius: 5px; background: #151914; margin-bottom: 11px; }
+.effect-item strong, .effect-item small { padding: 0 5px; }
+.effect-item small { display: block; margin-top: 5px; }
+.effect-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 28px; margin-bottom: 18px; }
+.effect-actions > div:first-child { min-width: 0; }
+.effect-actions h2 { white-space: nowrap; }
+.effect-actions p { margin-top: 6px; font-size: 12px; }
+.effect-action-buttons { display: flex; flex-wrap: wrap; gap: 8px; justify-content: flex-end; }
+.effect-action-buttons .file-button { padding: 10px 15px; }
+.effect-action-buttons input { display: none; }
+.action-status { grid-column: 1 / -1; color: var(--accent); }
+/* Idle, it is empty; a grid item still claims a row and its gap. */
+.action-status:empty { display: none; }
+.connection-error { color: #f0a99c !important; overflow-wrap: anywhere; }
+.connection-sidebar { display: block; }
+aside > .connection { display: grid; grid-template-columns: 30px minmax(0,1fr); gap: 0 9px; width: 100%; margin: 16px 0 27px; padding: 10px 0; background: transparent; border: 0; border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); border-radius: 0; }
+aside > .connection .device-icon { width: 30px; height: 34px; font-size: 19px; grid-row: span 2; }
+aside > .connection h2 { display: block; font-size: 12px; line-height: 1.2; }
+aside > .connection h2 .badge { display: block; width: max-content; margin-top: 5px; }
+aside > .connection p { grid-column: 1 / -1; font-size: 10px; line-height: 1.35; margin-top: 8px; }
+aside > .connection .connection-actions { grid-column: 1 / -1; display: flex; gap: 5px; margin-top: 8px; }
+aside > .connection .connection-actions button, aside > .connection .connection-actions #session-action button { width: auto; flex: 1; padding: 7px 5px; font-size: 10px; margin-top: 0; }
+aside > .connection .connection-actions { width: 100%; min-width: 0; justify-content: stretch; }
+aside > .connection .connection-actions { margin-left: 0; }
+aside > .connection .connection-actions button { min-width: 0; max-width: 100%; }
+aside > .connection .connection-actions #session-action:empty { display: none; }
+@media (max-width: 760px) { .effect-actions { display: block; } .effect-actions h2 { white-space: normal; } .effect-action-buttons { justify-content: flex-start; margin-top: 18px; } .action-status { margin-top: 14px; } }
+@media (min-width: 761px) and (max-width: 1050px) { .app-shell { grid-template-columns: 224px 1fr; } }
+.effect-category-heading{grid-column:1/-1;margin:1.2rem 0 .1rem;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+#page-effects > .card:not(:last-child){margin-bottom:20px}
+.nav-submenu{display:grid;gap:2px;margin:-4px 0 8px 34px}.nav-submenu a{padding:6px 10px;color:var(--muted);font-size:.78rem;text-decoration:none;border-left:1px solid var(--line)}.nav-submenu a:hover{color:var(--text);border-color:var(--accent)}
+.nav-debug{text-decoration:none;justify-content:flex-start;margin-top:auto}.nav-debug + .aside-foot{margin-top:8px}
+.connection .device-icon{display:none}.connection{gap:0}.connection-copy{min-width:0}aside > .connection{grid-template-columns:1fr}aside > .connection .connection-copy{grid-column:1}.connection.connected .badge{color:var(--accent);background:#303d23}
+.effect-filters{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.effect-filters select,#effect-category{border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;background:var(--card);color:var(--text)}
+
+/* Available FX marks anything the last "Installed on pedal" scan reported. */
+.effect-item.installed { border-color: #4f6a2e; background: #232b1d; }
+.effect-badge { display: inline-block; margin: 8px 5px 2px; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: .3px; color: #cfe89a; background: #33421f; border: 1px solid #4f6a2e; }
+
+/* Catalog filters share one row with Reload; they stack on a narrow screen. */
+@media(max-width:680px){.effect-filters{width:100%}.effect-filters input{flex:1;min-width:8rem}}
+
+/* Badge and actions share one row at the foot of a card. */
+.effect-item .effect-row{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:9px;padding:0 5px}
+.effect-item .effect-row .effect-badge{margin:0}
+.effect-item .effect-row button{padding:8px 12px;font-size:12px}
+.effect-item button.danger{border-color:#6a3a34;color:#e8b4ac;background:#2b1f1d}
+.effect-item button.danger:hover:not(:disabled){background:#3a2724}
+.effect-item button.danger.armed{background:#8c342a;border-color:#b05243;color:#fff}
+
+/* Pedal storage, under the connection card in the sidebar. */
+.pedal-storage{margin:2px 0 0}
+.storage-label{font-size:10px;letter-spacing:1.5px;color:#717a6e;margin-bottom:9px}
+.storage-bar{height:5px;border-radius:3px;background:#30362c;overflow:hidden}
+.storage-bar>span{display:block;height:100%;width:0;border-radius:3px;background:var(--accent);transition:width .3s ease}
+.storage-free{margin-top:9px;font-size:13px;font-weight:600;color:var(--text)}
+.storage-detail{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
+.pedal-storage.low .storage-bar>span{background:#d98b5f}
+.pedal-storage.low .storage-free{color:#e8b4ac}
+
+/* Two-letter brand mark: the base rule sizes a single 23px glyph. */
+.brand-mark{width:auto;min-width:34px;padding:0 6px;font-size:14px;font-weight:700;letter-spacing:.5px}
+
+/* Getting started: four steps across the top of the Effects page. */
+.getting-started{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;list-style:none;margin:0 0 18px;padding:0;counter-reset:step}
+.getting-started li{counter-increment:step;position:relative;padding:15px 15px 15px 40px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
+.getting-started li::before{content:counter(step);position:absolute;left:14px;top:15px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#2f3a25;color:var(--accent);font-size:10px;font-weight:700}
+.getting-started strong{display:block;font-size:12.5px;margin-bottom:4px}
+.getting-started span{display:block;font-size:11.5px;line-height:1.5;color:var(--muted)}
+.getting-started code{font-size:11px;color:#c6d6a8}
+@media(max-width:1050px){.getting-started{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:680px){.getting-started{grid-template-columns:1fr}}
+
+/* Restore a sound package. */
+.restore-actions{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 0}
+.restore-summary{margin-top:16px;border-top:1px solid var(--line);padding-top:12px}
+.restore-row{display:flex;justify-content:space-between;gap:12px;padding:5px 0;font-size:12px;color:var(--muted)}
+.restore-row strong{color:var(--text);font-weight:600}
+.restore-row.warn strong{color:#e8b4ac}
+.restore-card p{font-size:13px;margin-top:8px}
