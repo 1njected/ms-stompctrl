@@ -228,6 +228,7 @@
   };
   foot.append(status,revert,save);
 
+  panel.tabIndex=-1;
   panel.append(head,el('div','pe-body'),foot);
   overlay.append(panel);
   overlay.onclick=e=>{if(e.target===overlay&&!dirty())close();};
@@ -235,7 +236,12 @@
    if(e.key==='Escape'&&overlay){if(!dirty())close();document.removeEventListener('keydown',esc);}});
   document.body.append(overlay);
   render();update();
-  overlay.querySelector('#pe-name')?.focus();
+  /* Focusing the name raises the keyboard the moment the editor opens on a
+     phone, covering the chain it was opened to edit. Do it only where focus
+     costs nothing -- a pointer device -- and otherwise put focus on the panel,
+     so Escape and screen readers still land inside the dialog. */
+  if(matchMedia('(pointer:fine)').matches)overlay.querySelector('#pe-name')?.focus();
+  else panel.focus();
  }
 
  g.openPatchEditor=open;

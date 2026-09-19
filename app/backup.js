@@ -253,6 +253,6 @@
    if(took>1000)original('backup_slow',{slot:slot+1,ms:took,nextGap:gap});
    persist();
    await new Promise(r=>setTimeout(r,gap));}backup.patches=backup.patches.map((p,i)=>validate(p.sysexHex.split(' ').map(x=>parseInt(x,16)),i));backup.complete=true;status.textContent='50 of 50 patches captured. Download your backup. Restore has not been tested.';persist();original('backup_complete',{patches:50});}catch(e){backup.error=String(e);persist();status.textContent=`Backup stopped: ${e.message}. ${backup.patches.length}/50 captured; any download is partial.`;original('backup_error',String(e));}finally{button.textContent=backup.complete?'Sync from pedal':'Resume sync from pedal';state.running=false;button.disabled=false;save.disabled=backup.patches.length===0;}};
- save.onclick=()=>{const b=state.last;if(!b)return;const a=document.createElement('a'),url=URL.createObjectURL(new Blob([JSON.stringify(b,null,2)],{type:'application/json'}));a.href=url;a.download=`ms100bt-patches-${b.createdAt.replaceAll(':','-')}${b.complete?'':'-PARTIAL'}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);};
+ save.onclick=()=>{const b=state.last;if(!b)return;void stompSave(`ms100bt-patches-${b.createdAt.replaceAll(':','-')}${b.complete?'':'-PARTIAL'}.json`,JSON.stringify(b,null,2),'application/json');};
  state.run=()=>button.onclick();state.download=()=>save.onclick();original('backup_loaded','Read-only slot backup ready');
 })(globalThis);

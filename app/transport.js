@@ -41,9 +41,7 @@ globalThis.stompSilence={
 globalThis.clearProtocolLog=()=>{events.length=0;console.log('[stomp] protocol log cleared');};
 // Kept because a saved log is what made several of this project's bugs findable.
 globalThis.saveProtocolLog=()=>{
- const a=document.createElement('a');
- a.href=URL.createObjectURL(new Blob([JSON.stringify({writeStats:globalThis.__stompWriteStats,events},null,2)],{type:'application/json'}));
- a.download='ms-stompctrl-log.json';a.click();URL.revokeObjectURL(a.href);
+ void stompSave('ms-stompctrl-log.json',JSON.stringify({writeStats:globalThis.__stompWriteStats,events},null,2),'application/json');
  return `${events.length} entries`;
 };
 const hex=b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join(' ');

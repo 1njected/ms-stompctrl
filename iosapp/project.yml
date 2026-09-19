@@ -1,0 +1,52 @@
+# MS StompCtrl for iOS.
+#
+#   brew install xcodegen
+#   xcodegen generate && open StompCtrl.xcodeproj
+#
+# Change bundleIdPrefix before building: free provisioning refuses a bundle
+# identifier another Apple ID has already claimed.
+#
+# The web app is NOT copied in here. Two folder references pull it into the
+# bundle at build time -- ../app, which the browser build also serves, and web/
+# beside this file -- so there is exactly one copy of ui.js, install.js and the
+# rest, and it is the one the browser build and its tests use.
+name: StompCtrl
+options:
+  bundleIdPrefix: local.change.me
+  deploymentTarget:
+    iOS: "15.0"
+  createIntermediateGroups: true
+targets:
+  StompCtrl:
+    type: application
+    platform: iOS
+    sources:
+      - path: Sources
+      # Folder references: each lands in the bundle under its own name, which is
+      # what AssetSchemeHandler searches -- web/ first, so transport-ea.js
+      # shadows the browser transport.
+      - path: web
+        type: folder
+        buildPhase: resources
+      - path: ../app
+        type: folder
+        buildPhase: resources
+    info:
+      path: Generated-Info.plist
+      properties:
+        CFBundleDisplayName: StompCtrl
+        UILaunchScreen: {}
+        UIRequiredDeviceCapabilities: [arm64]
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
+        # Without this iOS hides the pedal from the app entirely.
+        UISupportedExternalAccessoryProtocols:
+          - jp.co.zoom.p1
+    settings:
+      base:
+        TARGETED_DEVICE_FAMILY: "1,2"
+        SWIFT_VERSION: "5.0"
+        CODE_SIGN_STYLE: Automatic
+        GENERATE_INFOPLIST_FILE: NO

@@ -225,8 +225,7 @@
   if(meta?.index)files.push(['index.json',new TextEncoder().encode(JSON.stringify(meta.index,null,2))]);
   const manifest={format:'stompshare-effects',version:1,createdAt:new Date().toISOString(),count:records.length,effects:records.map(({data,...x})=>x)};
   files.push(['manifest.json',new TextEncoder().encode(JSON.stringify(manifest,null,2))]);
-  const blob=g.BackupBundle.zip(files),a=document.createElement('a'),url=URL.createObjectURL(blob);
-  a.href=url;a.download='ms-stompctrl-effects-'+new Date().toISOString().slice(0,10)+'.zip';a.click();
+  void g.stompSave('ms-stompctrl-effects-'+new Date().toISOString().slice(0,10)+'.zip',g.BackupBundle.zip(files));
   setTimeout(()=>URL.revokeObjectURL(url),1000);
  }
 
