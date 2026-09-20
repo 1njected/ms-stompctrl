@@ -44,6 +44,17 @@ targets:
         # Without this iOS hides the pedal from the app entirely.
         UISupportedExternalAccessoryProtocols:
           - jp.co.zoom.p1
+        # iOS resolves an <input accept=".zdl"> through the type system, not by
+        # string: with no type claiming the extension, the Files picker offers
+        # the page nothing to select and "Add one effect" cannot be used at all.
+        # An imported declaration says the format exists and belongs to someone
+        # else, which is exactly the case here.
+        UTImportedTypeDeclarations:
+          - UTTypeIdentifier: com.zoom.zdl
+            UTTypeDescription: ZOOM effect binary
+            UTTypeConformsTo: [public.data]
+            UTTypeTagSpecification:
+              public.filename-extension: [zdl, ZDL]
     settings:
       base:
         TARGETED_DEVICE_FAMILY: "1,2"

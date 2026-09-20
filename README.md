@@ -31,7 +31,8 @@ the editor keep working with no pedal attached.
 ![](docs/screenshots/app-patches.png)
 ![](docs/screenshots/app-patchedit.png)
 
-
+## Custom ZDL
+Custom .ZDL can be installed, have a look at   ZoomMultistompZDL: https://github.com/themanro/ZoomMultistompZDL/
 
 ## Running it
 Available here:
@@ -54,6 +55,9 @@ Self-host the webbapp:
 
 Then open <http://127.0.0.1:8765>, pair the pedal in your OS Bluetooth
 settings, and press **Connect pedal**.
+
+### iOS
+iOS app available in /iosapp, needs Apple developer account to compile and install.
 
 
 ## Documentation

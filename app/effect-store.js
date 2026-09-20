@@ -36,10 +36,11 @@
  function remember(records){localStorage.setItem(SUMMARY,JSON.stringify({updatedAt:new Date().toISOString(),count:records.length,bytes:records.reduce((n,x)=>n+x.data.byteLength,0)}));}
 
  /* A ZDL carries its own identity: effect ID at 0x40, version string at 0x44. */
+ /* zdl.js owns the container format; this is the loose check bulk archive
+    imports have always used. */
  function describe(data,filename){
-  const v=new DataView(data.buffer,data.byteOffset,data.byteLength),text=(a,z)=>new TextDecoder().decode(data.slice(a,z));
-  if(data.length<76||text(4,8)!=='SIZE'||text(20,24)!=='INFO')throw Error(`${filename||'File'} is not a recognized ZDL effect.`);
-  return {id:v.getUint32(64,true).toString(16).padStart(8,'0'),version:text(68,76).split('\0')[0]};
+  const {id,version}=g.ZDL.inspect(data,filename||'File');
+  return {id,version};
  }
  async function add(file,source='local upload',filename){
   const data=file instanceof Uint8Array?file:new Uint8Array(await file.arrayBuffer());

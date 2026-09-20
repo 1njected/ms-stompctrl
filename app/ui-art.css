@@ -1,5 +1,33 @@
 .effect-item { overflow: hidden; background: #20251e; padding: 10px; }
 .effect-art { display: block; width: 100%; height: 112px; object-fit: cover; object-position: center; border-radius: 5px; background: #151914; margin-bottom: 11px; }
+/* Same footprint as .effect-art, so a grid of both lines up. */
+.effect-plate{position:relative;height:112px;margin-bottom:11px;border-radius:5px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
+  padding:10px 12px;text-align:center;overflow:hidden;
+  border:1px solid rgba(255,255,255,.07);
+  background:
+    radial-gradient(130% 80% at 50% -10%, rgba(255,255,255,.09), transparent 62%),
+    linear-gradient(175deg, var(--plate-a) 0%, var(--plate-b) 100%);
+  --plate-a:#2b3327; --plate-b:#181d16;}
+/* A single hairline across the top, the way a stompbox faceplate catches light. */
+.effect-plate::before{content:"";position:absolute;inset:0 0 auto;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);}
+.effect-plate .plate-name{font-size:var(--plate-size,26px);font-weight:800;line-height:1;
+  letter-spacing:.035em;text-transform:uppercase;color:#f4f7ec;
+  text-shadow:0 1px 0 rgba(0,0,0,.5);overflow-wrap:anywhere;}
+.effect-plate .plate-cat{font-size:9px;letter-spacing:.15em;text-transform:uppercase;
+  color:rgba(255,255,255,.5);margin:0;}
+.effect-plate[data-category="Dynamics"]          {--plate-a:#22322f;--plate-b:#141d1c}
+.effect-plate[data-category="Drive & Distortion"]{--plate-a:#3a2b1c;--plate-b:#211811}
+.effect-plate[data-category="Amps & Cabinets"]   {--plate-a:#33261f;--plate-b:#1e1714}
+.effect-plate[data-category="Modulation"]        {--plate-a:#2b2436;--plate-b:#191521}
+.effect-plate[data-category="Delay"]             {--plate-a:#1f2a37;--plate-b:#131a22}
+.effect-plate[data-category="Reverb"]            {--plate-a:#1f3033;--plate-b:#141d1f}
+.effect-plate[data-category="Filter & Wah"]      {--plate-a:#26331f;--plate-b:#171f14}
+.effect-plate[data-category="Pitch"]             {--plate-a:#332030;--plate-b:#1f1420}
+/* Installed cards already carry a green border and badge; lift the plate a
+   little so the state reads from the grid without another colour. */
+.effect-item.installed .effect-plate{border-color:#4f6a2e}
 .effect-item strong, .effect-item small { padding: 0 5px; }
 .effect-item small { display: block; margin-top: 5px; }
 .effect-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 28px; margin-bottom: 18px; }
@@ -80,3 +108,8 @@ aside > .connection .connection-actions #session-action:empty { display: none; }
 .restore-row strong{color:var(--text);font-weight:600}
 .restore-row.warn strong{color:#e8b4ac}
 .restore-card p{font-size:13px;margin-top:8px}
+
+/* The install offer that appears after loading a single effect. */
+.install-offer:empty{display:none}
+.install-offer{margin-top:10px}
+.install-offer button{padding:10px 16px;font-size:13px}

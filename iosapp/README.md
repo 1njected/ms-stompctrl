@@ -108,6 +108,23 @@ the whole iAP layer before the page is told anything, which is why
 Reading and the session come up; the UI has bugs still being worked out. The synthetic DevACK remains the one place the shim is weaker than
 the browser transport, so an install end to end is the thing to watch.
 
+## Custom effects
+
+"Add one effect" on the Effects page takes a single `.ZDL` and puts it in the
+browser's library, from where the catalog card installs it on the pedal. The
+file is checked strictly first — declared section lengths against actual length,
+the ELF where the header says it begins, and the pedal's 8.3 filename rule —
+because nothing upstream vouches for a file someone was handed and the next
+thing that happens to it is a write to flash. All 313 ZOOM `.ZDL` files
+available here pass that check, across all three ELF offsets the format uses.
+
+On iOS the picker needs `UTImportedTypeDeclarations` in `project.yml`: iOS
+resolves `accept=".zdl"` through the type system rather than by string, and with
+nothing claiming the extension the Files picker offers nothing to select. **Not
+yet confirmed on a device** — if `.ZDL` files still appear greyed out in Files,
+that declaration is the thing that did not take, and the stopgap is widening the
+input's `accept` in `../app/index.html`.
+
 ## Still to build
 
 - **A phone pass over the UI.** `ui.css` already breaks at 680px, but that was

@@ -108,7 +108,77 @@
  async function waitForInventory(){for(let i=0;globalThis.pedalInventory?.running&&i<120;i++)await new Promise(r=>setTimeout(r,250));if(globalThis.pedalInventory?.running)throw Error('Pedal inventory is still busy; reload it and try again.');}
  const categorySelect=document.createElement('select');categorySelect.id='effect-category';categorySelect.setAttribute('aria-label','Filter effects by category');categorySelect.innerHTML='<option value="">All categories</option>';$('effect-search').before(categorySelect);categorySelect.onchange=renderEffects;
  $('effect-status').onchange=renderEffects;
- function renderEffects(){const uses=patchEffectUses(),query=$('effect-search').value.toLowerCase(),category=categorySelect.value,list=$('effect-list');list.className='effects-grid';list.replaceChildren();const status=$('effect-status').value;const filtered=effects.filter(e=>(!category||categoryOf(e)===category)&&(!status||(status==='installed')===installedOnPedal(e))&&(e.filename+' '+e.effectId).toLowerCase().includes(query));const groups={};for(const e of filtered)(groups[categoryOf(e)]??=[]).push(e);for(const [group,items] of Object.entries(groups)){const heading=document.createElement('h3');heading.className='effect-category-heading';heading.textContent=group;list.append(heading);for(const e of items){const card=document.createElement('article'),name=document.createElement('strong'),detail=document.createElement('small'),install=document.createElement('button'),del=document.createElement('button'),row=document.createElement('div');row.className='effect-row';del.className='danger';del.textContent='Delete';card.className='effect-item';const artUrl=e.artwork&&artUrls.get(e.artwork);if(artUrl){const image=document.createElement('img');image.className='effect-art';image.src=artUrl;image.alt='';image.loading='lazy';image.onerror=()=>image.remove();card.append(image);}const onPedal=installedOnPedal(e);if(onPedal)card.classList.add('installed');const badge=document.createElement('span');badge.className='effect-badge';badge.textContent='✓ Installed';name.textContent=e.filename.replace(/\.zdl$/i,'');detail.textContent=`v${e.version} · ${(e.bytes/1024).toFixed(1)} KB`;install.textContent=onPedal?'Reinstall':'Install to pedal';install.onclick=async()=>{if(globalThis.iapHost?.session==null){install.textContent='Open session first';setTimeout(()=>install.textContent='Install to pedal',1800);return;}install.disabled=true;try{$('effect-action-status').textContent='Preparing pedal download…';if(globalThis.pedalInventory?.running){install.textContent='Waiting for inventory…';await waitForInventory();}install.textContent='Downloading…';await globalThis.pedalInstaller.install(e);install.textContent='Installed';$('effect-action-status').textContent=`Installed ${e.filename} on the pedal.`;pedalFiles.add(e.filename.toUpperCase());renderEffects();void refreshDisk();}catch(err){install.textContent='Retry';$('effect-action-status').textContent=err.message;}finally{install.disabled=false;}};// Deleting is destructive and the pedal has no undo, so the button arms first
+ /* The catalog card and the offer shown straight after importing one effect
+    both end up here, so a change to how an install is driven -- the inventory
+    wait, what the status line says, how a failure reads -- happens once. */
+ async function installToPedal(effect,button,restingLabel){
+  if(globalThis.iapHost?.session==null){
+   button.textContent='Open session first';
+   setTimeout(()=>button.textContent=restingLabel,1800);
+   return false;
+  }
+  button.disabled=true;
+  try{
+   $('effect-action-status').textContent='Preparing pedal download…';
+   if(globalThis.pedalInventory?.running){button.textContent='Waiting for inventory…';await waitForInventory();}
+   button.textContent='Downloading…';
+   await globalThis.pedalInstaller.install(effect);
+   button.textContent='Installed';
+   $('effect-action-status').textContent=`Installed ${effect.filename} on the pedal.`;
+   pedalFiles.add(effect.filename.toUpperCase());
+   renderEffects();void refreshDisk();
+   return true;
+  }catch(err){
+   button.textContent='Retry';
+   $('effect-action-status').textContent=err.message;
+   return false;
+  }finally{button.disabled=false;}
+ }
+
+ /* The offer itself: a button beside the status line, not a dialog. A
+    confirm() blocks the page, and in a WKWebView it blocks the bridge with it. */
+ function offerInstall(filename){
+  const slot=$('effect-install-offer');
+  slot.replaceChildren();
+  const effect=effects.find(x=>x.filename.toUpperCase()===filename.toUpperCase());
+  if(!effect)return;
+  const button=document.createElement('button');
+  button.className='primary';
+  button.textContent='Install to pedal';
+  button.onclick=async()=>{
+   const done=await installToPedal(effect,button,'Install to pedal');
+   if(done)setTimeout(()=>slot.replaceChildren(),2500);
+  };
+  slot.append(button);
+ }
+
+ function renderEffects(){const uses=patchEffectUses(),query=$('effect-search').value.toLowerCase(),category=categorySelect.value,list=$('effect-list');list.className='effects-grid';list.replaceChildren();const status=$('effect-status').value;const filtered=effects.filter(e=>(!category||categoryOf(e)===category)&&(!status||(status==='installed')===installedOnPedal(e))&&(e.filename+' '+e.effectId).toLowerCase().includes(query));const groups={};for(const e of filtered)(groups[categoryOf(e)]??=[]).push(e);for(const [group,items] of Object.entries(groups)){const heading=document.createElement('h3');heading.className='effect-category-heading';heading.textContent=group;list.append(heading);for(const e of items){const card=document.createElement('article'),name=document.createElement('strong'),detail=document.createElement('small'),install=document.createElement('button'),del=document.createElement('button'),row=document.createElement('div');row.className='effect-row';del.className='danger';del.textContent='Delete';card.className='effect-item';
+ const shown=e.filename.replace(/\.zdl$/i,'');
+ /* An effect with no artwork used to leave a blank slot. Set its name large
+    instead, tinted by category, so the grid still reads at a glance -- and so a
+    card looks deliberate whether or not anyone ever ran download-effects.py.
+    Artwork, where it exists, is still the picture. */
+ const makePlate=()=>{
+  const plate=document.createElement('div'),plateName=document.createElement('span'),plateCat=document.createElement('small');
+  plate.className='effect-plate';plate.dataset.category=categoryOf(e);
+  plateName.className='plate-name';plateName.textContent=shown;
+  // Eight characters is the pedal's own limit, so one line always fits; the
+  // step down keeps the longest names from crowding the plate edges.
+  plate.style.setProperty('--plate-size',shown.length<=5?'30px':shown.length<=7?'25px':'21px');
+  plateCat.className='plate-cat';plateCat.textContent=categoryOf(e);
+  plate.append(plateName,plateCat);return plate;
+ };
+ const artUrl=e.artwork&&artUrls.get(e.artwork);
+ if(artUrl){
+  const image=document.createElement('img');
+  image.className='effect-art';image.src=artUrl;image.alt='';image.loading='lazy';
+  /* A stored image that will not decode left the card empty before; fall back
+     to the plate rather than to nothing. */
+  image.onerror=()=>{image.replaceWith(makePlate());name.remove();};
+  card.append(image);
+ }else{
+  card.append(makePlate());
+ }const onPedal=installedOnPedal(e);if(onPedal)card.classList.add('installed');const badge=document.createElement('span');badge.className='effect-badge';badge.textContent='✓ Installed';detail.textContent=`v${e.version} · ${(e.bytes/1024).toFixed(1)} KB`;install.textContent=onPedal?'Reinstall':'Install to pedal';install.onclick=()=>installToPedal(e,install,'Install to pedal');// Deleting is destructive and the pedal has no undo, so the button arms first
    // and states what it will break before the second click commits.  The effect
    // binary is in the local catalog either way, so a delete is reinstallable.
    let armed=false,armTimer=null;
@@ -130,7 +200,7 @@
    if(onPedal)row.append(badge);
    row.append(install);
    if(onPedal)row.append(del);
-   card.append(name,detail,row);list.append(card);}}if(!list.children.length)list.textContent='No matching effects.';updateEffectCount();}
+   if(artUrl)name.textContent=shown;else name.remove();card.append(name,detail,row);list.append(card);}}if(!list.children.length)list.textContent='No matching effects.';updateEffectCount();}
  $('effect-search').oninput=renderEffects;
  async function refreshEffectStore(){localEffects=await effectStore.all();$('effect-storage-status').textContent=localEffects.length?`${localEffects.length} effect${localEffects.length===1?'':'s'} stored in this browser.`:'No effects stored in this browser yet.';}
 
@@ -154,12 +224,11 @@
     $('effect-list').textContent='Import your FX archive to fill the catalog.';
     return;
    }
-   // Many effects share one family image; fall back within the family, then to
-   // any image at all, so a card is never blank when artwork exists.
-   const familyArt={},has=a=>a&&artUrls.has(a);
-   for(const e of effects)if(has(e.artwork)&&!familyArt[e.effectId.slice(0,2)])familyArt[e.effectId.slice(0,2)]=e.artwork;
-   const fallback=effects.find(e=>has(e.artwork))?.artwork||null;
-   for(const e of effects)if(!has(e.artwork))e.artwork=familyArt[e.effectId.slice(0,2)]||fallback;
+   /* An effect with no artwork of its own used to borrow one: first from its
+      id family, then from any image at all, so that a card was never blank.
+      That is why ARRAKIS (080001d9) showed TapeEcho3's picture -- same 08
+      family, first image found. The name plate fills a blank card honestly
+      now, so nothing has to wear someone else's face. */
    const categories=[...new Set(effects.map(categoryOf))].sort();
    categorySelect.replaceChildren(new Option('All categories',''),...categories.map(c=>new Option(c,c)));
    effects.sort((a,b)=>a.filename.localeCompare(b.filename));
@@ -311,23 +380,55 @@
   sample:effects.slice(0,3).map(e=>({f:e.filename,id:e.effectId,art:e.artwork}))});
  
  $('effects-upload').onchange=async()=>{const files=[...$('effects-upload').files];if(!files.length)return;
-  const report=[];let effectsAdded=0,artAdded=0,skipped=[];
+  const report=[];let effectsAdded=0,artAdded=0,skipped=[],rejected=[];
+  const archives=files.some(f=>/\.zip$/i.test(f.name));
   $('effects-upload').disabled=true;
+  $('effect-install-offer').replaceChildren();
+  let lastImported=null;
   try{
    for(const file of files){
     if(/\.zip$/i.test(file.name)){
      const r=await effectStore.importArchive(await file.arrayBuffer(),text=>{$('effect-action-status').textContent=text;});
      effectsAdded+=r.effects;artAdded+=r.artwork;skipped=skipped.concat(r.skipped);
      if(r.catalogued)report.push(`catalog of ${r.catalogued}`);
-    }else if(/\.zdl$/i.test(file.name)){await effectStore.add(file,'computer upload');effectsAdded++;}
+    }else if(/\.zdl$/i.test(file.name)){
+     /* A loose .ZDL was handed over by a person, not unpacked from an archive
+        ZOOM published, so nothing has vouched for it and the next thing that
+        can happen to it is a write to the pedal's flash. Check it properly.
+        One bad file is reported and skipped rather than failing the batch. */
+     try{
+      const name=globalThis.ZDL.checkFilename(file.name);
+      const data=new Uint8Array(await file.arrayBuffer());
+      const {id,version,bytes}=globalThis.ZDL.inspect(data,file.name,{strict:true});
+      await effectStore.add(data,'computer upload',name);
+      effectsAdded++;
+      report.push(`${name} v${version}, ID ${id}, ${(bytes/1024).toFixed(1)} KB`);
+      lastImported=name;
+     }catch(e){rejected.push(e.message);}
+    }
    }
    await loadCatalog(true);
+   const offering=effectsAdded===1&&!archives&&!!lastImported;
    report.unshift(`${effectsAdded} effect${effectsAdded===1?'':'s'}`);
    // Say so when an archive carries no artwork, rather than leaving a catalog
-   // of blank cards looking like a failure to load.
-   report.push(artAdded?`${artAdded} image${artAdded===1?'':'s'}`:'no artwork in this archive');
+   // of blank cards looking like a failure to load. A loose .ZDL is not an
+   // archive and never carries artwork, so saying it is missing reads as a
+   // fault where there is none.
+   if(archives)report.push(artAdded?`${artAdded} image${artAdded===1?'':'s'}`:'no artwork in this archive');
+   /* Importing puts an effect in this browser; it does not touch the pedal.
+      Nothing in the wording said so, and a custom effect that lands in the
+      library while the pedal stays empty reads as a silent failure. */
    $('effect-action-status').textContent=`Imported ${report.join(', ')} into this browser.`+
-    (skipped.length?` ${skipped.length} file${skipped.length===1?'':'s'} skipped as unreadable.`:'');
+    (skipped.length?` ${skipped.length} file${skipped.length===1?'':'s'} skipped as unreadable.`:'')+
+    (rejected.length?' '+rejected.join(' '):'')+
+    (effectsAdded?(offering?' Nothing has been sent to the pedal yet.':' Nothing has been sent to the pedal yet — find it in the catalog below and press Install to pedal.'):'');
+   /* The search box and the filters are the person's, not ours: an import does
+      not touch them. The offer below is how a freshly loaded effect is reached,
+      so there is nothing to go hunting for. */
+   /* Loading one effect is almost always a prelude to putting it on the pedal,
+      so offer that here rather than making someone find the card again. Only
+      for a single effect: after an archive there is no one thing meant. */
+   if(offering)offerInstall(lastImported);
   }catch(e){$('effect-action-status').textContent=e.message;}
   finally{$('effects-upload').disabled=false;$('effects-upload').value='';}};
  if($('fx-file'))$('fx-file').onchange=async()=>{const file=$('fx-file').files[0];if(!file)return;try{const b=new Uint8Array(await file.arrayBuffer()),v=new DataView(b.buffer),ascii=(a,z)=>new TextDecoder().decode(b.slice(a,z));if(b.length<76||ascii(4,8)!=='SIZE'||ascii(20,24)!=='INFO')throw Error('This file is not a recognized ZDL effect.');const a=v.getUint32(12,true),n=v.getUint32(16,true);if(b.length!==20+a+n||ascii(20+a,24+a)!=='\x7fELF')throw Error('The ZDL file is incomplete or has an invalid structure.');$('fx-preview').textContent=`${file.name} · v${ascii(68,76).split('\0')[0]} · ${(b.length/1024).toFixed(1)} KB · ID ${v.getUint32(64,true).toString(16).padStart(8,'0')}`;}catch(e){$('fx-preview').textContent=e.message;}};
