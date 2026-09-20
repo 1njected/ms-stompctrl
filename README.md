@@ -32,7 +32,9 @@ the editor keep working with no pedal attached.
 ![](docs/screenshots/app-patchedit.png)
 
 ## Custom ZDL
-Custom .ZDL can be installed, have a look at   ZoomMultistompZDL: https://github.com/themanro/ZoomMultistompZDL/
+Custom .ZDL can be installed, have a look at:
+https://github.com/repeat98/ZoomMultistompZDL
+https://github.com/themanro/ZoomMultistompZDL
 
 ## Running it
 Available here:

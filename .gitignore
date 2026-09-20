@@ -22,3 +22,20 @@ tools/macos-bt-probe/bt-release
 .DS_Store
 __pycache__/
 *.pyc
+
+# The reverse-engineering tree: ZOOM firmware and effect binaries, the extracted
+# StompShare app, the pedal's Apple authentication certificate, and the author's
+# own pedal contents. None of it is redistributable -- see NOTICE.md. It is also
+# its own git repository, so without this an `add -A` embeds a gitlink here.
+re-files/
+
+# Internal working notes and AI memory, not part of the published project.
+memory/
+
+# Xcode output. iosapp/project.yml is the source of truth; `xcodegen generate`
+# rebuilds the .xcodeproj and its Info.plist from it.
+iosapp/**/*.xcodeproj/
+iosapp/*.xcodeproj/
+iosapp/**/Generated-Info.plist
+iosapp/**/DerivedData/
+iosapp/**/build/
