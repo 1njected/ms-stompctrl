@@ -76,7 +76,22 @@
  // from the local browser store or the patch references.  Catalog and pedal
  // both use 8.3 names such as _ACOSTIC.ZDL; compare case-insensitively anyway.
  const installedOnPedal=e=>pedalFiles.has(e.filename.toUpperCase());
- function syncPedalFiles(files=globalThis.pedalInventory?.files||[]){pedalFiles=new Set(files.filter(f=>/\.ZDL$/i.test(f.filename)).map(f=>f.filename.toUpperCase()));renderEffects();}
+ /* What is on the pedal is worth keeping between visits: scanning it takes a
+    full directory read, and without this every reload showed a catalog with
+    nothing marked installed until you connected and scanned again. Storage can
+    be unavailable or throw, and a stale list is only a wrong badge, so every
+    access is wrapped and failure just means the old behaviour. */
+ const PEDAL_FILES_KEY='stomp.pedalFiles.v1';
+ function rememberPedalFiles(){
+  try{localStorage.setItem(PEDAL_FILES_KEY,JSON.stringify([...pedalFiles]));}catch{}
+ }
+ function recallPedalFiles(){
+  try{
+   const saved=JSON.parse(localStorage.getItem(PEDAL_FILES_KEY)||'[]');
+   if(Array.isArray(saved))pedalFiles=new Set(saved.filter(f=>typeof f==='string'));
+  }catch{}
+ }
+ function syncPedalFiles(files=globalThis.pedalInventory?.files||[]){pedalFiles=new Set(files.filter(f=>/\.ZDL$/i.test(f.filename)).map(f=>f.filename.toUpperCase()));rememberPedalFiles();renderEffects();}
  let libraryLoaded=false;
  function updateEffectCount(){$('effect-count').textContent=!effects.length?(libraryLoaded?'No effects imported':'Loading library…'):pedalFiles.size?`${effects.filter(installedOnPedal).length} of ${effects.length} on pedal`:`${effects.length} catalog effects`;}
  function page(name){if(!['patches','effects'].includes(name))name='effects';document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+name);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===name);b.setAttribute('aria-current',b.dataset.page===name?'page':'false');});$('page-label').textContent={patches:'Patches',effects:'Effects'}[name];}
@@ -85,7 +100,7 @@
  document.querySelectorAll('[data-page]').forEach(b=>b.onclick=()=>{location.hash=b.dataset.page;page(b.dataset.page);});addEventListener('hashchange',()=>page(location.hash.slice(1)));page(location.hash.slice(1));
  function renderPatches(){const patches=globalThis.patchBackup?.last?.patches||[],query=$('patch-search').value.toLowerCase(),filtered=patches.filter(p=>(p.name||'').toLowerCase().includes(query)||String(p.slot).includes(query));$('patch-count').textContent=patches.length;$('backup-progress').value=patches.length;$('patch-caption').textContent=patches.length?`${patches.length} saved patches captured · ${patchBackup.last.complete?'All checksums verified':'Backup in progress or partial'}`:'Read the pedal to see your saved chains.';if(!patches.length)return;
  const list=$('patch-list');list.replaceChildren();list.className='patch-grid';if(!filtered.length){const p=document.createElement('p');p.textContent='No patches match your search.';list.append(p);}
- for(const p of filtered){const item=document.createElement('article');item.className='patch-item';const number=document.createElement('span'),name=document.createElement('div'),meta=document.createElement('div');number.className='patch-number';number.textContent=String(p.slot).padStart(2,'0');name.className='patch-name';name.textContent=p.name||'Untitled patch';meta.className='patch-meta';meta.textContent=p.crcValid?'✓ Checksum verified':'Captured';item.append(number,name);if(p.rawHex&&globalThis.PatchEditor){try{const dec=PatchEditor.decode(p.rawHex.split(' ').map(x=>parseInt(x,16)));const chain=document.createElement('div');chain.className='patch-chain';const used=dec.slots.filter(s=>!s.empty);if(!used.length)chain.append(Object.assign(document.createElement('span'),{className:'patch-chain-empty',textContent:'no effects'}));for(const s of used){const c=document.createElement('span');c.className='chain-node'+(s.enabled?'':' off');const d=PatchEditor.describe(s.effectId);c.textContent=d.short||'FX';c.title=`${d.family||'Effect'} — ${s.effectId}${s.enabled?'':' (bypassed)'}`;chain.append(c);}item.append(chain);}catch(e){}}item.append(meta);/* Clicking a patch opens the editor. The codec needs rawHex, which only a verified read produces, so a card without it stays inert rather than opening an editor over nothing. */if(p.rawHex&&globalThis.openPatchEditor){item.classList.add('editable');item.tabIndex=0;item.setAttribute('role','button');item.title='Edit this patch';const open=()=>globalThis.openPatchEditor(p,{onWritten:()=>{$('patch-caption').textContent=`Patch ${p.slot} written to the pedal. Re-read to refresh the library.`;}});item.onclick=open;item.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};}list.append(item);}}
+ for(const p of filtered){const item=document.createElement('article');item.className='patch-item';const number=document.createElement('span'),name=document.createElement('div'),meta=document.createElement('div');number.className='patch-number';number.textContent=String(p.slot).padStart(2,'0');name.className='patch-name';name.textContent=p.name||'Untitled patch';meta.className='patch-meta';meta.textContent=p.crcValid?'✓ Checksum verified':'Captured';item.append(number,name);if(p.rawHex&&globalThis.PatchEditor){try{const dec=PatchEditor.decode(p.rawHex.split(' ').map(x=>parseInt(x,16)));const chain=document.createElement('div');chain.className='patch-chain';const used=dec.slots.filter(s=>!s.empty);if(!used.length)chain.append(Object.assign(document.createElement('span'),{className:'patch-chain-empty',textContent:'no effects'}));for(const s of used){const c=document.createElement('span');c.className='chain-node'+(s.enabled?'':' off');const d=PatchEditor.describe(s.effectId);c.textContent=d.short||'FX';c.title=`${d.family||'Effect'} — ${s.effectId}${s.enabled?'':' (bypassed)'}`;chain.append(c);}item.append(chain);}catch(e){}}item.append(meta);/* Clicking a patch opens the editor. The codec needs rawHex, which only a verified read produces, so a card without it stays inert rather than opening an editor over nothing. */if(p.rawHex&&globalThis.openPatchEditor){item.classList.add('editable');item.tabIndex=0;item.setAttribute('role','button');item.title='Edit this patch';const open=()=>globalThis.openPatchEditor(p,{onWritten:res=>{$('patch-caption').textContent=`Patch ${res?.slot??p.slot} written to the pedal${res?.name?` as “${res.name}”`:''}.`;renderPatches();}});item.onclick=open;item.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};}list.append(item);}}
  $('patch-search').oninput=renderPatches;
  /* Effect id -> name. Two sources, because neither covers the ground alone:
     the browser library holds what the user imported, and effect-names.json is
@@ -125,7 +140,7 @@
    await globalThis.pedalInstaller.install(effect);
    button.textContent='Installed';
    $('effect-action-status').textContent=`Installed ${effect.filename} on the pedal.`;
-   pedalFiles.add(effect.filename.toUpperCase());
+   pedalFiles.add(effect.filename.toUpperCase());rememberPedalFiles();
    renderEffects();void refreshDisk();
    return true;
   }catch(err){
@@ -207,6 +222,8 @@
  // Nothing here is served: the catalog, the binaries and the artwork all come
  // out of this browser's own library, which is empty until the user imports an
  // archive. That is what lets a published copy carry no ZOOM assets.
+ recallPedalFiles();
+
  async function loadCatalog(reloadArtwork=false){
   try{
    // The catalog is built from user-supplied files, so an entry missing the
@@ -455,7 +472,7 @@
  stompEvents.addEventListener('connected',()=>{errorLine.textContent='';$('choose').textContent='Connected';});
 
  stompEvents.addEventListener('session',()=>{eventSession=true;update();$('connection-badge').textContent='Session ready';setTimeout(()=>{void refreshDisk();if(globalThis.stompAutoInventory===false){setInventoryStatus('Automatic scan is off — press Reload from pedal to see what is installed.');return;}setInventoryStatus('Reading pedal effect inventory…');pedalInventory.run().then(()=>{syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);});},1000);});
- stompEvents.addEventListener('disconnected',()=>{eventSession=false;storage.hidden=true;syncPedalFiles([]);setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
+ stompEvents.addEventListener('disconnected',()=>{eventSession=false;storage.hidden=true;setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
  function renderInventoryProgress(){const count=(globalThis.pedalInventory?.files||[]).filter(f=>/\.ZDL$/i.test(f.filename)).length;setInventoryStatus(`Reading pedal effect inventory… ${count}`);}
  update();setInterval(()=>{const ready=globalThis.iapHost?.session!=null;if(globalThis.pedalInventory?.running)renderInventoryProgress();if(ready&&!inventoryStarted){inventoryStarted=true;$('connection-badge').textContent='Session ready';$('connection-badge').classList.add('ready');}if(!ready)inventoryStarted=false;update();},250);
 })();

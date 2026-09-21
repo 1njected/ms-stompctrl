@@ -86,16 +86,36 @@
   if(q.slots[i].empty)throw Error('An empty slot cannot be switched on');
   q.slots[i].enabled=!!on;return q;};
  const toggle=(p,i)=>setEnabled(p,i,!p.slots[i]?.enabled);
+ /* An empty slot as the pedal itself writes one: id 0 with the enable bit set
+    and the parameters zeroed. Not eighteen zero bytes -- every one of the 149
+    empty slots in the 50 factory patches reads `01 00 00 00 ...`. */
+ const emptySlot=i=>({index:i,effectId:'00000000',enabled:true,empty:true,flags:0,
+                      params:new Array(SLOT-4).fill(0)});
+ /* Removing an effect closes the gap behind it. The pedal walks the chain from
+    slot 1 and stops at the first empty one: 48 of the 50 factory patches are
+    packed with no gaps at all, and the two that are not are both called
+    "Empty". Measured on hardware 2026-09-21 -- clearing the first three
+    effects of a six-effect patch left the pedal showing none of the remaining
+    three, because the chain now began with a hole. */
  const clear=(p,i)=>{const q=clone(p);
   if(!q.slots[i])throw Error('No such slot');
-  q.slots[i]={index:i,effectId:'00000000',enabled:false,empty:true,flags:0,
-              params:new Array(SLOT-4).fill(0)};
+  q.slots=pack(q.slots.filter((s,k)=>k!==i));
   return q;};
  /* Reorder moves whole slots, so each effect keeps its own parameters. */
+ /* Reordering repacks for the same reason clearing does: pushing the last
+    effect down into empty territory would open a gap, and the pedal stops
+    reading the chain at the first one. A move that would do that comes back
+    unchanged instead. */
  const move=(p,from,to)=>{const q=clone(p);
   if(!q.slots[from]||!q.slots[to])throw Error('No such slot');
   const [s]=q.slots.splice(from,1); q.slots.splice(to,0,s);
-  q.slots.forEach((x,i)=>{x.index=i;}); return q;};
+  q.slots=pack(q.slots); return q;};
+ /* Filled slots first, in the order given, empties padding the tail. */
+ const pack=slots=>{
+  const kept=slots.filter(s=>!s.empty).map((s,k)=>({...s,index:k}));
+  while(kept.length<SLOTS)kept.push(emptySlot(kept.length));
+  return kept;
+ };
  /* Params must come from the caller; see the header. */
  const setEffect=(p,i,effectId,params)=>{const q=clone(p);
   if(!q.slots[i])throw Error('No such slot');
@@ -107,6 +127,11 @@
   // The high bits belong to whatever the slot held; a new effect starts clear.
   q.slots[i]={index:i,effectId:String(effectId).toLowerCase().padStart(8,'0'),
               enabled:true,empty:false,flags:0,params:pr};
+  /* Choosing an effect in slot 6 while the ones before it are empty would put
+     it past the end of the chain, where the pedal never looks: it stops at the
+     first empty slot. Packing moves it to the front instead of writing
+     something the device cannot reach. */
+  q.slots=pack(q.slots);
   return q;};
 
  /* What an effect is, from its id alone.
@@ -178,6 +203,91 @@
   return found;
  }
 
+
+ /* A random chain, drawn only from effects the loaded patches actually use.
+    Those carry real parameter blocks; an invented effect id carries none, and
+    the pedal would be handed fourteen bytes of nothing. Sorted by category so
+    the result reads as a signal chain -- dynamics, filter, drive, amp,
+    modulation, delay, reverb -- rather than a shuffle. `rng` is injectable so a
+    test can pin the outcome. */
+ const CHAIN_WORDS=[['Dusty','Neon','Velvet','Rusty','Glass','Deep','Wild','Quiet','Amber','Slow','Iron','Pale'],
+                    ['Dunes','Drift','Room','Tide','Spark','Haze','Echo','Bloom','Ridge','Glow','Dawn','Mist']];
+ function randomName(rng=Math.random){
+  const pick=a=>a[Math.floor(rng()*a.length)%a.length];
+  for(let tries=0;tries<12;tries++){
+   const name=pick(CHAIN_WORDS[0])+' '+pick(CHAIN_WORDS[1]);
+   if(name.length<=NAME_LEN)return name;
+  }
+  return pick(CHAIN_WORDS[1]).slice(0,NAME_LEN);
+ }
+ /* Bytes 108-110 are patch-level fields nobody has decoded (docs/protocol.md
+    8.1). At least one of them tracks the chain: across the 50 factory patches
+    `(b109>>2)` equals the number of filled slots in 34 of them, and a brute
+    force over every 3-to-5 bit field in those 24 bits gets no further than
+    39/50 -- so the layout is not established and guessing at it would mean
+    writing an invented value into a patch on flash.
+      What can be done safely is to copy the three bytes from a real patch that
+    has the same number of effects. The pedal wrote them itself for a chain of
+    that length, so they are right by construction without anyone having to
+    know what they mean. This is why a random chain longer than the patch it
+    replaced showed only the original patch's worth of effects on the device:
+    the slots were written, the field that counts them was carried over. */
+ function chainFields(patches){
+  const byCount=new Map();
+  for(const p of patches||[]){
+   const raw=String(p.rawHex||'').split(' ').map(x=>parseInt(x,16));
+   if(raw.length!==BODY)continue;
+   let dec;try{dec=decode(raw);}catch{continue;}
+   const filled=dec.slots.filter(s=>!s.empty).length;
+   if(!byCount.has(filled))byCount.set(filled,dec.tail.slice(0,3));
+  }
+  return byCount;
+ }
+
+ /* Byte 108-110 carry, among other things, how many slots the pedal shows: a
+    patch left saying three displays three THRU slots and ignores anything
+    further along, which is what an edited patch looked like on hardware
+    2026-09-21. The layout is not decoded -- `b109>>2` equals the chain length
+    in 34 of the 50 factory patches and a brute force over every field in those
+    24 bits reaches only 39/50 -- so rather than invent a value, the three bytes
+    are copied from a real patch that has the same number of effects. The pedal
+    wrote them itself for a chain of that length. With no such patch to copy
+    from, the existing bytes are left exactly as they were. */
+ function stampChain(patch,fields){
+  if(!fields||typeof fields.get!=='function')return patch;
+  const filled=patch.slots.filter(s=>!s.empty).length;
+  const donor=fields.get(filled);
+  if(!donor||donor.length!==3)return patch;
+  const q=clone(patch);
+  q.tail=q.tail.slice();
+  for(let k=0;k<3;k++)q.tail[k]=donor[k]&255;
+  return q;
+ }
+
+ function randomChain(patch,sources,rng=Math.random,{full=false,fields=null}={}){
+  const pool=[...(sources instanceof Map?sources.values():sources||[])]
+   .filter(s=>s&&s.effectId&&Array.isArray(s.params)&&s.params.length===SLOT-4);
+  if(!pool.length)throw Error('No effects to draw from. Read the patches off the pedal first.');
+  /* Restrained by default: a handful of effects in signal order, which is what
+     someone reaching for a starting point wants. `full` drops those manners --
+     any number of slots, in any order. What neither does is hand back a chain
+     with something switched off: a random patch is meant to be heard, and a
+     bypassed slot is indistinguishable from a bug. Parameters are never
+     invented either way -- they come with the effect from a patch the pedal
+     itself wrote, so the values are known good. Only the arrangement varies. */
+  const want=full?1+Math.floor(rng()*SLOTS):2+Math.floor(rng()*3);
+  const bag=pool.slice(),chosen=[];
+  const take=Math.min(pool.length,want);
+  while(chosen.length<take&&bag.length)chosen.push(bag.splice(Math.floor(rng()*bag.length)%bag.length,1)[0]);
+  if(!full)chosen.sort((a,b)=>describe(a.effectId).category-describe(b.effectId).category);
+  let next=patch;
+  for(let i=0;i<SLOTS;i++)
+   next=i<chosen.length
+    ?setEnabled(setEffect(next,i,chosen[i].effectId,chosen[i].params),i,true)
+    :clear(next,i);
+  return rename(stampChain(next,fields),randomName(rng));
+ }
+
  g.PatchEditor={decode,encode,rename,setEnabled,toggle,clear,move,setEffect,
-                paramSources,describe,FAMILIES,SLOTS,SLOT,BODY,NAME_LEN};
+                paramSources,describe,chainFields,stampChain,randomChain,randomName,FAMILIES,SLOTS,SLOT,BODY,NAME_LEN};
 })(globalThis);

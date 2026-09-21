@@ -239,6 +239,14 @@
   if(cmp.badSlot>=0)
    throw Error(`Patch ${slot+1} did not take: slot ${cmp.badSlot+1} holds ${cmp.gotChain[cmp.badSlot].id} rather than ${cmp.sentChain[cmp.badSlot].id}. Is AUTO SAVE on?`);
   const drift=cmp.drift;
+  /* The read-back is the authoritative record, so put it straight into the
+     library. Without this the list kept showing the name the patch had before
+     the edit until all fifty were read again -- the write had worked, the page
+     just never heard about it. */
+  if(state.last&&Array.isArray(state.last.patches)){
+   const at=state.last.patches.findIndex(p=>p.slot===back.slot);
+   if(at>=0){state.last.patches[at]=back;persist();}
+  }
   original('patch_written',{patch:slot+1,name:back.name,drift});
   return {slot:slot+1,name:back.name,verified:true,drift};};
  button.onclick=async()=>{if(state.running)return;state.running=true;button.disabled=true;save.disabled=true;const backup=state.last&&!state.last.complete?state.last:{format:'stompshare-patch-backup',version:1,device:'ZOOM MS-100BT',deviceId:94,createdAt:new Date().toISOString(),complete:false,restoreTested:false,patches:[]};state.last=backup;delete backup.error;

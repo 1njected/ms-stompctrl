@@ -22,7 +22,7 @@
  const displayName=id=>{const n=g.__effectName?.(id);return n?n.replace(/^_+/,''):null;};
  const nameOf=id=>displayName(id)||(id==='00000000'?'—':'Unknown effect');
 
- let overlay=null,state=null,original=null,slot=null,onSaved=null;
+ let overlay=null,state=null,original=null,slot=null,onSaved=null,chainFields=null;
  // Survives update(): a successful write leaves the panel clean, so without
  // this the confirmation is immediately overwritten by 'No changes yet.'
  let notice=null;
@@ -190,6 +190,10 @@
   close();
   notice=null;
   sources=g.PatchEditor.paramSources(g.patchBackup?.last?.patches||[]);
+  /* Bytes 108-110 track the chain length; a random chain takes them from a real
+     patch with the same number of effects rather than keeping the ones that
+     belonged to the patch being replaced. */
+  chainFields=g.PatchEditor.chainFields(g.patchBackup?.last?.patches||[]);
   const body=String(patch.rawHex||'').split(' ').map(x=>parseInt(x,16));
   original=g.PatchEditor.decode(body);
   state=g.PatchEditor.decode(body);
@@ -209,27 +213,68 @@
 
   const foot=el('footer','pe-foot');
   const status=el('p','pe-status action-status');status.setAttribute('aria-live','polite');
+  /* Draws from the effects the loaded patches use, so it needs them read
+     first; the picker beside each slot is fed from the same place. */
+  const random=el('button',null,'Random patch');
+  const fullBox=document.createElement('input');
+  fullBox.type='checkbox';fullBox.id='pe-full';
+  const fullLabel=el('label','pe-full');
+  fullLabel.htmlFor='pe-full';
+  fullLabel.append(fullBox,document.createTextNode('Full random'));
+  const help=el('button','pe-help','What’s this?');
+  help.type='button';
+  help.setAttribute('aria-controls','pe-full-help');
+  help.setAttribute('aria-expanded','false');
+  const helpText=el('p','pe-help-text');
+  helpText.id='pe-full-help';helpText.hidden=true;
+  helpText.textContent=
+   'Off: two to four effects, arranged in signal order — dynamics, filter, drive, amp, '+
+   'modulation, delay, reverb. On: anything from one to six slots, in any order. '+
+   'Either way every effect comes back switched on, and they are drawn from patches already '+
+   'read off this pedal keeping the settings they had there, because those are the only '+
+   'values known to be good; only the arrangement varies. '+
+   'Nothing reaches the pedal until you press Write to pedal.';
+  help.onclick=()=>{
+   helpText.hidden=!helpText.hidden;
+   help.setAttribute('aria-expanded',String(!helpText.hidden));
+   help.textContent=helpText.hidden?'What’s this?':'Hide';
+  };
+  random.onclick=()=>{
+   try{
+    state=g.PatchEditor.randomChain(state,sources,Math.random,{full:fullBox.checked,fields:chainFields});
+    notice=null;
+   }catch(e){notice=e.message;}
+   render();update();
+  };
   const revert=el('button',null,'Revert');
   revert.onclick=()=>{state=g.PatchEditor.decode(body);render();update();};
   const save=el('button','pe-save primary','Write to pedal');
   save.onclick=async()=>{
-   save.disabled=true;const before=save.textContent;
+   save.disabled=true;const restingLabel=save.textContent;
    try{
     notice=null;status.textContent='Selecting patch and writing…';
-    const res=await g.patchBackup.writeSlot(slot,g.PatchEditor.encode(state));
+    /* Any edit that changes how many effects are in the chain has to update the
+       field that tells the pedal how many slots to show, or it keeps displaying
+       the old count and ignores everything past it. Only stamped when the
+       length actually changed, so an edit that leaves it alone writes exactly
+       the bytes it used to. */
+    const wasLength=original.slots.filter(s=>!s.empty).length;
+    const nowLength=state.slots.filter(s=>!s.empty).length;
+    const toWrite=wasLength===nowLength?state:g.PatchEditor.stampChain(state,chainFields);
+    const res=await g.patchBackup.writeSlot(slot,g.PatchEditor.encode(toWrite));
     const drift=res.drift?` (${res.drift} byte${res.drift===1?'':'s'} the pedal recomputed)`:'';
     notice=`Patch ${res.slot} written and verified as “${res.name}”${drift}.`;
-    original=g.PatchEditor.decode(g.PatchEditor.encode(state));
-    save.textContent='Written';setTimeout(()=>{save.textContent=before;},1600);
+    original=g.PatchEditor.decode(g.PatchEditor.encode(toWrite));
+    save.textContent='Written';setTimeout(()=>{save.textContent=restingLabel;},1600);
     onSaved?.(res);
    }catch(e){
     notice=e.message;save.textContent='Retry';
    }finally{update();}
   };
-  foot.append(status,revert,save);
+  foot.append(status,fullLabel,help,random,revert,save);
 
   panel.tabIndex=-1;
-  panel.append(head,el('div','pe-body'),foot);
+  panel.append(head,el('div','pe-body'),helpText,foot);
   overlay.append(panel);
   overlay.onclick=e=>{if(e.target===overlay&&!dirty())close();};
   document.addEventListener('keydown',function esc(e){
