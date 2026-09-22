@@ -33,8 +33,10 @@ the editor keep working with no pedal attached.
 
 ## Custom ZDL
 Custom .ZDL can be installed, have a look at:
-https://github.com/repeat98/ZoomMultistompZDL
-https://github.com/themanro/ZoomMultistompZDL
+- https://github.com/repeat98/ZoomMultistompZDL
+- https://github.com/themanro/ZoomMultistompZDL
+- https://www.reddit.com/r/zoommultistomp/
+
 
 ## Running it
 Available here:
@@ -93,6 +95,10 @@ with no file to enumerate.
 
 Each of these is a reference rather than a log: what was established and how it
 was verified, without the order it was found in.
+
+## Troubleshooting
+If connection get stuck or wont connect at all, you may have to restart the pedal and remove the Bluetooth connection from system settings and pair again. Also restart browser before trying again.
+On macos there sometimes seem like system services hijack the device because it is announced as "headset".
 
 ## Status
 

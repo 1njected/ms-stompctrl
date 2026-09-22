@@ -548,5 +548,17 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
  // Exported for install-codec.test.cjs: these four are the whole on-the-wire
  // encode chain and are verifiable against the captured native writes.
  g.pedalCodec={enc,pack,unpack,crc,delivery,fragmentAcks};
- g.pedalInstaller={register:e=>g.stompTransfer(()=>registerEffect(e)),disk:()=>g.stompTransfer(()=>diskSpace()),remove:name=>g.stompTransfer(async()=>{try{return await removeEffect(name);}catch(e){old('delete_abort',String(e));await abortInstall();throw e;}}),previewList:e=>g.stompTransfer(()=>previewList(e)),alive:()=>g.stompTransfer(()=>alive()),install:effect=>g.stompTransfer(async()=>{try{return await writeFile(effect);}catch(e){old('install_abort',String(e));await abortInstall(effect.filename);throw e;}})};
+ /* Each of these is a multi-step conversation with the pedal, so it holds the
+   operation lock for its whole length as well as taking the frame queue. A disk
+   query is short enough that refusing a concurrent one would be unhelpful, so it
+   is the one that may run inside another operation. */
+const exclusive=(label,fn,opts)=>g.pedalLock.run(label,()=>g.stompTransfer(fn),opts);
+g.pedalInstaller={
+ register:e=>exclusive(`registering ${e?.filename||'an effect'}`,()=>registerEffect(e)),
+ disk:(opts={})=>exclusive('reading the pedal\u2019s free space',()=>diskSpace(),opts),
+ remove:name=>exclusive(`deleting ${name}`,async()=>{try{return await removeEffect(name);}catch(e){old('delete_abort',String(e));await abortInstall();throw e;}}),
+ previewList:e=>exclusive('reading the effect list',()=>previewList(e)),
+ alive:()=>exclusive('checking the pedal',()=>alive()),
+ install:effect=>exclusive(`installing ${effect?.filename||'an effect'}`,async()=>{try{return await writeFile(effect);}catch(e){old('install_abort',String(e));await abortInstall(effect.filename);throw e;}})
+};
 })(globalThis);

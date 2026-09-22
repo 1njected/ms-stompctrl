@@ -214,7 +214,9 @@
 
     Not byte-exact: three derived fields (offsets 12, 13 and 16 of effect slot 0)
     are zeroed by the pedal when it loads a patch, so they cannot be restored. */
- state.writeSlot=async(slot,body,{verify=true}={})=>{
+ state.writeSlot=(slot,body,{verify=true,nested=false}={})=>
+  g.pedalLock.run(`writing patch ${slot+1}`,()=>writeSlotNow(slot,body,{verify}),{nested});
+ const writeSlotNow=async(slot,body,{verify=true}={})=>{
   if(!Number.isInteger(slot)||slot<0||slot>49)throw Error('Slot must be 0-49');
   const frame=buildEditBuffer(body);
   await state.selectPatch(slot);
@@ -249,7 +251,9 @@
   }
   original('patch_written',{patch:slot+1,name:back.name,drift});
   return {slot:slot+1,name:back.name,verified:true,drift};};
- button.onclick=async()=>{if(state.running)return;state.running=true;button.disabled=true;save.disabled=true;const backup=state.last&&!state.last.complete?state.last:{format:'stompshare-patch-backup',version:1,device:'ZOOM MS-100BT',deviceId:94,createdAt:new Date().toISOString(),complete:false,restoreTested:false,patches:[]};state.last=backup;delete backup.error;
+ button.onclick=()=>g.pedalLock.run('reading all 50 patches',()=>syncFromPedal())
+   .catch(e=>{status.textContent=e.message;});
+ const syncFromPedal=async()=>{if(state.running)return;state.running=true;button.disabled=true;save.disabled=true;const backup=state.last&&!state.last.complete?state.last:{format:'stompshare-patch-backup',version:1,device:'ZOOM MS-100BT',deviceId:94,createdAt:new Date().toISOString(),complete:false,restoreTested:false,patches:[]};state.last=backup;delete backup.error;
  /* Adaptive pacing. A slow reply means the pedal is busy -- the 10.6 s slot in
     the reference sweep arrived while it was pushing 21 unrelated frames -- and
     the sensible response is to stop crowding it. Back off after a slow read and

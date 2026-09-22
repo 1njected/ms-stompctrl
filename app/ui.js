@@ -9,7 +9,7 @@
  // pedal; update() owns its disabled state so it cannot be pressed without a
  // session or during a scan.
  const reloadInventoryButton=$('reload-inventory');
- reloadInventoryButton.onclick=async()=>{if(globalThis.iapHost?.session==null||globalThis.pedalInventory?.running)return;reloadInventoryButton.disabled=true;globalThis.pedalInventory.files=[];syncPedalFiles([]);setInventoryStatus('Reading pedal effect inventory…');await globalThis.pedalInventory.run();syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);};
+ reloadInventoryButton.onclick=async()=>{if(globalThis.iapHost?.session==null||globalThis.pedalInventory?.running)return;reloadInventoryButton.disabled=true;globalThis.pedalInventory.files=[];syncPedalFiles([],{verified:false});setInventoryStatus('Reading pedal effect inventory…');await globalThis.pedalInventory.run();syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);};
  const connection=$('connection-card'),aside=document.querySelector('aside');aside.insertBefore(connection,aside.querySelector('.workspace-label'));
  // Pedal storage, under the connection card. Hidden until a session reports it.
  // The pedal holds about 4 MB and effects run 10-26 KB, so knowing what is left
@@ -85,15 +85,25 @@
  function rememberPedalFiles(){
   try{localStorage.setItem(PEDAL_FILES_KEY,JSON.stringify([...pedalFiles]));}catch{}
  }
+ /* Restored from storage is not the same as read from the pedal. Automatic
+    scanning is off by default, so without this distinction the page asserts
+    "12 of 68 on pedal" and marks cards installed on the strength of a scan that
+    might be days old and a pedal whose contents have changed since -- which is
+    exactly what a user reported. The remembered list is still worth showing;
+    it just has to say what it is. */
+ let pedalFilesVerified=false;
  function recallPedalFiles(){
   try{
    const saved=JSON.parse(localStorage.getItem(PEDAL_FILES_KEY)||'[]');
    if(Array.isArray(saved))pedalFiles=new Set(saved.filter(f=>typeof f==='string'));
   }catch{}
  }
- function syncPedalFiles(files=globalThis.pedalInventory?.files||[]){pedalFiles=new Set(files.filter(f=>/\.ZDL$/i.test(f.filename)).map(f=>f.filename.toUpperCase()));rememberPedalFiles();renderEffects();}
+ function syncPedalFiles(files=globalThis.pedalInventory?.files||[],{verified=true}={}){
+  pedalFiles=new Set(files.filter(f=>/\.ZDL$/i.test(f.filename)).map(f=>f.filename.toUpperCase()));
+  pedalFilesVerified=verified;rememberPedalFiles();renderEffects();}
  let libraryLoaded=false;
- function updateEffectCount(){$('effect-count').textContent=!effects.length?(libraryLoaded?'No effects imported':'Loading library…'):pedalFiles.size?`${effects.filter(installedOnPedal).length} of ${effects.length} on pedal`:`${effects.length} catalog effects`;}
+ function updateEffectCount(){const onPedal=`${effects.filter(installedOnPedal).length} of ${effects.length} on pedal${pedalFilesVerified?'':' at the last scan'}`;
+  $('effect-count').textContent=!effects.length?(libraryLoaded?'No effects imported':'Loading library…'):pedalFiles.size?onPedal:`${effects.length} catalog effects`;}
  function page(name){if(!['patches','effects'].includes(name))name='effects';document.querySelectorAll('.page').forEach(p=>p.hidden=p.id!=='page-'+name);document.querySelectorAll('[data-page]').forEach(b=>{b.classList.toggle('active',b.dataset.page===name);b.setAttribute('aria-current',b.dataset.page===name?'page':'false');});$('page-label').textContent={patches:'Patches',effects:'Effects'}[name];}
 
 
@@ -193,7 +203,8 @@
   card.append(image);
  }else{
   card.append(makePlate());
- }const onPedal=installedOnPedal(e);if(onPedal)card.classList.add('installed');const badge=document.createElement('span');badge.className='effect-badge';badge.textContent='✓ Installed';detail.textContent=`v${e.version} · ${(e.bytes/1024).toFixed(1)} KB`;install.textContent=onPedal?'Reinstall':'Install to pedal';install.onclick=()=>installToPedal(e,install,'Install to pedal');// Deleting is destructive and the pedal has no undo, so the button arms first
+ }const onPedal=installedOnPedal(e);if(onPedal)card.classList.add('installed');const badge=document.createElement('span');badge.className='effect-badge';badge.textContent=pedalFilesVerified?'✓ Installed':'✓ At last scan';
+  badge.title=pedalFilesVerified?'Read from the pedal in this session':'Remembered from an earlier scan — press Reload from pedal to check';detail.textContent=`v${e.version} · ${(e.bytes/1024).toFixed(1)} KB`;install.textContent=onPedal?'Reinstall':'Install to pedal';install.onclick=()=>installToPedal(e,install,'Install to pedal');// Deleting is destructive and the pedal has no undo, so the button arms first
    // and states what it will break before the second click commits.  The effect
    // binary is in the local catalog either way, so a delete is reinstallable.
    let armed=false,armTimer=null;
@@ -222,6 +233,30 @@
  // Nothing here is served: the catalog, the binaries and the artwork all come
  // out of this browser's own library, which is empty until the user imports an
  // archive. That is what lets a published copy carry no ZOOM assets.
+ /* Grey out what must not be pressed while the pedal is mid-operation, and say
+    what it is doing. Without this the lock still protects the device, but the
+    only sign of it is an error after the press.
+
+    Each control's own disabled state is remembered and put back afterwards:
+    plenty of these are already disabled for their own reasons -- no session, no
+    library, nothing loaded -- and switching them all on at the end would be
+    wrong for exactly those. */
+ let lockedControls=null;
+ pedalLock.events.addEventListener('change',e=>{
+  const {busy,label}=e.detail;
+  if(busy){
+   const controls=[...['reload-inventory','restore-file','effects-upload'].map($).filter(Boolean),
+                   ...document.querySelectorAll('.effect-item button'),
+                   ...(globalThis.patchBackup?.panel?.querySelectorAll('button')||[])];
+   lockedControls=controls.map(el=>[el,el.disabled]);
+   for(const [el] of lockedControls)el.disabled=true;
+   if($('effect-action-status'))$('effect-action-status').textContent=`Pedal busy: ${label}…`;
+  }else{
+   for(const [el,was] of lockedControls||[])el.disabled=was;
+   lockedControls=null;
+  }
+ });
+
  recallPedalFiles();
 
  async function loadCatalog(reloadArtwork=false){

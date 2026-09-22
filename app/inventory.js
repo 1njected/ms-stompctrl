@@ -128,7 +128,10 @@
     }
     finally { clearTimeout(timer); }
   }
-  state.run = async () => {
+  /* A directory scan is the longest conversation this client has with the
+     pedal, so it holds the operation lock for the whole sweep. */
+  state.run = (opts = {}) => g.pedalLock.run('reading the effect list', () => scanNow(), opts);
+  const scanNow = async () => {
     if (state.running || iapHost.session === null) return state.files;
     state.running = true; state.files = [];
     try {

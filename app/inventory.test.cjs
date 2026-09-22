@@ -24,7 +24,7 @@ global.stompTransfer = fn => fn();
 let writes = [], deliver = true;
 global.stompWrite = bytes => { writes.push(bytes); return Promise.resolve(); };
 
-require('./inventory.js');
+require('./pedal-lock.js');require('./inventory.js');
 const inv = global.pedalInventory;
 inv.timing.deliveryWaits = [40, 40, 40, 40];
 inv.timing.responseMs = 300;

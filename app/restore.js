@@ -187,7 +187,11 @@
 
     Three derived bytes per patch do not survive the round trip; see
     backup.js writeSlot. */
- async function restorePatches(pkg,{onProgress=()=>{},stopOnError=false,slots=null,
+ /* Fifty writes in a row are one operation as far as the pedal is concerned, so
+    the lock is held across the lot and each write runs inside it rather than
+    taking it again. Letting anything else in between is how the device wedges. */
+ const restorePatches=(pkg,opts={})=>g.pedalLock.run('restoring patches',()=>restoreNow(pkg,opts));
+ async function restoreNow(pkg,{onProgress=()=>{},stopOnError=false,slots=null,
                                   skipEffects=[]}={}){
   if(!g.patchBackup?.writeSlot)throw Error('Connect the pedal first');
   const wanted=(pkg?.patches||[]).filter(p=>slots===null||slots.includes(p.slot));
@@ -214,7 +218,7 @@
    try{
     const body=String(patch.rawHex||'').split(' ').map(x=>parseInt(x,16));
     if(body.length!==122)throw Error(`patch body is ${body.length} bytes, expected 122`);
-    written.push(await g.patchBackup.writeSlot(slot,body));
+    written.push(await g.patchBackup.writeSlot(slot,body,{nested:true}));
    }catch(e){
     failed.push({slot:patch.slot,name:patch.name,error:e.message});
     g.log?.('restore_patch_failed',{slot:patch.slot,error:e.message});
