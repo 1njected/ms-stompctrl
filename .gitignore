@@ -29,6 +29,10 @@ __pycache__/
 # its own git repository, so without this an `add -A` embeds a gitlink here.
 re-files/
 
+# Written by the Pages workflow at deploy time, never by hand. A stale one
+# committed here would ship in the iOS bundle and be read as the live version.
+app/version.txt
+
 # Internal working notes and AI memory, not part of the published project.
 memory/
 

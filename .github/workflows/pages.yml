@@ -47,6 +47,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: actions/configure-pages@v5
+      # Cache busting, without anyone having to remember to bump a number.
+      # Every ?v= token becomes this commit, so a deploy changes every script
+      # URL and returning visitors fetch the new code instead of a cached copy.
+      # version.txt is what the running page polls to notice it should reload.
+      - name: Stamp the version
+        run: |
+          echo "${GITHUB_SHA}" > app/version.txt
+          sed -i "s/?v=[0-9a-zA-Z]*/?v=${GITHUB_SHA}/g" app/index.html
+          echo "stamped $(grep -o '?v=[0-9a-f]*' app/index.html | sort -u | head -1)"
       - uses: actions/upload-pages-artifact@v3
         with:
           path: app
