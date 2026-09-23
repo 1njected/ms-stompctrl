@@ -241,19 +241,28 @@
     plenty of these are already disabled for their own reasons -- no session, no
     library, nothing loaded -- and switching them all on at the end would be
     wrong for exactly those. */
- let lockedControls=null;
+ let lockedControls=null,busyNotice=null;
  pedalLock.events.addEventListener('change',e=>{
   const {busy,label}=e.detail;
+  const slot=$('effect-action-status');
   if(busy){
    const controls=[...['reload-inventory','restore-file','effects-upload'].map($).filter(Boolean),
                    ...document.querySelectorAll('.effect-item button'),
                    ...(globalThis.patchBackup?.panel?.querySelectorAll('button')||[])];
    lockedControls=controls.map(el=>[el,el.disabled]);
    for(const [el] of lockedControls)el.disabled=true;
-   if($('effect-action-status'))$('effect-action-status').textContent=`Pedal busy: ${label}…`;
+   if(slot){busyNotice={was:slot.textContent,shown:`Pedal busy: ${label}…`};slot.textContent=busyNotice.shown;}
   }else{
    for(const [el,was] of lockedControls||[])el.disabled=was;
    lockedControls=null;
+   /* Take the line back only if it is still the one we wrote. An operation that
+      finished with something to say -- "Installed SQUEAK.ZDL on the pedal", or
+      the reason it failed -- has already written over it, and that message is
+      worth more than whatever was there before. Without this the busy line
+      simply stayed up: "Pedal busy: reading the effect list…" with the pedal
+      long since idle. */
+   if(slot&&busyNotice&&slot.textContent===busyNotice.shown)slot.textContent=busyNotice.was;
+   busyNotice=null;
   }
  });
 
