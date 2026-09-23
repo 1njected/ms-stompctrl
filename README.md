@@ -109,6 +109,15 @@ anything is broken.
 
 Writing patches needs **AUTO SAVE** switched on in the pedal's system menu.
 
+## References
+Projects that have been a huge help developing this tool:
+- https://github.com/oandrew/ipod
+- https://github.com/skratchdot/ble-midi
+- https://github.com/thammer/zoom-explorer
+- https://github.com/g200kg/zoom-ms-utility
+- https://github.com/themanro/ZoomMultistompZDL
+- https://github.com/repeat98/ZoomMultistompZDL
+
 ## Licence
 
 [MIT](LICENSE) for the code in this repository.

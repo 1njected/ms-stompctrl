@@ -215,7 +215,7 @@
   const status=el('p','pe-status action-status');status.setAttribute('aria-live','polite');
   /* Draws from the effects the loaded patches use, so it needs them read
      first; the picker beside each slot is fed from the same place. */
-  const random=el('button',null,'Random patch');
+  const random=el('button',null,'Randomize patch');
   const fullBox=document.createElement('input');
   fullBox.type='checkbox';fullBox.id='pe-full';
   const fullLabel=el('label','pe-full');

@@ -1,5 +1,5 @@
-.effect-item { overflow: hidden; background: #20251e; padding: 10px; }
-.effect-art { display: block; width: 100%; height: 112px; object-fit: cover; object-position: center; border-radius: 5px; background: #151914; margin-bottom: 11px; }
+.effect-item { overflow: hidden; background: #1c2646; padding: 10px; }
+.effect-art { display: block; width: 100%; height: 112px; object-fit: cover; object-position: center; border-radius: 5px; background: #10182f; margin-bottom: 11px; }
 /* Same footprint as .effect-art, so a grid of both lines up. */
 .effect-plate{position:relative;height:112px;margin-bottom:11px;border-radius:5px;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:7px;
@@ -8,12 +8,12 @@
   background:
     radial-gradient(130% 80% at 50% -10%, rgba(255,255,255,.09), transparent 62%),
     linear-gradient(175deg, var(--plate-a) 0%, var(--plate-b) 100%);
-  --plate-a:#2b3327; --plate-b:#181d16;}
+  --plate-a:#223058; --plate-b:#141c38;}
 /* A single hairline across the top, the way a stompbox faceplate catches light. */
 .effect-plate::before{content:"";position:absolute;inset:0 0 auto;height:1px;
   background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);}
 .effect-plate .plate-name{font-size:var(--plate-size,26px);font-weight:800;line-height:1;
-  letter-spacing:.035em;text-transform:uppercase;color:#f4f7ec;
+  letter-spacing:.035em;text-transform:uppercase;color:#eef1f8;
   text-shadow:0 1px 0 rgba(0,0,0,.5);overflow-wrap:anywhere;}
 .effect-plate .plate-cat{font-size:9px;letter-spacing:.15em;text-transform:uppercase;
   color:rgba(255,255,255,.5);margin:0;}
@@ -27,7 +27,7 @@
 .effect-plate[data-category="Pitch"]             {--plate-a:#332030;--plate-b:#1f1420}
 /* Installed cards already carry a green border and badge; lift the plate a
    little so the state reads from the grid without another colour. */
-.effect-item.installed .effect-plate{border-color:#4f6a2e}
+.effect-item.installed .effect-plate{border-color:#4a78b0}
 .effect-item strong, .effect-item small { padding: 0 5px; }
 .effect-item small { display: block; margin-top: 5px; }
 .effect-actions { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 18px 28px; margin-bottom: 18px; }
@@ -54,18 +54,18 @@ aside > .connection .connection-actions { margin-left: 0; }
 aside > .connection .connection-actions button { min-width: 0; max-width: 100%; }
 aside > .connection .connection-actions #session-action:empty { display: none; }
 @media (max-width: 760px) { .effect-actions { display: block; } .effect-actions h2 { white-space: normal; } .effect-action-buttons { justify-content: flex-start; margin-top: 18px; } .action-status { margin-top: 14px; } }
-@media (min-width: 761px) and (max-width: 1050px) { .app-shell { grid-template-columns: 224px 1fr; } }
+@media (min-width: 761px) and (max-width: 1050px) { :root { --aside-w: 224px; } .app-shell { grid-template-columns: var(--aside-w) 1fr; } }
 .effect-category-heading{grid-column:1/-1;margin:1.2rem 0 .1rem;font-size:.78rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
 #page-effects > .card:not(:last-child){margin-bottom:20px}
 .nav-submenu{display:grid;gap:2px;margin:-4px 0 8px 34px}.nav-submenu a{padding:6px 10px;color:var(--muted);font-size:.78rem;text-decoration:none;border-left:1px solid var(--line)}.nav-submenu a:hover{color:var(--text);border-color:var(--accent)}
 .nav-debug{text-decoration:none;justify-content:flex-start;margin-top:auto}.nav-debug + .aside-foot{margin-top:8px}
-.connection .device-icon{display:none}.connection{gap:0}.connection-copy{min-width:0}aside > .connection{grid-template-columns:1fr}aside > .connection .connection-copy{grid-column:1}.connection.connected .badge{color:var(--accent);background:#303d23}
+.connection .device-icon{display:none}.connection{gap:0}.connection-copy{min-width:0}aside > .connection{grid-template-columns:1fr}aside > .connection .connection-copy{grid-column:1}.connection.connected .badge{color:var(--accent);background:#233a5e}
 .effect-filters{display:flex;gap:.5rem;align-items:center;flex-wrap:wrap;justify-content:flex-end}
 .effect-filters select,#effect-category{border:1px solid var(--line);border-radius:8px;padding:.55rem .7rem;background:var(--card);color:var(--text)}
 
 /* Available FX marks anything the last "Installed on pedal" scan reported. */
-.effect-item.installed { border-color: #4f6a2e; background: #232b1d; }
-.effect-badge { display: inline-block; margin: 8px 5px 2px; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: .3px; color: #cfe89a; background: #33421f; border: 1px solid #4f6a2e; }
+.effect-item.installed { border-color: #4a78b0; background: #1b2a4f; }
+.effect-badge { display: inline-block; margin: 8px 5px 2px; padding: 2px 9px; border-radius: 20px; font-size: 10px; font-weight: 600; letter-spacing: .3px; color: #cfe4f7; background: #233a5e; border: 1px solid #4a78b0; }
 
 /* Catalog filters share one row with Reload; they stack on a narrow screen. */
 @media(max-width:680px){.effect-filters{width:100%}.effect-filters input{flex:1;min-width:8rem}}
@@ -76,16 +76,16 @@ aside > .connection .connection-actions #session-action:empty { display: none; }
 .effect-item .effect-row button{padding:8px 12px;font-size:12px}
 .effect-item button.danger{border-color:#6a3a34;color:#e8b4ac;background:#2b1f1d}
 .effect-item button.danger:hover:not(:disabled){background:#3a2724}
-.effect-item button.danger.armed{background:#8c342a;border-color:#b05243;color:#fff}
+.effect-item button.danger.armed{background:#c8322a;border-color:#e8554a;color:#fff}
 
 /* Pedal storage, under the connection card in the sidebar. */
 .pedal-storage{margin:2px 0 0}
-.storage-label{font-size:10px;letter-spacing:1.5px;color:#717a6e;margin-bottom:9px}
-.storage-bar{height:5px;border-radius:3px;background:#30362c;overflow:hidden}
+.storage-label{font-size:10px;letter-spacing:1.5px;color:#7482a8;margin-bottom:9px}
+.storage-bar{height:5px;border-radius:3px;background:#2a3560;overflow:hidden}
 .storage-bar>span{display:block;height:100%;width:0;border-radius:3px;background:var(--accent);transition:width .3s ease}
 .storage-free{margin-top:9px;font-size:13px;font-weight:600;color:var(--text)}
 .storage-detail{display:block;margin-top:3px;font-size:11px;color:var(--muted)}
-.pedal-storage.low .storage-bar>span{background:#d98b5f}
+.pedal-storage.low .storage-bar>span{background:#e8554a}
 .pedal-storage.low .storage-free{color:#e8b4ac}
 
 /* Two-letter brand mark: the base rule sizes a single 23px glyph. */
@@ -94,10 +94,10 @@ aside > .connection .connection-actions #session-action:empty { display: none; }
 /* Getting started: four steps across the top of the Effects page. */
 .getting-started{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;list-style:none;margin:0 0 18px;padding:0;counter-reset:step}
 .getting-started li{counter-increment:step;position:relative;padding:15px 15px 15px 40px;background:var(--panel);border:1px solid var(--line);border-radius:10px}
-.getting-started li::before{content:counter(step);position:absolute;left:14px;top:15px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#2f3a25;color:var(--accent);font-size:10px;font-weight:700}
+.getting-started li::before{content:counter(step);position:absolute;left:14px;top:15px;display:grid;place-items:center;width:18px;height:18px;border-radius:50%;background:#233a5e;color:var(--accent);font-size:10px;font-weight:700}
 .getting-started strong{display:block;font-size:12.5px;margin-bottom:4px}
 .getting-started span{display:block;font-size:11.5px;line-height:1.5;color:var(--muted)}
-.getting-started code{font-size:11px;color:#c6d6a8}
+.getting-started code{font-size:11px;color:#c3d6ee}
 @media(max-width:1050px){.getting-started{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:680px){.getting-started{grid-template-columns:1fr}}
 
@@ -113,3 +113,54 @@ aside > .connection .connection-actions #session-action:empty { display: none; }
 .install-offer:empty{display:none}
 .install-offer{margin-top:10px}
 .install-offer button{padding:10px 16px;font-size:13px}
+/* ---------------------------------------------------------------------------
+   Pixelated pedal behind the workspace, signal lines rising in the sidebar.
+   From the design project "Pixelated pedal background image"; pedal-zoom.png
+   and signal-lines.png sit beside index.html.
+
+   Both layers are decorative and fail quietly: a CSS background whose image is
+   missing paints nothing, so the page is exactly as it was until the two files
+   are in place. `isolation:isolate` is what lets the z-index:-1 layer sit behind
+   the content without falling behind the page itself.
+   --------------------------------------------------------------------------- */
+.workspace{position:relative;isolation:isolate;overflow:hidden}
+.workspace::before{content:"";
+  /* Fixed to the viewport, not to the document. Absolutely positioned, the
+     layer was as tall as the page and its single non-repeating image sat at 35%
+     of that -- fine on a short page, far below the fold once the catalogue or
+     fifty patches made the workspace a few thousand pixels tall, which is why
+     it looked absent on Effects and Patches. Fixed keeps it in view and still
+     scrolls nothing.
+
+     Below the header, not behind it: the header is 80px including its divider
+     rule (box-sizing is border-box app-wide), and a backdrop crossing that line
+     reads as a smudge rather than a boundary. The left edge follows the sidebar
+     so the pedal stays in the content column and out of the signal lines. */
+  position:fixed;top:80px;right:0;bottom:0;left:var(--aside-w);z-index:-1;pointer-events:none;
+  background:url(pedal-zoom.png) 30% 35%/max(170%,1600px) auto no-repeat;
+  opacity:.08;
+  -webkit-mask-image:radial-gradient(120% 90% at 60% 40%,#000 40%,transparent 85%);
+          mask-image:radial-gradient(120% 90% at 60% 40%,#000 40%,transparent 85%)}
+
+aside{isolation:isolate;overflow:hidden}
+aside::before{content:"";position:absolute;z-index:-1;pointer-events:none;left:0;right:0;bottom:0;height:65%;
+  background:url(signal-lines.png) 64% 60%/auto 100% no-repeat;opacity:.5;
+  -webkit-mask-image:linear-gradient(180deg,transparent,#000 40%);
+          mask-image:linear-gradient(180deg,transparent,#000 40%)}
+
+@media(max-width:680px){
+  /* The design hides the sidebar waves here and dims the pedal. It also keeps
+     the pedal on .workspace, which this build cannot: below 680px the header is
+     absolutely positioned against .app-shell so it sits at the top of the page
+     beside the brand, and making .workspace a containing block would drop it
+     back under the sidebar -- the exact fault that positioning was added to
+     fix. So the backdrop moves to main, which is inside .workspace and carries
+     the content anyway. */
+  .workspace{position:static;overflow:visible}
+  .workspace::before,aside::before{display:none}
+  main{position:relative;isolation:isolate;overflow:hidden}
+  main::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+    background:url(pedal-zoom.png) 30% 35%/260% auto no-repeat;opacity:.06;
+    -webkit-mask-image:radial-gradient(120% 90% at 60% 40%,#000 40%,transparent 85%);
+            mask-image:radial-gradient(120% 90% at 60% 40%,#000 40%,transparent 85%)}
+}
