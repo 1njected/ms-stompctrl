@@ -8,9 +8,11 @@
        slot +0..+3   u32 little-endian:
                        bit 0       1 = effect on, 0 = bypassed
                        bits 1..28  effect id, 0 for an empty slot
-                       bits 29..31 unidentified, and NOT always zero in the
-                                   factory patches -- carried through verbatim
-                                   as `flags` so a round trip is byte-exact
+                       bits 29..31 the low three bits of parameter 0, which is
+                                   why they are NOT always zero in the factory
+                                   patches; carried through verbatim as `flags`
+                                   so a round trip is byte-exact, and read as
+                                   parameter bits by patch-params.js
        slot +4..+17  that effect's parameters, meaningless to any other effect
      offset 108..110 patch-level fields, not decoded; preserved verbatim
      offset 111..120 name, 10 characters, space padded
@@ -25,6 +27,12 @@
    setEffect() demands the caller supply the parameter bytes and says so. The
    other edits -- rename, bypass, reorder, clear -- only move or flip bytes the
    pedal already wrote, so they cannot produce a combination it has not seen.
+
+   Where a caller gets those bytes is somebody else's problem, and there are now
+   two answers: another patch that already uses the effect, which is what
+   paramSources() collects, or the effect's own `.ZDL` defaults, which
+   patch-params.js packs. Both hand back `flags` as well as the fourteen bytes,
+   because the first parameter is split across them.
 
    Writing a patch back is browser-probe/backup.js writeSlot(); it needs AUTO
    SAVE on and does not round-trip three derived bytes. docs/protocol.md 5.5. */
@@ -117,16 +125,20 @@
   return kept;
  };
  /* Params must come from the caller; see the header. */
- const setEffect=(p,i,effectId,params)=>{const q=clone(p);
+ const setEffect=(p,i,effectId,params,flags)=>{const q=clone(p);
   if(!q.slots[i])throw Error('No such slot');
   if(!/^[0-9a-fA-F]{1,8}$/.test(String(effectId)))throw Error('Effect id must be hex');
   const pr=Array.from(params||[]);
   if(pr.length!==SLOT-4)
    throw Error(`Slot ${i+1}: setEffect needs all ${SLOT-4} parameter bytes for the new effect; `+
                `this module cannot invent them.`);
-  // The high bits belong to whatever the slot held; a new effect starts clear.
+  /* The id word's top three bits come with the parameters, because they ARE
+     parameters: they hold p0's low three bits (patch-params.js). Dropping them
+     to zero -- which this did, calling them flags that "belong to whatever the
+     slot held" -- rewrote the new effect's first knob, and for a delay that is
+     its time. A caller that has no flags to give still gets the old behaviour. */
   q.slots[i]={index:i,effectId:String(effectId).toLowerCase().padStart(8,'0'),
-              enabled:true,empty:false,flags:0,params:pr};
+              enabled:true,empty:false,flags:(flags||0)&7,params:pr};
   /* Choosing an effect in slot 6 while the ones before it are empty would put
      it past the end of the chain, where the pedal never looks: it stops at the
      first empty slot. Packing moves it to the front instead of writing
@@ -145,11 +157,19 @@
     Derived by grouping all 117 catalog effects by (top byte, byte 2); every
     group was internally consistent, and the names below are what each group
     plainly contains. It applies to built-in ids too, because it reads the id
-    rather than any file. */
+    rather than any file.
+
+    That derivation is why `07:00` was called "Synth" and is now SFX. The
+    catalog half of that category is almost all synths -- Bass Synth, StdSyn,
+    SynTlk, Z-Syn -- so grouping the catalog named the group after them, and the
+    firmware half was not in the sample: AUTOPAN, BITCRUSH, BOMBER, RTCLOSET and
+    Z_ORGAN are no kind of synth. ZOOM's own FX list puts all of them, synths
+    included, under [SFX]. Nothing local could have said so: FLST_SEQ.ZDT
+    numbers its 32 categories and names none of them (§7.2). */
  const FAMILIES={
   '01:00':'Dynamics','01:40':'Bass drive','01:60':'Bass preamp',
   '02:00':'Filter & EQ','03:00':'Drive','04:00':'Amp',
-  '05:10':'Bass/acoustic amp','06:00':'Modulation','07:00':'Synth',
+  '05:10':'Bass/acoustic amp','06:00':'Modulation','07:00':'SFX',
   '08:00':'Delay','09:00':'Reverb',
  };
  /* Compact forms for places that show a whole chain at once, where the full
@@ -158,7 +178,7 @@
     leaves nothing sensible at all. */
  const SHORT={'Dynamics':'Dynamics','Bass drive':'Bass OD','Bass preamp':'Bass pre',
               'Filter & EQ':'EQ','Drive':'Drive','Amp':'Amp','Bass/acoustic amp':'Bass amp',
-              'Modulation':'Mod','Synth':'Synth','Delay':'Delay','Reverb':'Reverb'};
+              'Modulation':'Mod','SFX':'SFX','Delay':'Delay','Reverb':'Reverb'};
  const h2=n=>n.toString(16).padStart(2,'0');
  function describe(effectId){
   const id=parseInt(effectId||'0',16)||0;
@@ -283,7 +303,7 @@
   let next=patch;
   for(let i=0;i<SLOTS;i++)
    next=i<chosen.length
-    ?setEnabled(setEffect(next,i,chosen[i].effectId,chosen[i].params),i,true)
+    ?setEnabled(setEffect(next,i,chosen[i].effectId,chosen[i].params,chosen[i].flags),i,true)
     :clear(next,i);
   return rename(stampChain(next,fields),randomName(rng));
  }

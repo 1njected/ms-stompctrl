@@ -101,10 +101,30 @@ each one pushed them all to different offsets.
 
 Swapping is the one edit that could produce something the pedal has not seen,
 because a slot's 14 parameter bytes belong to whichever effect held it.
-`setEffect()` refuses to invent them, so the picker offers only effects that
-appear somewhere in the loaded patches and reuses a parameter block the pedal
-wrote — 68 on a factory pedal. Options are grouped by family and carry the
-effect name and nothing else.
+`setEffect()` refuses to invent them. The picker is nonetheless **one list of
+every effect this pedal can play**, grouped by family, each option the effect's
+name and nothing else — because there are two places to get the bytes:
+
+- **A loaded patch**, where the pedal wrote them itself. 68 on a factory pedal.
+- **The effect's own defaults.** Every `.ZDL` states a default per parameter, and
+  `patch-params.js` packs them into the 14 bytes using the published parameter
+  layout (`docs/protocol.md` §7.3). That reaches the other 149, including an
+  add-on you installed but no patch uses — the case that made an effect missing
+  from its own pedal's editor. For an add-on the defaults are read out of the
+  stored file by `zdl.js` `descriptor()`, so an effect ZOOM publishes tomorrow
+  works the moment you import it; for a firmware effect there is no file to
+  read, so those 100 come from `effect-params.json`, built by
+  `tools/build-effect-params.py`.
+
+A patch wins where there is one. Which of the two a given option came from is an
+implementation detail and does not reach the list: an earlier version grouped
+the options by it, which only raised the question of what the grouping meant.
+
+What the list leaves out is effects the pedal could not resolve, since it empties
+such a slot silently rather than refusing the write. So: firmware effects, on
+every MS-100BT, and add-ons in the browser library, which the slot's own Install
+button can put on the pedal. That is the Effects page's list plus the built-ins,
+which are not files and so appear on no page.
 
 ### Names
 
@@ -113,14 +133,102 @@ list covers *installed* effects, while the factory effects are built into the
 firmware with no files at all. Of the 68 ids the 50 factory patches use, 3 exist
 as files on the pedal.
 
-`effect-names.json` closes that gap — an id-to-name index of 218 entries, about
-5.5 KB, shipped with the app. It is an index, not binaries.
+`effect-names.json` closes that gap — the 101 firmware names, about 5.9 KB
+including two id lists, shipped with the app. It is an index, not binaries, and
 `tools/build-effect-names.py` derives it by reading the effect id at `.ZDL`
-offset `0x40`. Where the catalog has a display name it wins over the filename,
-because it reads better: `01400010` is `Bass Booster` rather than `B_BOOST`,
-`01000035` is `160 Comp` rather than `160_COMP`. The factory set keeps its
-filename (`COMP`, `ZNR`, `TAPEECHO`). Leading underscores are stripped; they mark
-bass and acoustic effects, which the family already says in words.
+offset `0x40`. Leading underscores are stripped; they mark bass and acoustic
+effects, which the family already says in words.
+
+**Names are firmware-only, deliberately.** An add-on's name is its filename, and
+the browser holds the file — so the library already answers it, the Effects page
+already shows it, and naming add-ons here as well duplicated that and went stale
+whenever ZOOM published one. What the index keeps for add-ons is their *ids*, as
+a bare list, because two membership questions have no other local answer and
+both decide what the editor tells you about a slot:
+
+- `factory`, the 101 firmware ids. On every MS-100BT, so such a slot survives
+  any write.
+- `addons`, the 117 catalog ids. One of these outside your library is *not in
+  your library*, which importing fixes. An id in **neither** list is not an
+  MS-100BT effect at all, which nothing fixes — and the id cannot tell those
+  apart on its own: `08004030` reads as a perfectly ordinary Delay id and
+  belongs to no effect.
+
+### Patch files
+
+The editor's **Download** and **Import…** move one patch at a time, which is
+what sharing a sound needs; a whole-backup JSON is the restore panel's job.
+
+Download writes the 146-byte edit-buffer frame — `F0 52 00 5E 28 <140 packed>
+F7`, byte for byte what a write sends — as lowercase hex text with no
+separators, named after the patch (`LostDlys2W.100bt`). Writing the frame rather
+than the bare 122-byte body keeps the model byte in the file, which is the only
+thing in a patch that records which pedal it is for. The extension mirrors the
+convention of the sym.bios.is patch library, whose MS-70CDR patches are hex text
+named `.70cdr`.
+
+Import accepts five shapes, because files arrive in whatever form their author
+had: hex text with or without separators, a binary `.syx`, a bare 122-byte body,
+the `0x08` slot dump a backup records (checksum verified), and a one-patch
+backup JSON. A whole backup is refused with a pointer to **Bring it back**.
+An imported patch lands in the editor rather than on the pedal, so its chain is
+on screen before **Write to pedal** is pressed; that also keeps one verified
+write path rather than adding a second.
+
+**Importing another MS model.** The family shares this envelope and this
+122-byte layout, so a sibling model's file decodes cleanly, and the model byte
+is reported rather than trusted — the write rewrites it. Measured on one real
+import, `LostDlys2W.70cdr`: model byte `0x61`, chain FLTRDLY, DRIVE ECHO, DELAY,
+ROOM, and it re-exports to a `.100bt` file differing in those two hex digits and
+nothing else.
+
+**What actually blocks a patch is the effects, per slot.** A patch carries only
+ids, and an id is either a firmware effect — which ships on every MS-100BT — or
+an add-on, which needs its `.ZDL` installed. The pedal does not refuse one it
+cannot resolve: it commits the patch and silently empties that slot
+(`protocol.md` §5.5). So the editor classifies every slot before a write:
+
+| Slot | | |
+|---|---|---|
+| built-in | firmware, so on every MS-100BT | — |
+| installed | an add-on whose `.ZDL` is on the pedal | — |
+| not installed | an add-on the browser library holds | **Install** on the slot |
+| not in your library | a catalog add-on this browser does not hold | import the FX archive |
+| not an MS-100BT effect | in no MS-100BT source at all | nothing helps |
+| unchecked | no pedal scan, or no library, for that slot | said out loud, not passed |
+
+**The index records which ids are firmware.** `effect-names.json` gained a
+`factory` list: the 101 ids from `InitialStomps`. It matters because the two
+sources it is built from are disjoint and together are the whole index — 101
+firmware plus 117 catalog is all 218 ids — so an id is firmware or an add-on
+with no guessing. Without it the only available rule was "absent from the add-on
+catalog, therefore firmware" (`soundPackage.plan()`'s rule for restores), which
+cannot tell a firmware effect from an add-on the user never imported, and calls
+the second one present. That rule is still the fallback when an index has no
+`factory` field. `build-effect-names.py` omits the field rather than writing an
+empty one when `StompShare.app` was not passed, because an empty list would
+claim every effect is an add-on.
+
+The split also makes the check work with nothing connected: a firmware-only
+patch is answered with no pedal scan and no library at all. Only add-on slots
+need those, and only those go `unchecked` without them.
+
+**Installing from the slot.** A `not installed` slot carries an Install button.
+`effectStore.catalog()` is built from the stored binaries, so a library entry is
+a guarantee that the bytes are there — which is why the button is offered for
+exactly that state and not for `not in your library`, where there would be
+nothing to send. It calls `pedalInstaller.install()`, which takes the pedal lock
+itself and so cannot overlap a write, then tells `ui.js` through
+`__effectInstalled()` so the Effects page and the badge agree. The badge clears
+on the next render.
+
+That is the `LostDlys2W` case end to end: three firmware effects, and DRIVE ECHO
+is `08000100` — `DRV_ECHO.ZDL`, an add-on. Uninstalled, slot 2 is badged and the
+footer keeps saying so; press Install and the patch writes clean.
+
+Codec in `../app/patch-file.js`, tests in `patch-file.test.cjs`: five input
+shapes onto the same 122 bytes, slot dumps, backup JSON, a sibling-model file,
+15 refusals and the filename rules.
 
 ### Writing
 
@@ -132,6 +240,13 @@ commit directly.
 No command can read that setting, so every write is verified by reading the slot
 back and comparing name and chain. Three derived bytes never survive the round
 trip; they are reported rather than hidden.
+
+A failed verify says which kind of failure it was, because the two have nothing
+to do with each other. A stale name means nothing took — the AUTO SAVE symptom.
+A name that took with one slot emptied means the pedal could not resolve that
+slot's effect, so the message names the effect and points at the Effects page;
+asking about AUTO SAVE there sends the diagnosis in the wrong direction, which is
+how it read the first time it happened.
 
 Verified on hardware: a rename, a bypass and an effect swap applied together in
 one write, each confirmed by reading the slot back.
@@ -187,7 +302,7 @@ installed and reads the free space.
 Plain Node, no dependencies:
 
 ```sh
-cd browser-probe && for t in *.test.cjs; do node "$t" || break; done
+cd app && for t in *.test.cjs; do node "$t" || break; done
 ```
 
 Tests that need captured hardware fixtures skip themselves when the fixtures are

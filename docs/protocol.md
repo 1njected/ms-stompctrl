@@ -368,6 +368,32 @@ enable bit of all six slots — and byte drift is reported as a number rather th
 a verdict. `PatchBackupCodec.comparePatch()` is the rule, tested against a real
 patch body in `edit-buffer.test.cjs`.
 
+**An effect the pedal does not have is dropped, not refused. [V]** Writing an
+imported patch to slot 45 on 2026-10-04: the name took, five of six slots took,
+and slot 2 came back `00000000` where `08000100` had been sent. `08000100` is
+`DRV_ECHO.ZDL`, a download-catalog add-on, and it was not installed on the
+pedal. So the pedal accepts a patch naming an effect it cannot resolve, commits
+it, and zeroes exactly the slots it could not resolve — no error, no refusal,
+and the rest of the patch intact.
+
+This is a distinct failure from an unset AUTO SAVE and must be read as one. AUTO
+SAVE off means *nothing* took, so the name comes back stale; a dropped effect
+means everything took except that slot. `comparePatch()` reports them separately
+— `dropped` lists the slots sent filled and read back empty — and `writeSlot()`
+names the effect and points at the Effects page instead of asking about AUTO
+SAVE. Mentioning AUTO SAVE for both is what made this one unreadable when it
+first appeared.
+
+Whether an effect is present is therefore worth checking *before* a write. It
+cannot be read off a patch: an id is either a firmware effect, which ships on
+every MS-100BT, or an add-on, which needs its `.ZDL` on the filesystem.
+`effect-names.json` now records which is which: it indexes the 101 firmware
+effects and the 117-effect catalog, which are disjoint and together are all 218
+of its ids, and a `factory` list names the firmware half. Before that it
+answered only "is this an MS-100BT effect at all", which an uninstalled add-on
+passes. The patch editor classifies every slot against it plus the pedal's own
+file list, and offers to install the ones it can — see `app.md`.
+
 `patchBackup.selectPatch(slot)`, `patchBackup.writeSlot(slot, body)` and
 `soundPackage.restorePatches(pkg)` implement this.
 
@@ -493,7 +519,7 @@ catalog effects by the pair gave eleven internally consistent groups:
 | `04` | `00` | Amp |
 | `05` | `10` | Bass/acoustic amp |
 | `06` | `00` | Modulation |
-| `07` | `00` | Synth |
+| `07` | `00` | SFX — ZOOM's own grouping for the panner, bit-crusher, organ and the synths |
 | `08` | `00` | Delay |
 | `09` | `00` | Reverb |
 
@@ -542,7 +568,7 @@ Read off the 50 factory patches in a hardware backup, not from sibling models.
 | Offset | Field |
 |---|---|
 | `0`–`107` | six effect slots, 18 bytes each |
-| slot `+0`–`+3` | u32 LE — bit 0 **enabled**, bits 1–28 **effect id**, bits 29–31 unidentified |
+| slot `+0`–`+3` | u32 LE — bit 0 **enabled**, bits 1–28 **effect id**, bits 29–31 **parameter 0's low three bits** (§7.3) |
 | slot `+4`–`+17` | that effect's parameters |
 | `108`–`110` | patch-level fields, not decoded |
 | `111`–`120` | name, 10 characters, space padded |
@@ -554,7 +580,9 @@ patches with the bit both set and clear, and eight slots ship bypassed —
 
 **Bits 29–31 are not always zero** and are carried through verbatim; an encoder
 that assumes them zero corrupts real patches, which is how the first version of
-`patch-editor.js` failed its round-trip test.
+`patch-editor.js` failed its round-trip test. They are parameter 0's low three
+bits — see §7.3, which is also why zeroing them when *placing* an effect rewrote
+its first knob.
 
 `app/patch-editor.js` decodes and encodes this, and
 `patch-editor.test.cjs` round-trips all 50 real patches byte for byte.
@@ -580,15 +608,85 @@ bytes the pedal itself wrote, so they cannot produce a slot the firmware has not
 seen. Swapping in a *different* effect is not in that class: bytes `+4`–`+17`
 belong to whichever effect the slot held, and nothing in the patch says what the
 new one expects. `setEffect()` therefore requires the caller to supply all 14
-parameter bytes and refuses to invent them. The defaults are obtainable — each
-`.ZDL` descriptor carries a min/default/max triple per parameter (§7.1) — but
-that is not wired up.
+parameter bytes and refuses to invent them.
+
+There are now two places to get them. A loaded patch that already uses the effect — bytes the pedal
+wrote itself, which is what `PatchEditor.paramSources()` collects — or the effect's own defaults,
+which every `.ZDL` descriptor states per parameter (§7.1) and `tools/build-effect-params.py`
+extracts into `app/effect-params.json`. Packing those into the 14 bytes needs the parameter layout
+below. A patch wins where there is one, and the editor's list does not distinguish the two: both
+produce 14 valid bytes, so which one did is not a fact about the effect. The list covers every
+effect this pedal can resolve, firmware or an imported add-on, and no others, because an id it
+cannot resolve costs a silently emptied slot (§5.5).
 
 ### 7.3 Patch memory **[V]**
 
 122 unpacked bytes per slot, 50 slots. Six effect slots of 18 bytes each; the effect ID is the low
 28 bits of the first little-endian word, shifted right by one. The patch name is ASCII at bytes
 111–120.
+
+#### Where a slot's nine parameters live **[V]**
+
+**This layout is not ours.** g200kg's `zoom-ms-utility` documents the MS-50G / MS-60B / MS-70CDR
+patch dump bit by bit, as a table over the 146-byte SysEx frame naming every bit
+`<effect>p<param>b<bit>`:
+
+> <https://github.com/g200kg/zoom-ms-utility/blob/master/midimessage.md>
+
+The MS-100BT carries the same patch layout behind a different model byte, so that table applies
+here. Converted once from frame coordinates to the 122-byte unpacked body — the frame's seven-bit
+packing undone with the rule in §6.1 — it is slot-relative and identical for all six slots:
+
+| Parameter | Bits | Where, relative to the slot |
+|---|---|---|
+| `p0` | 12 | byte 3 bits 5–7, byte 4 bits 0–7, byte 5 bit 0 |
+| `p1` | 11 | byte 5 bits 2–7, byte 6 bits 0–4 |
+| `p2` | 11 | byte 6 bit 7, byte 7 bits 0–7, byte 8 bits 0–1 |
+| `p3` | 8 | byte 8 bits 4–7, byte 9 bits 0–3 |
+| `p4` | 8 | byte 9 bits 4–7, byte 10 bits 0–3 |
+| `p5` | 8 | byte 10 bits 4–7, byte 11 bits 0–3 |
+| `p6` | 8 | byte 11 bits 4–7, byte 12 bits 0–3 |
+| `p7` | 9 | byte 12 bits 4–7, byte 13 bits 0–4 |
+| `p8` | 8 | byte 16 bits 0–7 |
+
+Little-endian within each field: `b0` is the least significant bit. `app/patch-params.js` is this
+table, and `app/patch-params.test.cjs` asserts it is a partition — no bit claimed twice, none
+outside the slot.
+
+**Byte 3 is the surprise, and it matters.** Bytes 0–3 are the id word, whose top three bits this
+project had recorded as "unidentified, and NOT always zero in the factory patches" and carried
+through as `flags`. They are not flags: they are `p0`'s low three bits. `setEffect()` zeroed them
+when placing an effect, which rewrote the new effect's first parameter — for a delay, its time. It
+now takes the flags alongside the 14 bytes.
+
+**The cabinet is two things, and neither is a knob.** Byte 15 is what the same table calls
+`<effect>cab`, a whole byte with its own values: `0x00` off, `0x40` a guitar cabinet, `0x50`/`0x51`
+the bass revisions. Byte 14 and byte 17 are unused.
+
+A `CAB` *descriptor* entry is not a knob either, but it does consume a parameter index. Its max
+reads 0 and its default reads `67109072`, a pointer — the only two fields in 217 descriptors that
+are not what their position says. In all 31 effects that have one, `CAB` sits at `p7` with `OUT` at
+`p8`, and the backup confirms `OUT` decoding at `p8` within its real 0–4 range. Which effects have
+one is not the category: `DZ_DRIVE` and `ALIEN` are drives (`03:00`) and both carry a `CAB` knob, so
+the test is a descriptor parameter named `CAB`.
+
+The two parts move together. Of the 12 amp slots in the backup, 6 have byte 15 at `0x00` and every
+one of those has `p7` at 0; the 6 at `0x40` carry `p7` values of 240, 8, 304 and 320 — a cabinet
+selection whose rule is in neither the published table nor the descriptor. A placed default
+therefore writes cabinet *off*, both parts: that state is internally consistent, half the factory
+amp slots are already in it, and it needs nothing guessed.
+
+**Checked against hardware.** Decoding the 50-patch backup with this table: every non-empty slot
+round-trips byte for byte apart from the cabinet byte, 756 of 768 parameters land inside the range
+their `.ZDL` states, and 317 sit *exactly* on the descriptor's default. The 12 not counted are the
+`CAB` entries. (Those counts cover the slots whose effects are in the firmware index; add-ons are
+parsed from their stored `.ZDL` instead and checked in `zdl.test.cjs`, which reads 312 of 314 real
+files and finds every default inside its range.)
+
+**A stored number is not a displayed one.** The pedal shows ZNR `THRSH` as 1–25 over a stored 0–24,
+and the scaling lives in each parameter's edit handler (§7.1), which nothing here reads. Defaults
+are exact because they come from the descriptor in stored form; a *displayed* value would be a
+guess.
 
 ---
 

@@ -81,12 +81,15 @@ protocol off the original iOS app, and the `protocol-*.json*` files are the
 capture that evidence rests on.
 
 `app/download-effects.py` builds an FX archive from ZOOM's public archive.
-`tools/build-effect-names.py` rebuilds `app/effect-names.json` by reading the
-effect id at `.ZDL` offset `0x40`. Point it at an FX archive from
-`download-effects.py` and it reproduces the catalog-derived names with nothing
-else needed — it reads that archive's own `index.json` for display names. The
-factory names come from ZOOM's StompShare bundle, which is not distributed here,
-so those cannot be rebuilt from a fresh clone.
+`tools/build-effect-names.py` rebuilds `app/effect-names.json` and
+`tools/build-effect-params.py` rebuilds `app/effect-params.json`, both by reading
+ZOOM's own `.ZDL` files: the id at offset `0x40`, and for the params the knob
+descriptor inside the effect's DSP image. Both cover the **firmware** effects
+only, which is why they need ZOOM's StompShare bundle — not distributed here, so
+those cannot be rebuilt from a fresh clone. Add-ons need neither index: the
+browser holds their files, so `app/zdl.js` reads their knobs on import, and the
+names index keeps their ids alone. Point `build-effect-names.py` at an FX archive
+from `download-effects.py` to rebuild that id list.
 
 That index is why the editor can show `SQUEAK` rather than `03000060`. The
 pedal cannot supply these names — its file list covers installed effects only,

@@ -60,13 +60,27 @@
   const w=(b[i*18]|b[i*18+1]<<8|b[i*18+2]<<16|b[i*18+3]<<24)>>>0;
   return {id:((w>>>1)&0xfffffff).toString(16).padStart(8,'0'),on:(w&1)===1};});
  const patchName=b=>String.fromCharCode(...b.slice(111,121)).replace(/\0.*$/,'').trimEnd();
+ /* A slot sent with an effect and read back empty is its own diagnosis.
+
+    Measured 2026-10-04, writing an imported patch to slot 45: the name took,
+    five slots took, and slot 2 came back `00000000` where `08000100` was sent.
+    `08000100` is DRV_ECHO.ZDL, a catalog add-on, and it was not installed on
+    the pedal. So the pedal accepts a patch naming an effect it does not have,
+    commits it, and zeroes exactly the slots it cannot resolve.
+
+    That is nothing to do with AUTO SAVE, which was on and demonstrably working
+    -- the name and the other five slots are the proof. Reporting it as "is AUTO
+    SAVE on?" sent the diagnosis in the wrong direction entirely, so a dropped
+    slot is now separated from a slot that holds the wrong thing. */
  function comparePatch(sent,got){
   const a=Array.from(sent),b=Array.from(got);
   if(a.length!==122||b.length!==122)throw Error('A patch body is 122 bytes');
   const sentChain=chainOf(a),gotChain=chainOf(b);
   const badSlot=sentChain.findIndex((s,i)=>s.id!==gotChain[i].id||s.on!==gotChain[i].on);
+  const dropped=sentChain.reduce((out,s,i)=>
+    (s.id!=='00000000'&&gotChain[i].id==='00000000')?[...out,{slot:i+1,effectId:s.id}]:out,[]);
   return {nameOk:patchName(a)===patchName(b),sentName:patchName(a),gotName:patchName(b),
-          badSlot,sentChain,gotChain,
+          badSlot,dropped,sentChain,gotChain,
           drift:a.reduce((n,v,i)=>n+(v!==b[i]?1:0),0),
           ok:patchName(a)===patchName(b)&&badSlot<0};
  }
@@ -236,8 +250,23 @@
 
   // Pure comparison, tested in backup.test.cjs.
   const cmp=g.PatchBackupCodec.comparePatch(want,got);
+  /* Order matters. A name that did not take means nothing took, which is the
+     AUTO SAVE symptom; a name that took with one slot emptied is a missing
+     effect. Asking about AUTO SAVE first in both cases is what made the second
+     one unreadable. */
   if(!cmp.nameOk)
    throw Error(`Patch ${slot+1} did not take: the name reads "${cmp.gotName}" rather than "${cmp.sentName}". Is AUTO SAVE on?`);
+  if(cmp.dropped.length){
+   const names=cmp.dropped.map(d=>{
+    const name=g.__effectName?.(d.effectId);
+    return `slot ${d.slot} (${name?`${name.replace(/^_+/,'')}, ${d.effectId}`:d.effectId})`;});
+   /* Deliberately not naming where to install from: this runs for an editor
+      write, where the slot has its own Install button, and for a whole-backup
+      restore, where the Effects page is the only route. */
+   throw Error(`Patch ${slot+1} was written, but the pedal emptied `+
+     `${names.join(' and ')}: it has no such effect installed. `+
+     `Install ${cmp.dropped.length===1?'it':'them'} and write again.`);
+  }
   if(cmp.badSlot>=0)
    throw Error(`Patch ${slot+1} did not take: slot ${cmp.badSlot+1} holds ${cmp.gotChain[cmp.badSlot].id} rather than ${cmp.sentChain[cmp.badSlot].id}. Is AUTO SAVE on?`);
   const drift=cmp.drift;

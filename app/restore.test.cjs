@@ -10,6 +10,7 @@ global.indexedDB = {};
 global.localStorage = { getItem: () => null, setItem() {} };
 require('./bundle.js');            // BackupBundle.zip writes the package
 require('./effect-store.js');      // zipEntries and effectName read it back
+require('./pedal-lock.js');        // restorePatches() runs inside the lock
 require('./restore.js');
 
 // Hardware-captured fixture, not redistributable: it holds the author's own

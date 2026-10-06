@@ -35,12 +35,12 @@ global.IAPCodec = { Parser: function () { this.feed = () => {}; }, frame: () => 
 global.log = () => {};
 
 for (const f of ['flst.js', 'iap.js', 'backup.js', 'bundle.js', 'effect-store.js', 'install.js',
-                 'restore.js', 'patch-editor.js'])
+                 'restore.js', 'patch-editor.js', 'patch-file.js'])
   require('./' + f);
 
 // Modules whose surface is fixed at load and therefore checkable here.
 const MODULES = ['effectStore', 'FlstCodec', 'IAPCodec', 'BackupBundle', 'PatchBackupCodec',
-                 'pedalCodec', 'pedalInstaller', 'soundPackage', 'PatchEditor'];
+                 'pedalCodec', 'pedalInstaller', 'soundPackage', 'PatchEditor', 'PatchFile'];
 
 // Deliberately not checked: iapHost, pedalInventory and patchBackup gain their
 // methods only after the DOM-dependent half of their module runs, so requiring

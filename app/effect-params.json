@@ -1,0 +1,2792 @@
+{
+ "note": "effect id -> its knobs, as the .ZDL descriptor states them; an index, no binaries",
+ "generated_by": "tools/build-effect-params.py",
+ "caveat": "def/max are stored values, not displayed ones; an effect may scale or offset them for its display (ZNR THRSH shows 1-25 over a stored 0-24)",
+ "params": {
+  "01000008": [
+   {
+    "name": "Sense",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "ATTCK",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "01000010": [
+   {
+    "name": "THRSH",
+    "max": 50,
+    "def": 40
+   },
+   {
+    "name": "Ratio",
+    "max": 9,
+    "def": 5
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "ATTCK",
+    "max": 9,
+    "def": 6
+   }
+  ],
+  "01000020": [
+   {
+    "name": "THRSH",
+    "max": 50,
+    "def": 40
+   },
+   {
+    "name": "Ratio",
+    "max": 9,
+    "def": 3
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "ATTCK",
+    "max": 9,
+    "def": 0
+   }
+  ],
+  "01000030": [
+   {
+    "name": "Drive",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 54
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 50
+   }
+  ],
+  "01000040": [
+   {
+    "name": "Time",
+    "max": 49,
+    "def": 20
+   },
+   {
+    "name": "Curve",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "01000050": [
+   {
+    "name": "THRSH",
+    "max": 24,
+    "def": 9
+   },
+   {
+    "name": "DETCT",
+    "max": 1,
+    "def": 1
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "01000060": [
+   {
+    "name": "THRSH",
+    "max": 24,
+    "def": 9
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000008": [
+   {
+    "name": "EFX_L",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "OUT_L",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000010": [
+   {
+    "name": "160\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "400\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "800\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "3.2k\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "6.4k\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "12k\u001f",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000020": [
+   {
+    "name": "Freq1",
+    "max": 30,
+    "def": 8
+   },
+   {
+    "name": "Q1",
+    "max": 5,
+    "def": 1
+   },
+   {
+    "name": "Gain1",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "Freq2",
+    "max": 30,
+    "def": 15
+   },
+   {
+    "name": "Q2",
+    "max": 5,
+    "def": 1
+   },
+   {
+    "name": "Gain2",
+    "max": 24,
+    "def": 12
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000030": [
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 0
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000040": [
+   {
+    "name": "Freq",
+    "max": 49,
+    "def": 24
+   },
+   {
+    "name": "Reso",
+    "max": 20,
+    "def": 15
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000050": [
+   {
+    "name": "Sense",
+    "max": 19,
+    "def": 17
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000060": [
+   {
+    "name": "Sense",
+    "max": 19,
+    "def": 14
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000070": [
+   {
+    "name": "Range",
+    "max": 9,
+    "def": 6
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Sense",
+    "max": 19,
+    "def": 16
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "02000090": [
+   {
+    "name": "Freq",
+    "max": 100,
+    "def": 56
+   },
+   {
+    "name": "Sense",
+    "max": 10,
+    "def": 5
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Type",
+    "max": 2,
+    "def": 2
+   },
+   {
+    "name": "Chara",
+    "max": 1,
+    "def": 1
+   },
+   {
+    "name": "VLCTY",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "020000a0": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 25
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Shape",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "020000b0": [
+   {
+    "name": "Step",
+    "max": 6,
+    "def": 6
+   },
+   {
+    "name": "PTTRN",
+    "max": 7,
+    "def": 6
+   },
+   {
+    "name": "Speed",
+    "max": 77,
+    "def": 25
+   },
+   {
+    "name": "Shape",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "020000c0": [
+   {
+    "name": "Speed",
+    "max": 77,
+    "def": 34
+   },
+   {
+    "name": "Range",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Type",
+    "max": 2,
+    "def": 2
+   },
+   {
+    "name": "Chara",
+    "max": 1,
+    "def": 1
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 90
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "020000d0": [
+   {
+    "name": "Rate",
+    "max": 77,
+    "def": 5
+   },
+   {
+    "name": "Wave",
+    "max": 3,
+    "def": 3
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   }
+  ],
+  "03000008": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000010": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000020": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000030": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000040": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000050": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000060": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000070": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000080": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000090": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000a0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000b0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000c0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000d0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000e0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "030000f0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000100": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000110": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000120": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000130": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "03000140": [
+   {
+    "name": "Top",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Body",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "04000008": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 24
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 86
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 48
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 45
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 44
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 52
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67108872
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000010": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67108880
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000030": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 59
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 107
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 46
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 48
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 58
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67108912
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000050": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67108944
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000090": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 53
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 95
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 51
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67109008
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "040000f0": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 58
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67109104
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000130": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 45
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 93
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 53
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 47
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 51
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 55
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67109168
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "04000140": [
+   {
+    "name": "Gain",
+    "max": 100,
+    "def": 62
+   },
+   {
+    "name": "Tube",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 87
+   },
+   {
+    "name": "Trebl",
+    "max": 100,
+    "def": 52
+   },
+   {
+    "name": "Middl",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Bass",
+    "max": 100,
+    "def": 44
+   },
+   {
+    "name": "Prese",
+    "max": 100,
+    "def": 54
+   },
+   {
+    "name": "CAB",
+    "max": 0,
+    "def": 67109184
+   },
+   {
+    "name": "OUT",
+    "max": 4,
+    "def": 0
+   }
+  ],
+  "06000008": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 33
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 130
+   },
+   {
+    "name": "Wave",
+    "max": 29,
+    "def": 21
+   }
+  ],
+  "06000020": [
+   {
+    "name": "PTTRN",
+    "max": 19,
+    "def": 0
+   },
+   {
+    "name": "Speed",
+    "max": 77,
+    "def": 24
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "THRSH",
+    "max": 50,
+    "def": 20
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 130
+   }
+  ],
+  "06000030": [
+   {
+    "name": "Rate",
+    "max": 77,
+    "def": 11
+   },
+   {
+    "name": "Color",
+    "max": 3,
+    "def": 3
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000035": [
+   {
+    "name": "RateA",
+    "max": 77,
+    "def": 46
+   },
+   {
+    "name": "RateB",
+    "max": 51,
+    "def": 5
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "ResoA",
+    "max": 10,
+    "def": 0
+   },
+   {
+    "name": "ResoB",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Link",
+    "max": 2,
+    "def": 0
+   },
+   {
+    "name": "DPT_A",
+    "max": 99,
+    "def": 36
+   },
+   {
+    "name": "DPT_B",
+    "max": 99,
+    "def": 62
+   }
+  ],
+  "0600003a": [
+   {
+    "name": "Speed",
+    "max": 77,
+    "def": 24
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "DRCTN",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "06000040": [
+   {
+    "name": "Speed",
+    "max": 50,
+    "def": 25
+   },
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Bias",
+    "max": 100,
+    "def": 48
+   },
+   {
+    "name": "Wave",
+    "max": 100,
+    "def": 24
+   },
+   {
+    "name": "Mode",
+    "max": 1,
+    "def": 1
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000070": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 24
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000080": [
+   {
+    "name": "Cent",
+    "max": 50,
+    "def": 35
+   },
+   {
+    "name": "PreD",
+    "max": 50,
+    "def": 0
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 52
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000090": [
+   {
+    "name": "Comp",
+    "max": 9,
+    "def": 2
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 24
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "060000a0": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 29
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "060000b0": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 29
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "060000d0": [
+   {
+    "name": "E.LVL",
+    "max": 120,
+    "def": 50
+   },
+   {
+    "name": "Rate",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "EQ",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Mode",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "060000d8": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 47
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 7
+   },
+   {
+    "name": "Reso",
+    "max": 20,
+    "def": 18
+   },
+   {
+    "name": "PreD",
+    "max": 50,
+    "def": 4
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 65
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "060000e0": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 47
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 7
+   },
+   {
+    "name": "Reso",
+    "max": 20,
+    "def": 18
+   },
+   {
+    "name": "PreD",
+    "max": 50,
+    "def": 4
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 65
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "060000f0": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 38
+   },
+   {
+    "name": "Sense",
+    "max": 19,
+    "def": 0
+   },
+   {
+    "name": "Reso",
+    "max": 20,
+    "def": 15
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000100": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 30
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 72
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 120
+   }
+  ],
+  "06000110": [
+   {
+    "name": "Oct1",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Oct2",
+    "max": 100,
+    "def": 15
+   },
+   {
+    "name": "Dry",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Chara",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000120": [
+   {
+    "name": "Shift",
+    "max": 25,
+    "def": 19
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Fine",
+    "max": 50,
+    "def": 25
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000130": [
+   {
+    "name": "Shift",
+    "max": 25,
+    "def": 0
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Fine",
+    "max": 50,
+    "def": 25
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000140": [
+   {
+    "name": "Scale",
+    "max": 9,
+    "def": 6
+   },
+   {
+    "name": "Key",
+    "max": 11,
+    "def": 0
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000150": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Time",
+    "max": 50,
+    "def": 50
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Mode",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000160": [
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 37
+   },
+   {
+    "name": "Speed",
+    "max": 128,
+    "def": 57
+   },
+   {
+    "name": "Rise",
+    "max": 100,
+    "def": 75
+   },
+   {
+    "name": "Mode",
+    "max": 2,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "06000170": [
+   {
+    "name": "Freq",
+    "max": 49,
+    "def": 27
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 120
+   }
+  ],
+  "07000010": [
+   {
+    "name": "Bit",
+    "max": 12,
+    "def": 5
+   },
+   {
+    "name": "SMPL",
+    "max": 50,
+    "def": 2
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 90
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "07000020": [
+   {
+    "name": "PTTRN",
+    "max": 3,
+    "def": 3
+   },
+   {
+    "name": "Decay",
+    "max": 99,
+    "def": 49
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 15
+   },
+   {
+    "name": "THRSH",
+    "max": 50,
+    "def": 40
+   },
+   {
+    "name": "Power",
+    "max": 30,
+    "def": 30
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 4
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "07000030": [
+   {
+    "name": "Synth",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "Dry",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Wave",
+    "max": 3,
+    "def": 2
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Speed",
+    "max": 100,
+    "def": 0
+   }
+  ],
+  "07000040": [
+   {
+    "name": "Upper",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Lower",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Dry",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "HPF",
+    "max": 10,
+    "def": 3
+   },
+   {
+    "name": "LPF",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   }
+  ],
+  "07000050": [
+   {
+    "name": "Rate",
+    "max": 78,
+    "def": 5
+   },
+   {
+    "name": "Width",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Depth",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Clip",
+    "max": 10,
+    "def": 0
+   }
+  ],
+  "07000060": [
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Mode",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Drive",
+    "max": 100,
+    "def": 20
+   }
+  ],
+  "08000008": [
+   {
+    "name": "Time",
+    "max": 4022,
+    "def": 559
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "P-P",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000010": [
+   {
+    "name": "Time",
+    "max": 2014,
+    "def": 559
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 64
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 56
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 5
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000020": [
+   {
+    "name": "Time",
+    "max": 2014,
+    "def": 499
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 62
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 20
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000030": [
+   {
+    "name": "Time",
+    "max": 4022,
+    "def": 359
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 28
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 40
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "P-P",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000040": [
+   {
+    "name": "Time",
+    "max": 2005,
+    "def": 990
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 20
+   },
+   {
+    "name": "Bal",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000050": [
+   {
+    "name": "Time",
+    "max": 3018,
+    "def": 2999
+   },
+   {
+    "name": "PTTRN",
+    "max": 7,
+    "def": 1
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 20
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 10
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000060": [
+   {
+    "name": "Time",
+    "max": 2014,
+    "def": 359
+   },
+   {
+    "name": "Sense",
+    "max": 19,
+    "def": 5
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 30
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000070": [
+   {
+    "name": "Time",
+    "max": 2014,
+    "def": 499
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 90
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 6
+   },
+   {
+    "name": "Depth",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Reso",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000080": [
+   {
+    "name": "Time",
+    "max": 1999,
+    "def": 89
+   },
+   {
+    "name": "Pitch",
+    "max": 30,
+    "def": 21
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 80
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "08000090": [
+   {
+    "name": "TimeL",
+    "max": 2014,
+    "def": 164
+   },
+   {
+    "name": "TimeR",
+    "max": 2014,
+    "def": 504
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "LchFB",
+    "max": 100,
+    "def": 55
+   },
+   {
+    "name": "RchFB",
+    "max": 100,
+    "def": 37
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "LchLv",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "RchLv",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "080000a0": [
+   {
+    "name": "Time",
+    "max": 2014,
+    "def": 499
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 28
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 57
+   },
+   {
+    "name": "Rate",
+    "max": 49,
+    "def": 49
+   },
+   {
+    "name": "Color",
+    "max": 3,
+    "def": 3
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "080000b0": [
+   {
+    "name": "Time",
+    "max": 990,
+    "def": 40
+   },
+   {
+    "name": "Duty",
+    "max": 75,
+    "def": 75
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 100
+   },
+   {
+    "name": "THRSH",
+    "max": 30,
+    "def": 20
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "080000c0": [
+   {
+    "name": "E.LVL",
+    "max": 120,
+    "def": 30
+   },
+   {
+    "name": "F.B",
+    "max": 100,
+    "def": 20
+   },
+   {
+    "name": "Time",
+    "max": 599,
+    "def": 359
+   },
+   {
+    "name": "Sync",
+    "max": 15,
+    "def": 0
+   },
+   {
+    "name": "Mode",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   },
+   {
+    "name": "HiDMP",
+    "max": 10,
+    "def": 5
+   }
+  ],
+  "09000008": [
+   {
+    "name": "PreD",
+    "max": 199,
+    "def": 80
+   },
+   {
+    "name": "Decay",
+    "max": 100,
+    "def": 45
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 62
+   },
+   {
+    "name": "LoDMP",
+    "max": 100,
+    "def": 32
+   },
+   {
+    "name": "HiDMP",
+    "max": 100,
+    "def": 70
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "0900000c": [
+   {
+    "name": "Decay",
+    "max": 100,
+    "def": 10
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 46
+   },
+   {
+    "name": "PreD",
+    "max": 199,
+    "def": 53
+   },
+   {
+    "name": "HPF",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000010": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 9
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 5
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 46
+   },
+   {
+    "name": "PreD",
+    "max": 99,
+    "def": 48
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000020": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 9
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "PreD",
+    "max": 99,
+    "def": 4
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000030": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 19
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 4
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 46
+   },
+   {
+    "name": "PreD",
+    "max": 99,
+    "def": 9
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000040": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 19
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "PreD",
+    "max": 99,
+    "def": 0
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000050": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 14
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 7
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 56
+   },
+   {
+    "name": "PreD",
+    "max": 99,
+    "def": 89
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000060": [
+   {
+    "name": "Decay",
+    "max": 29,
+    "def": 14
+   },
+   {
+    "name": "Shape",
+    "max": 20,
+    "def": 20
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 50
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 6
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ],
+  "09000070": [
+   {
+    "name": "Size",
+    "max": 99,
+    "def": 19
+   },
+   {
+    "name": "Tone",
+    "max": 10,
+    "def": 8
+   },
+   {
+    "name": "Mix",
+    "max": 100,
+    "def": 60
+   },
+   {
+    "name": "Ref",
+    "max": 10,
+    "def": 5
+   },
+   {
+    "name": "Level",
+    "max": 150,
+    "def": 100
+   },
+   {
+    "name": "Tail",
+    "max": 1,
+    "def": 0
+   }
+  ]
+ }
+}

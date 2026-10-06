@@ -58,11 +58,21 @@ assert.equal(E.decode(b).slots[firstUsed].effectId, p0.slots[firstUsed].effectId
              'the effect id survives a bypass');
 assert.equal(E.toggle(off, firstUsed).slots[firstUsed].enabled, true, 'toggle restores it');
 
-// clear empties a slot; an empty slot cannot be switched on
+// clear removes an effect and closes the gap behind it, so the slot it was in
+// holds whatever followed and the freed slot is at the tail -- not, as this
+// once asserted, empty where the effect used to be. The pedal stops reading a
+// chain at its first empty slot, which is why clearing repacks;
+// chain-packing.test.cjs has that rule on synthetic chains, and this is it
+// holding on a real patch. An empty slot still cannot be switched on.
+const filled = p => p.slots.filter(s => !s.empty).length;
 const cleared = E.clear(p0, firstUsed);
-assert.equal(cleared.slots[firstUsed].empty, true);
-assert.equal(E.decode(E.encode(cleared)).slots[firstUsed].effectId, '00000000');
-assert.throws(() => E.setEnabled(cleared, firstUsed, true), /empty slot/);
+assert.equal(filled(cleared), filled(p0) - 1, 'clearing drops exactly one effect');
+assert.equal(cleared.slots[E.SLOTS - 1].empty, true, 'and the freed slot is the last one');
+const reread = E.decode(E.encode(cleared));
+assert.equal(reread.slots[E.SLOTS - 1].effectId, '00000000');
+assert.deepEqual(reread.slots.map(s => s.effectId), cleared.slots.map(s => s.effectId),
+                 'the repacked chain survives an encode');
+assert.throws(() => E.setEnabled(cleared, E.SLOTS - 1, true), /empty slot/);
 
 // reorder carries each effect's parameters with it
 const two = p0.slots.filter(s => !s.empty).length >= 2;

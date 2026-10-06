@@ -100,5 +100,31 @@ c = comparePatch(base, bypassed);
 assert.equal(c.ok, false, 'an effect switched off is not the patch that was sent');
 assert.equal(c.badSlot, 0);
 
+/* A slot sent with an effect and read back empty, which is what the pedal does
+   with an effect it cannot resolve. Measured 2026-10-04 writing an imported
+   patch to slot 45: the name and five slots took, slot 2 came back 00000000
+   where 08000100 (DRV_ECHO.ZDL, an uninstalled add-on) was sent. It has to be
+   distinguishable from a slot holding the wrong effect, because the two have
+   different causes and only one of them is about AUTO SAVE. */
+const emptied = base.slice();
+[0, 1, 2, 3].forEach(k => { emptied[1 * 18 + k] = 0; });
+c = comparePatch(base, emptied);
+assert.equal(c.ok, false);
+assert.equal(c.nameOk, true, 'the name still took, so AUTO SAVE was working');
+assert.deepEqual(c.dropped, [{ slot: 2, effectId: '090001d0' }], 'the dropped slot is named');
+assert.equal(c.badSlot, 1, 'it is also a chain mismatch');
+
+// Every other failure reports nothing dropped, so the diagnosis stays specific.
+assert.deepEqual(comparePatch(base, base).dropped, []);
+assert.deepEqual(comparePatch(base, recalculated).dropped, []);
+assert.deepEqual(comparePatch(base, swapped).dropped, [], 'a wrong effect is not a dropped one');
+assert.deepEqual(comparePatch(base, bypassed).dropped, []);
+// The reverse -- an empty slot coming back filled -- is a mismatch, not a drop.
+const appeared = base.slice();
+appeared[3 * 18] = 0x11;
+assert.deepEqual(comparePatch(base, appeared).dropped, []);
+assert.equal(comparePatch(base, appeared).badSlot, 3);
+
 assert.throws(() => comparePatch(base.slice(0, 121), base), /122 bytes/);
-console.log('Write verification: recomputed bytes pass with drift reported; wrong name, wrong effect and flipped bypass all fail and say which');
+console.log('Write verification: recomputed bytes pass with drift reported; wrong name, wrong effect, '
+  + 'flipped bypass and a slot the pedal emptied all fail and say which');

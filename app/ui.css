@@ -53,6 +53,16 @@
 .pe-family.bass{color:var(--accent);border-color:#4a6a9a;background:#233a5e}
 .pe-byp{font-size:9px;letter-spacing:1.1px;color:#8594ba;border:1px solid #34426e;
   border-radius:4px;padding:2px 6px;white-space:nowrap;flex:none}
+/* A slot the pedal will empty on write. Warm rather than red: the patch is
+   still editable and still savable to a file, and the Effects page fixes it. */
+.pe-missing{font-size:9px;letter-spacing:1.1px;text-transform:uppercase;color:#f2c879;
+  background:#3a2f16;border:1px solid #6b5420;border-radius:4px;padding:2px 6px;
+  white-space:nowrap;flex:none}
+.pe-slot:has(.pe-missing){border-color:#6b5420}
+/* The fix for the badge beside it, so it carries the accent the primary
+   actions use. .pe-actions button sets the size; this only recolours. */
+.pe-actions button.pe-install{background:var(--accent);color:#0f1a36;border-color:var(--accent)}
+.pe-actions button.pe-install:hover:not(:disabled){background:#d9ecfa}
 .pe-chain{display:flex;align-items:center;gap:10px;margin-bottom:12px}
 .pe-chain-end{font-size:9px;letter-spacing:1.4px;color:#7482a8}
 .pe-chain-line{flex:1;height:1px;background:linear-gradient(90deg,#34426e,#223058)}
@@ -66,13 +76,16 @@
   border-radius:6px;padding:6px 8px;font-size:12px;max-width:15em;cursor:pointer}
 .pe-slot.empty .pe-pick{border-style:dashed}
 
+.pe-io{display:flex;align-items:center;gap:9px;padding:12px 23px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.02);flex-wrap:wrap}
+.pe-io-label{font-size:9px;letter-spacing:1.4px;text-transform:uppercase;color:#7482a8;margin-right:auto}
+.pe-io button.pe-io-btn{padding:6px 11px;font-size:12px;border-radius:6px}
 .pe-foot{display:flex;align-items:center;gap:11px;padding:17px 23px;border-top:1px solid var(--line);flex-wrap:wrap}.pe-full{display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted);white-space:nowrap;cursor:pointer}.pe-full input{margin:0;accent-color:var(--accent);cursor:pointer}/* A quiet text link, not a button: the footer already has three of those and a round one among them reads as a mistake. `.pe-foot button` sets the padding for the real buttons, so this has to out-specify it. */.pe-foot button.pe-help{border:0;background:none;padding:4px 2px;font-size:12px;color:var(--muted);text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(255,255,255,.25);white-space:nowrap}.pe-foot button.pe-help:hover:not(:disabled){background:none;color:var(--text);text-decoration-color:currentColor}.pe-foot button.pe-help[aria-expanded="true"]{color:var(--accent);text-decoration-color:currentColor}.pe-help-text{margin:0;padding:14px 23px;font-size:12px;line-height:1.6;color:var(--muted);border-top:1px solid var(--line);background:rgba(255,255,255,.02)}
 .pe-status{flex:1;font-size:12px;margin:0}
 .pe-foot button{padding:9px 15px}
 
 @media(max-width:680px){
   .pe-overlay{padding:0;align-items:stretch}
-  .pe-panel{max-height:100vh;max-height:100dvh;border-radius:0;border:0;width:100%}.pe-foot{padding-bottom:calc(17px + env(safe-area-inset-bottom,0px))}
+  .pe-panel{max-height:100vh;max-height:100dvh;border-radius:0;border:0;width:100%}.pe-io{padding:10px 18px}.pe-foot{padding-bottom:calc(17px + env(safe-area-inset-bottom,0px))}
   .pe-slot{flex-wrap:wrap}
   .pe-actions{width:100%;justify-content:flex-end}
   .pe-pick{max-width:none;flex:1}

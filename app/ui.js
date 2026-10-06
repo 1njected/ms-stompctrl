@@ -118,12 +118,75 @@
     anyone installs and so never appear in the library. Without the index the
     editor could name 3 of the 68 effects a factory pedal's patches use. */
  let builtinNames={};
+ /* Which ids are built into the firmware. null means the index predates the
+    split and cannot say -- not that there are none, so callers fall back to a
+    heuristic rather than treating every effect as an add-on. */
+ let factoryIds=null,addonIds=null;
  fetch('effect-names.json').then(r=>r.ok?r.json():null)
-  .then(d=>{if(d?.names){builtinNames=d.names;renderPatches();}})
+  .then(d=>{if(d?.names){builtinNames=d.names;
+   factoryIds=Array.isArray(d.factory)?new Set(d.factory):null;
+   addonIds=Array.isArray(d.addons)?new Set(d.addons):null;
+   renderPatches();}})
   .catch(()=>{});
  globalThis.__effectName=id=>
    effects.find(e=>e.effectId===id)?.filename.replace(/\.zdl$/i,'')
    ||builtinNames[id]||null;
+
+ /* What the patch editor needs before it writes: not whether an effect exists,
+    but whether THIS pedal has it.
+
+    Those came apart on 2026-10-04. An imported patch failed its write with slot
+    2 emptied, because `08000100` is DRV_ECHO.ZDL -- a catalog add-on that was
+    not installed. The editor had checked the id against effect-names.json and
+    passed it, which was the wrong question: that index is InitialStomps (the
+    101 firmware effects) plus the 117-effect download catalog, so it answers
+    "does this effect exist for an MS-100BT", and an add-on exists whether or
+    not it is on the pedal.
+
+    Three sources, all living in this module's closure, so they are handed over
+    together rather than reached for one at a time:
+      library  -- the add-on catalog, id to filename. An id in it is an add-on
+                  and needs its .ZDL present; an id absent from it is a firmware
+                  effect, which ships on every MS-100BT. This is the same
+                  heuristic restore.js plan() uses, and the same measurement
+                  backs it: 65 of the 68 effects the factory patches use are
+                  firmware, 3 are add-ons.
+      installed -- .ZDL filenames read off the pedal. `verified` says whether
+                  that was this session or a remembered scan.
+      listed   -- is this an MS-100BT effect at all, whoever has it? The index
+                  names only firmware effects now, so this reads its two id
+                  lists rather than its names: `factory` plus `addons` is all
+                  218, and an id in neither belongs to no MS-100BT effect. The
+                  id alone cannot answer it -- `08004030` reads as an ordinary
+                  Delay id and is nothing -- so the lists are not decoration.
+      factory  -- the ids built into the firmware, read straight off the index,
+                  or null where the index predates that field. It makes the
+                  library heuristic above exact: the 101 firmware effects and
+                  the 117 catalog effects are disjoint and together are the
+                  whole index, so an id is firmware or an add-on with no
+                  guessing. That matters because the heuristic cannot tell a
+                  firmware effect from an add-on the user has not imported, and
+                  the second one will be dropped on write.
+    `libraryLoaded` and `indexLoaded` are reported so a caller can tell a clean
+    check from one it could not make -- silence on an empty library would read
+    as "all present". */
+ globalThis.__effectAvailability=()=>({
+  library:effects,libraryLoaded,
+  installed:[...pedalFiles],verified:pedalFilesVerified,
+  indexLoaded:Object.keys(builtinNames).length>0,
+  listed:id=>!!builtinNames[id]||addonIds?.has(id)||effects.some(e=>e.effectId===id),
+  factory:factoryIds,
+ });
+
+ /* An install that happened somewhere other than the Effects page -- the patch
+    editor installs the effect a slot needs -- still has to land in this
+    module's idea of what is on the pedal, or the editor goes on reporting the
+    effect as missing and the Effects card keeps offering to install it. */
+ globalThis.__effectInstalled=filename=>{
+  if(!filename)return;
+  pedalFiles.add(String(filename).toUpperCase());
+  rememberPedalFiles();renderEffects();updateEffectCount();
+ };
  const categoryOf=e=>{const n=e.filename.toUpperCase();if(/COMP|LIMIT|GATE|DYN/.test(n))return'Dynamics';if(/DRIVE|DIST|FUZZ|OD|CRUNCH/.test(n))return'Drive & Distortion';if(/AMP|CAB|COMBO|PRE/.test(n))return'Amps & Cabinets';if(/CHOR|FLANG|PHAS|TREMO|VIB/.test(n))return'Modulation';if(/DELAY|ECHO/.test(n))return'Delay';if(/REVERB|ROOM|HALL|SPRING/.test(n))return'Reverb';if(/WAH|FILTER|EQ|AUTO/.test(n))return'Filter & Wah';if(/PITCH|OCT|HARM/.test(n))return'Pitch';return'Other'};
  // Effect IDs the saved patches reference, so a delete can say what it breaks.
  // Six slots per patch, 18 bytes each, the id in the low 28 bits of the first

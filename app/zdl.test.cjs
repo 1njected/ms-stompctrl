@@ -1,8 +1,8 @@
 /* The .ZDL container check that stands between a file someone was handed and
    the pedal's flash. Layout from docs/protocol.md 7.1. */
-const assert=require('node:assert/strict');
+const assert=require('node:assert/strict'), fs=require('node:fs');
 require('./zdl.js');
-const {inspect,checkFilename,FILENAME_MAX}=global.ZDL;
+const {inspect,checkFilename,FILENAME_MAX}=global.ZDL, Z=global.ZDL;
 
 /* Build a structurally valid file: 'SIZE' at 4, section lengths at 0x0C/0x10,
    'INFO' at 0x14, id at 0x40, version at 0x44, ELF at 0x14+A. */
@@ -44,3 +44,50 @@ assert.throws(()=>checkFilename('effect.bin'),/\.ZDL extension/);
 assert.equal(inspect(build({version:'2.10'}),'V.ZDL').version,'2.10');
 
 console.log('ZDL container: strict and loose checks, id, version and the 8.3 filename rule passed');
+
+/* descriptor(): the knobs, parsed in the browser.
+
+   This is what replaced 47 KB of generated JSON -- an add-on's defaults come
+   out of the stored file now (app/patch-params.js). The structural checks run
+   anywhere; the real-file sweep needs ZOOM's binaries and skips without them,
+   and is what actually proves the parser, by agreeing with the Python one on
+   every file both can read. */
+{
+  // Not a ZDL at all, truncated, and empty: three nulls, no throw. A caller is
+  // enumerating a library, so one bad file must cost one effect, not the list.
+  assert.equal(Z.descriptor(new Uint8Array(0)), null);
+  assert.equal(Z.descriptor(new Uint8Array([0x7f, 0x45, 0x4c, 0x46, 1, 2, 3])), null);
+  assert.equal(Z.descriptor(new Uint8Array(200)), null);
+  assert.equal(Z.MAX_PARAMS, 9, 'the patch layout has room for nine');
+
+  const dir = __dirname + '/../re-files';
+  if (!fs.existsSync(dir)) {
+    console.log('ZDL descriptor: refusals OK; real-file sweep skipped (ZOOM binaries absent)');
+  } else {
+    const walk = d => fs.readdirSync(d, { withFileTypes: true }).flatMap(e =>
+      e.isDirectory() ? walk(d + '/' + e.name) : (/\.ZDL$/i.test(e.name) ? [d + '/' + e.name] : []));
+    const files = walk(dir);
+    let parsed = 0, knobs = 0, none = 0;
+    for (const f of files) {
+      const bytes = new Uint8Array(fs.readFileSync(f));
+      const d = Z.descriptor(bytes);
+      if (d === null) { none++; continue; }
+      parsed++; knobs += d.length;
+      assert.ok(d.length <= Z.MAX_PARAMS, `${f}: ${d.length} knobs is more than the patch can hold`);
+      for (const k of d) {
+        assert.equal(typeof k.name, 'string');
+        assert.ok(k.max <= 0xfffffff, `${f}: ${k.name} max ${k.max} is not a knob range`);
+        /* CAB is the documented exception and the only one: its max reads 0 and
+           its "default" reads 67109072, a pointer. Its value is the cabinet
+           byte, not a packed field (patch-params.js), so the pair means nothing
+           here -- but every other knob in all 218 files is a real range with a
+           default inside it, and that is worth failing on. */
+        if (/^cab$/i.test(k.name)) continue;
+        assert.ok(k.def <= k.max, `${f}: ${k.name} default ${k.def} is above its max ${k.max}`);
+      }
+    }
+    assert.ok(parsed > 200, `only ${parsed} of ${files.length} files parsed`);
+    console.log(`ZDL descriptor: ${parsed} of ${files.length} real files parsed, `
+      + `${knobs} knobs, ${none} without a descriptor; defaults all within range`);
+  }
+}
