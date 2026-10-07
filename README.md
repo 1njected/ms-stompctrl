@@ -16,16 +16,22 @@ machine.
 
 ## What it does
 
-- **Read all 50 patches** off the pedal, with checksums verified
-- **Edit chains** — rename a patch, reorder effects, bypass them, swap one
-  effect for another, clear a slot
+- **Read all 50 patches** off the pedal, checksums verified
+- **Edit chains** — rename, reorder, bypass, clear a slot
+- **Swap in any effect** on the pedal or in your library, not just the ones your
+  patches already use
+- **Export a patch** as `.100bt`
+- **Import patches** — `.100bt`, `.70cdr`, `.syx`, hex, or a backup JSON
 - **Write patches back** to the pedal
-- **Back up and restore**, as a JSON file or a bundle with the effect binaries
-- **Install effects** onto the pedal from `.ZDL` files
-- **Browse what's installed**, with the pedal's own file list
+- **Back up and restore** — a JSON file, or a bundle with the effect binaries
+- **Install effects** from `.ZDL` files
+- **Browse what's installed**, from the pedal's own file list
 
 The last read is kept in your browser's local storage, so the patch list and
 the editor keep working with no pedal attached.
+
+**Connecting on macOS is unreliable** — a macOS Bluetooth defect, not the app or
+the pedal. See `docs/bluetooth.md`.
 
 ![](docs/screenshots/app-fx.png)
 ![](docs/screenshots/app-patches.png)
