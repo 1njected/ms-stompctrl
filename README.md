@@ -69,6 +69,8 @@ settings, and press **Connect pedal**.
 ### iOS
 iOS app available in /iosapp, needs Apple developer account to compile and install.
 
+### macos
+Macos app available under Releases or /macosapp (src). Macos sometimes locks the Bluetooth device so the browser cannot connect. This app fixes those kind of issues.
 
 ## Documentation
 
