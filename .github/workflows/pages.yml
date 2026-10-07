@@ -25,10 +25,10 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: '24'
       # No dependencies to install: the tests are plain Node.
       - name: Run tests
         working-directory: app
@@ -45,8 +45,8 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/configure-pages@v5
+      - uses: actions/checkout@v6
+      - uses: actions/configure-pages@v6
       # Cache busting, without anyone having to remember to bump a number.
       # Every ?v= token becomes this commit, so a deploy changes every script
       # URL and returning visitors fetch the new code instead of a cached copy.
@@ -56,8 +56,8 @@ jobs:
           echo "${GITHUB_SHA}" > app/version.txt
           sed -i "s/?v=[0-9a-zA-Z]*/?v=${GITHUB_SHA}/g" app/index.html
           echo "stamped $(grep -o '?v=[0-9a-f]*' app/index.html | sort -u | head -1)"
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: app
       - id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
