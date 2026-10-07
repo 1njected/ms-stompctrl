@@ -9,7 +9,7 @@
  // pedal; update() owns its disabled state so it cannot be pressed without a
  // session or during a scan.
  const reloadInventoryButton=$('reload-inventory');
- reloadInventoryButton.onclick=async()=>{if(globalThis.iapHost?.session==null||globalThis.pedalInventory?.running)return;reloadInventoryButton.disabled=true;globalThis.pedalInventory.files=[];syncPedalFiles([],{verified:false});setInventoryStatus('Reading pedal effect inventory…');await globalThis.pedalInventory.run();syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);};
+ reloadInventoryButton.onclick=async()=>{if(!pedalReady()||globalThis.pedalInventory?.running)return;reloadInventoryButton.disabled=true;globalThis.pedalInventory.files=[];syncPedalFiles([],{verified:false});setInventoryStatus('Reading pedal effect inventory…');await globalThis.pedalInventory.run();syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);};
  const connection=$('connection-card'),aside=document.querySelector('aside');aside.insertBefore(connection,aside.querySelector('.workspace-label'));
  // Pedal storage, under the connection card. Hidden until a session reports it.
  // The pedal holds about 4 MB and effects run 10-26 KB, so knowing what is left
@@ -25,7 +25,7 @@
  const sizeText=n=>n>=1048576?`${(n/1048576).toFixed(1)} MB`:`${Math.round(n/1024)} KB`;
  let diskBusy=false;
  async function refreshDisk(){
-  if(globalThis.iapHost?.session==null){storage.hidden=true;return;}
+  if(!pedalReady()){storage.hidden=true;return;}
   if(diskBusy)return;                       // installs can finish faster than a query
   diskBusy=true;
   try{
@@ -69,7 +69,48 @@
     page does not track -- "Resume sync from pedal" when a restored or
     interrupted sync is partial -- and overwriting it here put the button back
     to the idle wording while a half-finished sync was sitting in storage. */
- let effects=[],localEffects=[],artUrls=new Map(),pedalFiles=new Set(),lastRender='',lastConnection='',eventSession=false,inventoryStarted=false;
+ let effects=[],localEffects=[],artUrls=new Map(),pedalFiles=new Set(),lastRender='',lastConnection='',eventSession=false,inventoryStarted=false,startupDone=false;
+ /* WHAT "READY" MEANS NOW. The data session used to be opened once and held, so
+    `iapHost.session!=null` was a fair test of "the pedal is usable". Sessions
+    are taken per operation now (iap.js withSession), so that expression is true
+    only while work is running and gating the UI on it would blink every control
+    off between operations. The question the UI actually wants is whether a
+    session COULD be opened: identified, and signature verified. */
+ const pedalReady=()=>!!globalThis.iapHost?.canOpen?.();
+ /* A HANDSHAKE THAT NEVER FINISHES USED TO LOOK LIKE ONE IN PROGRESS.
+
+    Identification is the pedal's move and authentication follows from it; both
+    are request-and-wait with nothing bounding the wait, so a pedal whose SysEx
+    layer has stopped leaves the card reading "Identifying and authenticating
+    the pedal…" for as long as the tab is open. docs/bluetooth.md has the state
+    and its only remedy, and the page may as well say so.
+
+    15 s is well past a healthy handshake -- identification and the certificate
+    exchange complete in well under a second on a working pedal -- and short of
+    anything legitimately slow. */
+ const HANDSHAKE_MS=15000;
+ let connectedAt=0;
+ const handshakeStalled=()=>!!connectedAt&&!pedalReady()&&Date.now()-connectedAt>HANDSHAKE_MS;
+ /* NOTHING RECEIVED AND STOPPED PARTWAY ARE DIFFERENT FAULTS.
+
+    `lastStage` is null until iap.js processes a frame, so a null means the port
+    opened and the pedal has said nothing whatsoever -- the `silent_after_open`
+    case. That is usually not a dead pedal: Chrome reports the service UUID it
+    REQUESTED, not the channel macOS connected, and the pedal answers only on
+    channel 1 while macOS pins its own binding to channel 2 (docs/protocol.md,
+    Transport traps). Picking the other entry for the pedal is the first thing
+    to try, and costs nothing.
+
+    A non-null stage means identification began and then stopped, which is the
+    state only a power cycle clears. Saying "stopped during identification" for
+    both -- as the first version of this did -- sends you to the power switch
+    for a problem a different chooser entry would have fixed. */
+ const stalledText=()=>{
+  const at=globalThis.iapHost?.lastStage;
+  return at
+   ?`The pedal stopped answering after ${at}. Switch it off and on, then connect again — nothing on this computer clears that state.`
+   :'The port is open but the pedal has sent nothing. It answers on only one of its two ports, and Chrome cannot tell which one it connected: press Disconnect, then Connect, and pick the other entry for the pedal. If that is no better, switch the pedal off and on.';
+ };
  const setInventoryStatus=text=>{$('effect-caption').textContent=text;};
  // "Installed on pedal" is the only authority on what is actually on the
  // filesystem, so Available FX marks its entries from that scan rather than
@@ -111,7 +152,8 @@
  function renderPatches(){const patches=globalThis.patchBackup?.last?.patches||[],query=$('patch-search').value.toLowerCase(),filtered=patches.filter(p=>(p.name||'').toLowerCase().includes(query)||String(p.slot).includes(query));$('patch-count').textContent=patches.length;$('backup-progress').value=patches.length;$('patch-caption').textContent=patches.length?`${patches.length} saved patches captured · ${patchBackup.last.complete?'All checksums verified':'Backup in progress or partial'}`:'Read the pedal to see your saved chains.';if(!patches.length)return;
  const list=$('patch-list');list.replaceChildren();list.className='patch-grid';if(!filtered.length){const p=document.createElement('p');p.textContent='No patches match your search.';list.append(p);}
  for(const p of filtered){const item=document.createElement('article');item.className='patch-item';const number=document.createElement('span'),name=document.createElement('div'),meta=document.createElement('div');number.className='patch-number';number.textContent=String(p.slot).padStart(2,'0');name.className='patch-name';name.textContent=p.name||'Untitled patch';meta.className='patch-meta';meta.textContent=p.crcValid?'✓ Checksum verified':'Captured';item.append(number,name);if(p.rawHex&&globalThis.PatchEditor){try{const dec=PatchEditor.decode(p.rawHex.split(' ').map(x=>parseInt(x,16)));const chain=document.createElement('div');chain.className='patch-chain';const used=dec.slots.filter(s=>!s.empty);if(!used.length)chain.append(Object.assign(document.createElement('span'),{className:'patch-chain-empty',textContent:'no effects'}));for(const s of used){const c=document.createElement('span');c.className='chain-node'+(s.enabled?'':' off');const d=PatchEditor.describe(s.effectId);c.textContent=d.short||'FX';c.title=`${d.family||'Effect'} — ${s.effectId}${s.enabled?'':' (bypassed)'}`;chain.append(c);}item.append(chain);}catch(e){}}item.append(meta);/* Clicking a patch opens the editor. The codec needs rawHex, which only a verified read produces, so a card without it stays inert rather than opening an editor over nothing. */if(p.rawHex&&globalThis.openPatchEditor){item.classList.add('editable');item.tabIndex=0;item.setAttribute('role','button');item.title='Edit this patch';const open=()=>globalThis.openPatchEditor(p,{onWritten:res=>{$('patch-caption').textContent=`Patch ${res?.slot??p.slot} written to the pedal${res?.name?` as “${res.name}”`:''}.`;renderPatches();}});item.onclick=open;item.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();open();}};}list.append(item);}}
- $('patch-search').oninput=renderPatches;
+ let patchSearchTimer=null;
+ $('patch-search').oninput=()=>{clearTimeout(patchSearchTimer);patchSearchTimer=setTimeout(renderPatches,120);};
  /* Effect id -> name. Two sources, because neither covers the ground alone:
     the browser library holds what the user imported, and effect-names.json is
     an id/name index covering the pedal's built-in effects, which are not files
@@ -187,12 +229,54 @@
   pedalFiles.add(String(filename).toUpperCase());
   rememberPedalFiles();renderEffects();updateEffectCount();
  };
- const categoryOf=e=>{const n=e.filename.toUpperCase();if(/COMP|LIMIT|GATE|DYN/.test(n))return'Dynamics';if(/DRIVE|DIST|FUZZ|OD|CRUNCH/.test(n))return'Drive & Distortion';if(/AMP|CAB|COMBO|PRE/.test(n))return'Amps & Cabinets';if(/CHOR|FLANG|PHAS|TREMO|VIB/.test(n))return'Modulation';if(/DELAY|ECHO/.test(n))return'Delay';if(/REVERB|ROOM|HALL|SPRING/.test(n))return'Reverb';if(/WAH|FILTER|EQ|AUTO/.test(n))return'Filter & Wah';if(/PITCH|OCT|HARM/.test(n))return'Pitch';return'Other'};
+ /* Memoised per record. renderEffects() asks four times for every effect --
+    in the filter, in the grouping, and twice per card -- and each call ran up
+    to nine regexes over an uppercased filename. The answer depends only on the
+    filename, so it is computed once and kept on the record. */
+ /* ONE TAXONOMY, SHARED WITH THE PATCH EDITOR.
+
+    These were two different schemes answering the same question. This page
+    grouped by regexes over the FILENAME; the editor groups by the effect ID,
+    via PatchEditor.describe(). So the same effect sat under "Amps & Cabinets"
+    here and "Bass preamp" there, and the filename guess was wrong on its own
+    terms: AUTOPAN matched /AUTO/ and landed in "Filter & Wah", MONOSYN matched
+    nothing and fell to "Other".
+
+    The id is the better answer and the documented one: (top byte, byte 2) names
+    a family for every one of the 218 known effects and for nothing else
+    (docs/protocol.md 7.1), and it works for firmware effects, which have no
+    file to read a name from. The filename heuristic stays only as a fallback
+    for an id outside those pairs -- a custom effect that invented its own. */
+ const categoryFromName=e=>{const n=e.filename.toUpperCase();if(/COMP|LIMIT|GATE|DYN/.test(n))return'Dynamics';if(/DRIVE|DIST|FUZZ|OD|CRUNCH/.test(n))return'Drive & Distortion';if(/AMP|CAB|COMBO|PRE/.test(n))return'Amps & Cabinets';if(/CHOR|FLANG|PHAS|TREMO|VIB/.test(n))return'Modulation';if(/DELAY|ECHO/.test(n))return'Delay';if(/REVERB|ROOM|HALL|SPRING/.test(n))return'Reverb';if(/WAH|FILTER|EQ|AUTO/.test(n))return'Filter & Wah';if(/PITCH|OCT|HARM/.test(n))return'Pitch';return'Other'};
+ const categoryFor=e=>globalThis.PatchEditor?.describe?.(e.effectId)?.family||categoryFromName(e);
+ const categoryOf=e=>e.__category??(e.__category=categoryFor(e));
  // Effect IDs the saved patches reference, so a delete can say what it breaks.
  // Six slots per patch, 18 bytes each, the id in the low 28 bits of the first
  // word shifted right by one -- the decode the old installed-effects panel used.
  // A patch is counted once even if two of its slots hold the same effect.
- function patchEffectUses(){const uses=new Map();for(const p of globalThis.patchBackup?.last?.patches||[]){const b=p.rawHex.split(' ').map(x=>parseInt(x,16)),seen=new Set();for(let i=0;i<6;i++){const id=((b[i*18]|b[i*18+1]<<8|b[i*18+2]<<16|b[i*18+3]<<24)>>>1)&0xfffffff;if(id)seen.add(id.toString(16).padStart(8,'0'));}for(const id of seen)uses.set(id,(uses.get(id)||0)+1);}return uses;}
+ /* Cached against the backup it was built from.
+
+    This decodes all fifty patch bodies out of hex to find which effects a chain
+    uses, and renderEffects() called it on every keystroke in the search box.
+
+    Identity alone is NOT a safe key. syncFromPedal() resumes an incomplete
+    backup -- it keeps the same `last` object and pushes each slot into
+    `patches` as it arrives -- so the object stays identical while its contents
+    grow, and a cache keyed on identity would serve a stale map for the whole
+    read. The length moves with every slot, and `complete` flips at the end
+    (when the patches array is also rebuilt by validate()), so the three
+    together change whenever the answer can. A finished backup that is re-read
+    gets a fresh object anyway. */
+ let usesCache=null,usesKey='';
+ function patchEffectUses(){
+  const last=globalThis.patchBackup?.last;
+  const key=last?`${last.createdAt}|${last.patches?.length??0}|${last.complete?1:0}`:'';
+  if(usesCache&&usesKey===key&&usesFor===last)return usesCache;
+  usesKey=key;usesFor=last;
+  return usesCache=computePatchEffectUses();
+ }
+ let usesFor=null;
+ function computePatchEffectUses(){const uses=new Map();for(const p of globalThis.patchBackup?.last?.patches||[]){const b=p.rawHex.split(' ').map(x=>parseInt(x,16)),seen=new Set();for(let i=0;i<6;i++){const id=((b[i*18]|b[i*18+1]<<8|b[i*18+2]<<16|b[i*18+3]<<24)>>>1)&0xfffffff;if(id)seen.add(id.toString(16).padStart(8,'0'));}for(const id of seen)uses.set(id,(uses.get(id)||0)+1);}return uses;}
  async function waitForInventory(){for(let i=0;globalThis.pedalInventory?.running&&i<120;i++)await new Promise(r=>setTimeout(r,250));if(globalThis.pedalInventory?.running)throw Error('Pedal inventory is still busy; reload it and try again.');}
  const categorySelect=document.createElement('select');categorySelect.id='effect-category';categorySelect.setAttribute('aria-label','Filter effects by category');categorySelect.innerHTML='<option value="">All categories</option>';$('effect-search').before(categorySelect);categorySelect.onchange=renderEffects;
  $('effect-status').onchange=renderEffects;
@@ -200,7 +284,7 @@
     both end up here, so a change to how an install is driven -- the inventory
     wait, what the status line says, how a failure reads -- happens once. */
  async function installToPedal(effect,button,restingLabel){
-  if(globalThis.iapHost?.session==null){
+  if(!pedalReady()){
    button.textContent='Open session first';
    setTimeout(()=>button.textContent=restingLabel,1800);
    return false;
@@ -273,7 +357,7 @@
    let armed=false,armTimer=null;
    const disarm=()=>{armed=false;clearTimeout(armTimer);del.textContent='Delete';del.classList.remove('armed');};
    del.onclick=async()=>{
-    if(globalThis.iapHost?.session==null){del.textContent='Open session first';armTimer=setTimeout(disarm,1800);return;}
+    if(!pedalReady()){del.textContent='Open session first';armTimer=setTimeout(disarm,1800);return;}
     if(!armed){armed=true;const n=uses.get(e.effectId)||0;del.textContent=n?`Confirm — breaks ${n} patch${n===1?'':'es'}`:'Confirm delete';del.classList.add('armed');armTimer=setTimeout(disarm,5000);return;}
     disarm();del.disabled=install.disabled=true;
     try{
@@ -290,7 +374,11 @@
    row.append(install);
    if(onPedal)row.append(del);
    if(artUrl)name.textContent=shown;else name.remove();card.append(name,detail,row);list.append(card);}}if(!list.children.length)list.textContent='No matching effects.';updateEffectCount();}
- $('effect-search').oninput=renderEffects;
+ /* Debounced: each keystroke rebuilt the whole grid -- up to 117 cards of six
+    elements -- and typing a word did it once per letter. 120 ms is below the
+    point it reads as lag and collapses a burst of typing into one render. */
+ let searchTimer=null;
+ $('effect-search').oninput=()=>{clearTimeout(searchTimer);searchTimer=setTimeout(renderEffects,120);};
  async function refreshEffectStore(){localEffects=await effectStore.all();$('effect-storage-status').textContent=localEffects.length?`${localEffects.length} effect${localEffects.length===1?'':'s'} stored in this browser.`:'No effects stored in this browser yet.';}
 
  // Nothing here is served: the catalog, the binaries and the artwork all come
@@ -415,7 +503,7 @@
   const n=subset.patches.length;
   const p=soundPackage.plan(subset,{...restoreContext,library:loadedLibrary});
   showPlan(p);
-  const ready=globalThis.iapHost?.session!=null;
+  const ready=pedalReady();
   $('restore-run').disabled=!ready||!n||p.fits===false;
   $('restore-run').textContent=n===0?'Nothing selected'
    :n===loadedPackage.patches.length?'Install and restore all'
@@ -442,7 +530,7 @@
    const pkg=await soundPackage.read(await file.arrayBuffer());
    // Only ask the pedal for anything if there is a session; otherwise plan dry.
    let installedNames=[...pedalFiles],disk=null;
-   if(globalThis.iapHost?.session!=null){
+   if(pedalReady()){
     if(!installedNames.length){$('restore-status').textContent='Reading the pedal…';
      const files=await pedalInventory.run();syncPedalFiles(files);installedNames=[...pedalFiles];}
     try{disk=await globalThis.pedalInstaller.disk();}catch{}
@@ -572,14 +660,59 @@
   paint(open);
   helpToggle.onclick=()=>{open=!open;paint(open);try{localStorage.setItem(HELP_KEY,open?'1':'0');}catch{}};
  }
- function update(){const ready=globalThis.iapHost?.session!=null,connected=typeof opened!=='undefined'&&opened,verified=globalThis.iapSignature?.verified;const sigFailed=!!globalThis.iapSignature?.checked&&!verified;
-  const state=ready?'Session ready':connected?(verified?'Connected':sigFailed?'Not verified':'Identifying…'):'Disconnected';$('connection-card').classList.toggle('connected',connected);if(state!==lastConnection){lastConnection=state;$('connection-badge').textContent=state;$('connection-badge').classList.toggle('ready',ready||connected);$('connection-description').textContent=ready?'Ready to read your patches and create a backup.':connected?(verified?'Open the pedal session to access your patches.':sigFailed?`${globalThis.iapSignature?.error||'Authentication failed.'} Disconnect and try again.`:'Identifying and authenticating the pedal…'):'Connect your paired pedal to read and back up patches.';}sessionButton.hidden=ready||!connected;$('close').hidden=!connected;$('choose').hidden=connected;if(bundleButton)bundleButton.disabled=!!globalThis.backupBundleBusy||!!globalThis.patchBackup?.running||!globalThis.patchBackup?.last?.complete;readButton.disabled=!!globalThis.patchBackup?.running||!ready;reloadInventoryButton.disabled=!ready||!!globalThis.pedalInventory?.running;const signature=JSON.stringify([patchBackup.last?.patches?.length,patchBackup.last?.complete,patchBackup.running]);if(signature!==lastRender){lastRender=signature;renderPatches();}}
- stompEvents.addEventListener('connected',()=>{eventSession=false;setInventoryStatus('Connected — opening the pedal session…');update();$('connection-badge').textContent='Connected';setTimeout(()=>{if(!eventSession&&!sessionButton.hidden&&!sessionButton.disabled)sessionButton.click();},700);});
+ function update(){const ready=pedalReady(),connected=typeof opened!=='undefined'&&opened,verified=globalThis.iapSignature?.verified;const sigFailed=!!globalThis.iapSignature?.checked&&!verified;
+  const stalled=connected&&handshakeStalled()&&!sigFailed;const state=ready?'Pedal ready':connected?(verified?'Connected':sigFailed?'Not verified':stalled?'Not answering':'Identifying…'):'Disconnected';$('connection-card').classList.toggle('connected',connected);if(state!==lastConnection){lastConnection=state;$('connection-badge').textContent=state;$('connection-badge').classList.toggle('ready',ready||connected);$('connection-description').textContent=ready?'Ready to read your patches and create a backup.':connected?(verified?'Open the pedal session to access your patches.':sigFailed?`${globalThis.iapSignature?.error||'Authentication failed.'} Disconnect and try again.`:stalled?stalledText():'Identifying and authenticating the pedal…'):'Connect your paired pedal to read and back up patches.';}sessionButton.hidden=true;$('close').hidden=!connected;$('choose').hidden=connected;if(bundleButton)bundleButton.disabled=!!globalThis.backupBundleBusy||!!globalThis.patchBackup?.running||!globalThis.patchBackup?.last?.complete;readButton.disabled=!!globalThis.patchBackup?.running||!ready;reloadInventoryButton.disabled=!ready||!!globalThis.pedalInventory?.running;const signature=JSON.stringify([patchBackup.last?.patches?.length,patchBackup.last?.complete,patchBackup.running]);if(signature!==lastRender){lastRender=signature;renderPatches();}}
+ stompEvents.addEventListener('connected',()=>{eventSession=false;startupDone=false;connectedAt=Date.now();setInventoryStatus('Connected — identifying the pedal…');update();$('connection-badge').textContent='Connected';});
  stompEvents.addEventListener('error',e=>{errorLine.textContent=e.detail?.message||'Connection failed. Check the pedal is in Pairing mode and try again.';$('choose').textContent='Connect pedal';$('choose').disabled=false;});
  stompEvents.addEventListener('connected',()=>{errorLine.textContent='';$('choose').textContent='Connected';});
 
- stompEvents.addEventListener('session',()=>{eventSession=true;update();$('connection-badge').textContent='Session ready';setTimeout(()=>{void refreshDisk();if(globalThis.stompAutoInventory===false){setInventoryStatus('Automatic scan is off — press Reload from pedal to see what is installed.');return;}setInventoryStatus('Reading pedal effect inventory…');pedalInventory.run().then(()=>{syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);});},1000);});
- stompEvents.addEventListener('disconnected',()=>{eventSession=false;storage.hidden=true;setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
+ /* The startup scan runs ONCE, when the pedal becomes usable -- not on the
+    `session` event it used to hang off.
+
+    That event now fires at the start of every operation, and the scan is itself
+    an operation: inventory.run() takes the lock, the lock opens a session, the
+    session fires this, and it would schedule another scan. The one-shot is the
+    fix, and `startupDone` is reset on connect so a reconnect scans again. */
+ async function startupScan(){
+  void refreshDisk();
+  if(globalThis.stompAutoInventory===false){
+   setInventoryStatus('Automatic scan is off — press Reload from pedal to see what is installed.');return;}
+  setInventoryStatus('Reading pedal effect inventory…');
+  try{await pedalInventory.run();}catch(e){setInventoryStatus(`Could not read the effect list: ${e.message}`);return;}
+  syncPedalFiles();setInventoryStatus(`${pedalFiles.size} effects on the pedal.`);
+ }
+ // A session opening is no longer news the UI reports; it just refreshes.
+ stompEvents.addEventListener('session',()=>{eventSession=true;update();});
+ stompEvents.addEventListener('session-closed',()=>update());
+ stompEvents.addEventListener('disconnected',()=>{eventSession=false;connectedAt=0;storage.hidden=true;setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
  function renderInventoryProgress(){const count=(globalThis.pedalInventory?.files||[]).filter(f=>/\.ZDL$/i.test(f.filename)).length;setInventoryStatus(`Reading pedal effect inventory… ${count}`);}
- update();setInterval(()=>{const ready=globalThis.iapHost?.session!=null;if(globalThis.pedalInventory?.running)renderInventoryProgress();if(ready&&!inventoryStarted){inventoryStarted=true;$('connection-badge').textContent='Session ready';$('connection-badge').classList.add('ready');}if(!ready)inventoryStarted=false;update();},250);
+ /* THE TICK PACES ITSELF.
+
+    This ran four times a second for as long as the tab existed -- while
+    disconnected, while hidden, forever -- each time re-reading globals and
+    building a render signature only to decide it had nothing to do.
+
+    Nothing it watches changes while the tab is hidden and no pedal work is
+    running, so the interval became a self-scheduling timeout that picks its
+    delay from what is actually happening. The fast rate is kept for the only
+    case that needs it: an operation whose progress is on screen. Becoming
+    visible ticks immediately rather than waiting out a slow period. */
+ const BUSY_MS=250,IDLE_MS=1000,HIDDEN_MS=3000;
+ let tickTimer=null;
+ function tickOnce(){const ready=pedalReady();if(globalThis.pedalInventory?.running)renderInventoryProgress();if(ready&&!inventoryStarted){inventoryStarted=true;$('connection-badge').classList.add('ready');}if(!ready)inventoryStarted=false;
+  // Identification finishing is what starts the scan, once per connection.
+  if(ready&&!startupDone){startupDone=true;setTimeout(()=>void startupScan(),400);}
+  update();}
+ function pace(){
+  if(document.hidden)return HIDDEN_MS;
+  const working=!!globalThis.pedalInventory?.running||!!globalThis.patchBackup?.running
+              ||!!globalThis.pedalLock?.busy;
+  return working||pedalReady()?BUSY_MS:IDLE_MS;
+ }
+ function scheduleTick(){
+  clearTimeout(tickTimer);
+  tickTimer=setTimeout(()=>{if(!document.hidden)tickOnce();scheduleTick();},pace());
+ }
+ update();scheduleTick();
+ document.addEventListener('visibilitychange',()=>{if(!document.hidden){tickOnce();scheduleTick();}});
 })();

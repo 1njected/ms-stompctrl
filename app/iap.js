@@ -20,12 +20,15 @@ class Parser{
 global.IAPCodec={frame,Parser};
 if(typeof document==='undefined')return;
 if(global.iapHost)return;
-const state=global.iapHost={enabled:true,protocols:[],identified:false,session:null,pendingSession:null,nextTransaction:1};
+const state=global.iapHost={enabled:true,lastStage:null,protocols:[],identified:false,session:null,pendingSession:null,nextTransaction:1};
 const previousLog=log;let queue=Promise.resolve();
 let transferTail=Promise.resolve();
 global.stompTransfer=fn=>{const wait=transferTail;let release;transferTail=new Promise(r=>{release=r});return wait.then(fn).finally(release);};
 const status=document.createElement('p');status.id='iap-status';status.textContent='iAP: waiting for accessory identification';el('staging').append(status);
-function stage(text){status.textContent='iAP: '+text;previousLog('iap_state',text);}
+/* The last handshake step reached, kept so the UI can say where a stalled
+   handshake stopped. Without it a pedal that goes quiet mid-identification and
+   one still working look identical, and the page waits on the first forever. */
+function stage(text){state.lastStage=text;status.textContent='iAP: '+text;previousLog('iap_state',text);}
 async function send(cmd,tr,data=[]){const b=frame(cmd,tr,data);await stompWrite(b,'iap');previousLog('iap_tx',{cmd:cmd.toString(16),transaction:tr,hex:hex(b)});}
 const ack=(p,value=0)=>send(2,p.transaction,[value,p.cmd]);
 async function receive(p){
@@ -53,8 +56,8 @@ async function receive(p){
  case 0x4b:await send(0x4c,p.transaction,[p.data[0],0,0,0,0,0,0,0,0]);break;
  case 0x41:
   if(p.data[1]===0x3f&&state.pendingSession&&p.transaction===state.pendingSession.transaction){
-   if(p.data[0]===0){state.session=state.pendingSession.id;stage('data session open');el('identity').disabled=false;global.stompEvents?.dispatchEvent(new CustomEvent('session',{detail:{id:state.session}}));}
-   else stage('session rejected: '+p.data[0]);
+   if(p.data[0]===0){state.session=state.pendingSession.id;stage('data session open');el('identity').disabled=false;global.stompEvents?.dispatchEvent(new CustomEvent('session',{detail:{id:state.session}}));settle(null);}
+   else {stage('session rejected: '+p.data[0]);settle(Error(`The pedal refused a data session (status ${p.data[0]}).`));}
    state.pendingSession=null;
   }
   // The accessory acknowledges every encapsulated 0x43 request with 0x41
@@ -71,10 +74,101 @@ async function receive(p){
  }
 }
 const parser=new Parser(p=>{queue=queue.then(()=>receive(p)).catch(e=>{previousLog('iap_error',String(e));stage('error: '+e.message);});},e=>previousLog('iap_parse_error',e));
-log=function(kind,value){previousLog(kind,value);if(kind==='rx')parser.feed(value.split(' ').map(x=>parseInt(x,16)));if(kind==='closed'){parser.buf=[];state.pendingSession=null;state.session=null;state.identified=false;openButton.disabled=true;stage('disconnected');globalThis.stompConnection.connected=false;stompEvents.dispatchEvent(new CustomEvent('disconnected'));}};
+onStompFrame(function(kind,value,bytes){if(kind==='rx')parser.feed(bytes);if(kind==='closed'){parser.buf=[];state.pendingSession=null;state.session=null;state.identified=false;depth=0;settle(Error('The pedal disconnected.'));openButton.disabled=true;stage('disconnected');globalThis.stompConnection.connected=false;stompEvents.dispatchEvent(new CustomEvent('disconnected'));}});
 const openButton=document.createElement('button');openButton.textContent='Open StompShare data session';openButton.disabled=true;el('identity').before(openButton);
 state.openSession=()=>openButton.click();
-state.closeSession=async()=>{if(state.session===null)return;await send(0x40,state.nextTransaction++,[state.session>>8,state.session&255]);state.session=null;state.pendingSession=null;stage('data session closed');};
+
+/* THE DATA SESSION IS HELD ONLY WHILE SOMETHING IS USING IT.
+
+   It used to be opened once, by a button, and kept until Disconnect. That made
+   the whole time you were connected a window in which closing the tab or
+   reloading the page left the pedal holding a session for a host that was gone
+   -- and a session the pedal still believes in is what makes the next connect
+   fail, a state nothing host-side clears (docs/bluetooth.md). transport.js
+   fires the 0x40 from `pagehide` best-effort, which is all it can do while a
+   page is dying.
+
+   So the window is closed instead of guarded: withSession() opens a session,
+   runs the work, and closes it again. Reference-counted, because restore holds
+   one across fifty writes and each write asks for a session of its own -- the
+   count means the outermost caller closes it and the inner ones do not pull it
+   out from under their siblings.
+
+   What this costs is a 0x3F/0x41 round trip per operation. What it buys is that
+   an idle connected page holds nothing: the only thing left to orphan is a
+   session with work actually running in it. */
+let depth=0,waiters=[];
+function settle(err){const w=waiters;waiters=[];for(const {resolve,reject} of w)err?reject(err):resolve(state.session);}
+
+/* Resolves with the session id once the pedal has acknowledged it. The open is
+   the pedal's to confirm -- a 0x3F draws a 0x41 whose status decides it -- so
+   this waits on that reply rather than on having sent anything. */
+state.ensureSession=(timeoutMs=6000)=>{
+ if(state.session!==null)return Promise.resolve(state.session);
+ if(!state.identified)return Promise.reject(Error('The pedal has not finished identifying yet.'));
+ if(global.iapSignature&&!global.iapSignature.verified)
+  return Promise.reject(Error('The pedal\'s signature has not been verified.'));
+ return new Promise((resolve,reject)=>{
+  const timer=setTimeout(()=>{
+   waiters=waiters.filter(w=>w.resolve!==done);
+   reject(Error('The pedal did not acknowledge a data session.'));
+  },timeoutMs);
+  const done=v=>{clearTimeout(timer);resolve(v);};
+  const fail=e=>{clearTimeout(timer);reject(e);};
+  waiters.push({resolve:done,reject:fail});
+  // One 0x3F in flight at a time; a second caller just waits on the first.
+  if(!state.pendingSession)openButton.click();
+ });
+};
+
+state.withSession=async fn=>{
+ depth++;
+ try{
+  await state.ensureSession();
+  return await fn();
+ }finally{
+  depth--;
+  /* Only the outermost caller closes, and only if the port is still there --
+     on a disconnect `closed` has already zeroed this and the 0x40 would go
+     nowhere. */
+  if(depth<=0){
+   depth=0;
+   if(state.session!==null)
+    try{await state.closeSession();}catch(e){previousLog('session_close_failed',String(e));}
+  }
+ }
+};
+state.sessionDepth=()=>depth;
+
+/* ONE PLACE THAT KNOWS HOW A SESSION FRAME IS SHAPED.
+
+   Everything the host sends inside a data session is a 0x43 whose payload
+   begins with the two-byte session id, and everything the pedal sends back
+   carries the same two bytes. That arithmetic was written out at eight call
+   sites across backup, install, patches and inventory, and the matching
+   receive-side check at three more -- so a new call site could silently forget
+   the session check and send into, or accept from, the wrong stream.
+
+   `session` is a parameter rather than always read from state, because the
+   difference matters: backup.js captures the id once at the start of an
+   operation and uses that, so a session that changes underneath a half-written
+   patch produces a failure rather than a frame addressed to the new one. Call
+   sites that legitimately want "whatever is open now" simply omit it. */
+state.frame=(data,{session=state.session,transaction=state.nextTransaction++}={})=>{
+ if(session===null||session===undefined)throw Error('No data session');
+ return IAPCodec.frame(0x43,transaction,[session>>8,session&255,...data]);
+};
+
+/* Does this received frame belong to the open session? Callers that care about
+   a particular command still check p.cmd themselves -- backup wants 0x42 only,
+   install and inventory accept any. */
+state.forSession=p=>!!p&&p.lingo===0&&(p.data[0]*256+p.data[1])===state.session;
+
+/* Can a session be opened right now? What the UI should gate on, because with
+   sessions coming and going `session!=null` is true only mid-operation and
+   would blink the whole page's controls on and off. */
+state.canOpen=()=>!!state.identified&&(!global.iapSignature||!!global.iapSignature.verified);
+state.closeSession=async()=>{if(state.session===null)return;await send(0x40,state.nextTransaction++,[state.session>>8,state.session&255]);state.session=null;state.pendingSession=null;stage('data session closed');el('identity').disabled=true;global.stompEvents?.dispatchEvent(new CustomEvent('session-closed'));};
 openButton.onclick=()=>{queue=queue.then(async()=>{if(global.iapSignature&&!global.iapSignature.verified)throw Error('Accessory signature verification required');const protocol=state.protocols.find(x=>x.name==='jp.co.zoom.p1');if(!protocol)throw Error('Pedal did not advertise jp.co.zoom.p1');const tr=state.nextTransaction++;state.pendingSession={id:1,transaction:tr};await send(0x3f,tr,[0,1,protocol.index]);stage('waiting for data-session acknowledgement');}).catch(e=>stage(e.message));};
 el('identity').disabled=true;el('identity').onclick=()=>{queue=queue.then(async()=>{if(state.session===null)throw Error('No data session');await send(0x43,state.nextTransaction++,[state.session>>8,state.session&255,0xf0,0x7e,0,6,1,0xf7]);}).catch(e=>stage(e.message));};
 previousLog('iap_loaded','StartIDPS / FID / EndIDPS enabled; waiting for next frame');

@@ -17,8 +17,20 @@ const RECORD = ('f0 52 00 5e 60 04 25 00 00 17 00 00 00 00 00 41 52 45 4e 41 2e 
 const DONE = [0xf0, 0x52, 0x00, 0x5e, 0x60, 0x03, 0xf7];   // "no more entries"
 
 const logged = [];
-global.log = (k, v) => logged.push({ k, v });
-global.iapHost = { session: SESSION, nextTransaction: 1 };
+const __listeners = [];
+global.onStompFrame = fn => { __listeners.push(fn); return () => {}; };
+global.log = (k, v) => { logged.push({ k, v });
+  for (const fn of __listeners) fn(k, v, k === 'rx' ? String(v).split(' ').map(x => parseInt(x, 16)) : null); };
+// Mirrors the real helpers in iap.js: inventory.js frames and filters through
+// them now rather than doing the session arithmetic itself.
+global.iapHost = {
+  session: SESSION, nextTransaction: 1,
+  frame(data, { session = this.session, transaction = this.nextTransaction++ } = {}) {
+    if (session === null || session === undefined) throw Error('No data session');
+    return global.IAPCodec.frame(0x43, transaction, [session >> 8, session & 255, ...data]);
+  },
+  forSession(p) { return !!p && p.lingo === 0 && (p.data[0] * 256 + p.data[1]) === this.session; },
+};
 global.stompTransfer = fn => fn();
 
 let writes = [], deliver = true;

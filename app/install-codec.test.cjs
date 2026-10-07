@@ -7,9 +7,10 @@
    status word the installer discarded, so nothing failed loudly for two days. */
 const assert = require('node:assert/strict'), fs = require('node:fs');
 
-// install.js builds two IAPCodec.Parser instances and wraps globalThis.log at
+// install.js builds two IAPCodec.Parser instances and subscribes via onStompFrame at
 // load; neither matters here, so stub just enough for it to evaluate.
 global.IAPCodec = { Parser: function () { this.feed = () => {}; }, frame: () => [] };
+global.onStompFrame = () => () => {};
 global.log = () => {};
 require('./install.js');
 const { enc, pack, unpack, crc } = global.pedalCodec;

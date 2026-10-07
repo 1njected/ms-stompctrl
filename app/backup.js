@@ -135,10 +135,10 @@
   original('backup_restored',{patches:stored.patches.length,complete:!!stored.complete,createdAt:stored.createdAt});
  }
 
- const parser=new IAPCodec.Parser(p=>{if(p.lingo!==0||p.cmd!==0x42||p.data[0]*256+p.data[1]!==iapHost.session)return;
+ const parser=new IAPCodec.Parser(p=>{if(!iapHost.forSession(p)||p.cmd!==0x42)return;
  for(const b of p.data.slice(2)){if(b===240)buffer=[];buffer.push(b);if(buffer.length>32768)buffer=[];if(b===247){const frame=buffer;buffer=[];if(pending&&frame[0]===240&&frame[1]===82&&frame[3]===94&&frame[4]===pending.command){if(pending.slot!==null&&frame[7]!==pending.slot)return;const q=pending;pending=null;clearTimeout(q.timer);q.resolve(frame);}}}
  });
- log=function(k,v){original(k,v);if(k==='rx')parser.feed(v.split(' ').map(x=>parseInt(x,16)));if(k==='closed'&&pending){clearTimeout(pending.timer);pending.reject(Error('Disconnected during backup'));pending=null;}};
+ onStompFrame(function(k,v,bytes){if(k==='rx')parser.feed(bytes);if(k==='closed'&&pending){clearTimeout(pending.timer);pending.reject(Error('Disconnected during backup'));pending=null;}});
  async function request(data,command,slot=null){return stompTransfer(()=>requestExclusive(data,command,slot));}
  /* One waiter per request, kept alive across resends.
 
@@ -154,14 +154,13 @@
     resolves it, whichever resend it answers. */
  const REQUEST_BUDGET=20000, RESEND_AFTER=6000;
  async function requestExclusive(data,command,slot=null,{budget=REQUEST_BUDGET,resendAfter=RESEND_AFTER}={}){
-  if(!opened||iapHost.session===null)throw Error('Open the StompShare data session first');
+  if(!opened||iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   if(pending)throw Error('A patch request is already pending');
   let resolve,reject;const result=new Promise((a,b)=>{resolve=a;reject=b;});result.catch(()=>{});
   pending={resolve,reject,command,slot};
   const transmit=async()=>{
    const session=iapHost.session;
-   await stompWrite(IAPCodec.frame(0x43,iapHost.nextTransaction++,
-     [session>>8,session&255,...data]),'backup');
+   await stompWrite(iapHost.frame(data,{session}),'backup');
   };
   const deadline=Date.now()+budget;
   let timer=null,sends=0;
@@ -190,9 +189,9 @@
  /* Editor mode. A received 0x50 sets the firmware's gate flag and 0x51 clears
     it; neither draws a reply. 0x28 and 0x32 are both gated behind it, which is
     why reading the edit buffer used to time out. docs/protocol.md 5.4. */
- state.editorMode=async on=>{if(!opened||iapHost.session===null)throw Error('Open the StompShare data session first');
+ state.editorMode=async on=>{if(!opened||iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const session=iapHost.session;
-  await stompWrite(IAPCodec.frame(0x43,iapHost.nextTransaction++,[session>>8,session&255,240,82,0,94,on?0x50:0x51,247]),'editor');
+  await stompWrite(iapHost.frame([240,82,0,94,on?0x50:0x51,247],{session}),'editor');
   original('editor_mode',{on});
   // Measured repeatedly: 0x29 after 0x50 drew no reply at 400 and 1200 ms and
   // answered every time at 2000 and 3000. The threshold moves, so allow plenty;
@@ -207,10 +206,9 @@
     same transport. docs/protocol.md 5.3. */
  state.selectPatch=async slot=>{
   if(!Number.isInteger(slot)||slot<0||slot>49)throw Error('Slot must be 0-49');
-  if(!opened||iapHost.session===null)throw Error('Open the StompShare data session first');
+  if(!opened||iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const session=iapHost.session;
-  await stompWrite(IAPCodec.frame(0x43,iapHost.nextTransaction++,
-    [session>>8,session&255,0xC0,slot]),'select');
+  await stompWrite(iapHost.frame([0xC0,slot],{session}),'select');
   original('patch_select',{patch:slot+1});
   await new Promise(r=>setTimeout(r,1200));};
 
@@ -237,8 +235,7 @@
   await state.editorMode(true);
   try{
    const session=iapHost.session;
-   await stompWrite(IAPCodec.frame(0x43,iapHost.nextTransaction++,
-     [session>>8,session&255,...frame]),'write');
+   await stompWrite(iapHost.frame(frame,{session}),'write');
    await new Promise(r=>setTimeout(r,1200));
    // leaving the patch is what commits it
    await state.selectPatch(slot===0?1:0);

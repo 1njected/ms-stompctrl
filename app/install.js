@@ -55,8 +55,8 @@
   const done=fragmentAcks.get(p.transaction);
   if(done)done();
  });
- const parser=new IAPCodec.Parser(p=>{if(p.lingo!==0||p.data[0]*256+p.data[1]!==iapHost.session)return;for(const b of p.data.slice(2)){if(b===240)buf=[];buf.push(b);if(b!==247)continue;const f=buf;buf=[];if(pending&&pending.match(f)){const q=pending;pending=null;clearTimeout(q.timer);q.resolve(f);}}});
- const old=g.log;g.log=(k,v)=>{old(k,v);if(k==='rx'){const bytes=v.split(' ').map(x=>parseInt(x,16));ackParser.feed(bytes.slice());parser.feed(bytes);}};
+ const parser=new IAPCodec.Parser(p=>{if(!iapHost.forSession(p))return;for(const b of p.data.slice(2)){if(b===240)buf=[];buf.push(b);if(b!==247)continue;const f=buf;buf=[];if(pending&&pending.match(f)){const q=pending;pending=null;clearTimeout(q.timer);q.resolve(f);}}});
+ g.onStompFrame((k,v,bytes)=>{if(k==='rx'){ackParser.feed(bytes);parser.feed(bytes);}});
  // The response clock deliberately does not start here. Delivery below is
  // separately bounded and can take 7.5 s (or 12 s fragmented), and running one
  // clock across both meant a delivery stall spent the response budget -- the
@@ -84,7 +84,7 @@ async function exchange(data,match,timeout=8000){
  // One packet, one transaction id, one frame -- retransmitted byte for byte.
  const post=delivery(),tr=iapHost.nextTransaction++;
  post.sent(tr);
- const frame=IAPCodec.frame(0x43,tr,[iapHost.session>>8,iapHost.session&255,...data]);
+ const frame=iapHost.frame(data,{transaction:tr});
  let acked=false;
  try{
   for(let attempt=1;attempt<=3&&acked===false;attempt++){
@@ -131,7 +131,7 @@ async function exchangeFragmented(data,match,timeout=30000){
    // duplicated file data, because the pedal read it as more of the stream.
    const post=delivery(),tr=iapHost.nextTransaction++;
    post.sent(tr);
-   const frame=IAPCodec.frame(0x43,tr,[iapHost.session>>8,iapHost.session&255,...part]);
+   const frame=iapHost.frame(part,{transaction:tr});
    let acked=false;
    try{
     for(let attempt=1;attempt<=3&&acked===false;attempt++){
@@ -277,7 +277,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
 
  // Register an already-written effect in the pedal's list, as its own operation.
  async function registerEffect(effect){
-  if(iapHost.session===null)throw Error('Open a StompShare data session first');
+  if(iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const raw=await bytesOf(effect);
   const name=effect.filename.toUpperCase();
   const {effectId,category}=FlstCodec.categoryOf(raw);
@@ -318,7 +318,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
  // file that is gone, which is the state to avoid.
  const PROTECTED=['FLST_SEQ.ZDT','PAIR.DAT'];
  async function removeEffect(filename){
-  if(iapHost.session===null)throw Error('Open a StompShare data session first');
+  if(iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const name=String(filename||'').toUpperCase();
   // FLST_SEQ.ZDT is the pedal's only copy of its effect list and PAIR.DAT is its
   // pairing state; neither is recoverable from the catalog.  The extension test
@@ -367,7 +367,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
  // then 60 01 / 61 06 / 60 07, and never sends 61 05.  Cutting the user's guitar
  // signal to read a number would be a poor trade.
  async function diskSpace(){
-  if(iapHost.session===null)throw Error('Open a StompShare data session first');
+  if(iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   await acquire();
   try{
    const f=await exchange([240,82,0,94,0x60,0x29,0,247],is(4,0x29));
@@ -385,7 +385,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
 
  // Read the list and report what an install would change. Writes nothing.
  async function previewList(effect){
-  if(iapHost.session===null)throw Error('Open a StompShare data session first');
+  if(iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const raw=effect?await bytesOf(effect):null;
   await acquire();
   try{
@@ -412,7 +412,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
   }
  }
 
- async function writeFile(effect){if(iapHost.session===null)throw Error('Open a StompShare data session first');const raw=await bytesOf(effect);if(raw.length<76||new TextDecoder().decode(raw.slice(4,8))!=='SIZE')throw Error('Invalid ZDL effect');const name=effect.filename.toUpperCase();if(name.length>12)throw Error('Effect filename exceeds 12 characters');const filename=nameField(name);
+ async function writeFile(effect){if(iapHost.session===null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');const raw=await bytesOf(effect);if(raw.length<76||new TextDecoder().decode(raw.slice(4,8))!=='SIZE')throw Error('Invalid ZDL effect');const name=effect.filename.toUpperCase();if(name.length>12)throw Error('Effect filename exceeds 12 characters');const filename=nameField(name);
   const writeWindow=globalThis.stompWriteWindow?.();
   await acquire();await exchange([240,82,0,94,0x61,5,247],f=>f[4]===0&&f[5]===0);await statusExchange([240,82,0,94,0x60,0,1,247],is(5),'File mode setup');await exchange([240,82,0,94,0x60,0x29,0,247],is(4,0x29));await exchange([240,126,0,6,1,247],f=>f[0]===240&&f[1]===126&&f[4]===2);await exchange(deleteFrame(name),is(3));await exchange([240,126,0,6,1,247],f=>f[0]===240&&f[1]===126&&f[4]===2);await exchange([240,82,0,94,0x60,2,247],is(4,2));await exchange([240,82,0,94,0x60,0x20,1,0,0,0,0,0,0,0,0,0,filename[0],...filename.slice(1),247],is(4,0x20));
   // A write response can be delayed by the pedal's flash task.  The trace
@@ -524,13 +524,12 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
    if(p.cmd===0x41&&p.data[1]===0x43)receipt=true;
    if(p.cmd===0x42)reply=true;
   });
-  const prev=g.log;
-  g.log=(k,v)=>{prev(k,v);if(k==='rx')rp.feed(v.split(' ').map(x=>parseInt(x,16)));};
+  const stopListening=g.onStompFrame((k,v,bytes)=>{if(k==='rx')rp.feed(bytes);});
   try{
-   const frame=IAPCodec.frame(0x43,iapHost.nextTransaction++,[iapHost.session>>8,iapHost.session&255,240,126,0,6,1,247]);
+   const frame=iapHost.frame([240,126,0,6,1,247]);
    await stompWrite(frame,'alive');
    for(let i=0;i<timeout/50&&!reply;i++)await new Promise(r=>setTimeout(r,50));
-  }finally{g.log=prev;}
+  }finally{stopListening();}
   if(reply)return {alive:true};
   if(receipt)return {alive:false,locked:true,
     reason:'The pedal is receiving commands but has stopped answering them. Switch it off and on again.'};

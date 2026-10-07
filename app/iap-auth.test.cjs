@@ -1,7 +1,8 @@
 const assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs');
 require('./iap.js');
 const sent=[],logs=[];
-const ctx={IAPCodec:global.IAPCodec,log:(k,v)=>logs.push({k,v}),hex:b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join(' '),stompWrite:async b=>{sent.push(b);}};
+const __listeners=[];
+const ctx={IAPCodec:global.IAPCodec,onStompFrame:fn=>{__listeners.push(fn);return()=>{};},log:(k,v)=>{logs.push({k,v});for(const fn of __listeners)fn(k,v,k==='rx'?String(v).split(' ').map(x=>parseInt(x,16)):null);},hex:b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join(' '),stompWrite:async b=>{sent.push(b);}};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/iap-auth.js','utf8'),ctx);
 const drain=()=>new Promise(r=>setImmediate(r));
 (async()=>{

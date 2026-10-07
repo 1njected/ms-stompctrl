@@ -8,7 +8,7 @@ const bad=Array.from(start);bad[6]=0;p.feed([...bad,...start,...start]);assert.e
 const vm=require('node:vm'),fs=require('node:fs');
 const nodes=new Map(),sent=[],logs=[];const node=()=>({disabled:false,textContent:'',children:[],before(){},append(...k){this.children.push(...k);}});
 const el=id=>{if(!nodes.has(id))nodes.set(id,node());return nodes.get(id);};
-let buttons=[];const ctx={Uint8Array,TextDecoder,Promise,console,document:{createElement(tag){const n=node();if(tag==='button')buttons.push(n);return n;}},el,log:(k,v)=>logs.push({k,v}),hex:b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join(' '),stompWrite:async b=>{sent.push(Array.from(b));}};
+let buttons=[];const __listeners=[];const ctx={Uint8Array,TextDecoder,Promise,console,onStompFrame:fn=>{__listeners.push(fn);return()=>{};},document:{createElement(tag){const n=node();if(tag==='button')buttons.push(n);return n;}},el,log:(k,v)=>{logs.push({k,v});for(const fn of __listeners)fn(k,v,k==='rx'?String(v).split(' ').map(x=>parseInt(x,16)):null);},hex:b=>Array.from(b,x=>x.toString(16).padStart(2,'0')).join(' '),stompWrite:async b=>{sent.push(Array.from(b));}};
 vm.createContext(ctx);vm.runInContext(fs.readFileSync(__dirname+'/iap.js','utf8'),ctx);
 const drain=()=>new Promise(r=>setImmediate(r));
 function incoming(b){ctx.log('rx',ctx.hex(b));}
@@ -26,5 +26,34 @@ function incoming(b){ctx.log('rx',ctx.hex(b));}
 // that nothing reaches for the old #log anchor any more.
  assert.equal(el('staging').children.length, 1, 'the iAP status line parks in #staging');
  assert(!nodes.has('log'), 'iap.js must not depend on the removed #log element');
- console.log('Identification, advertised protocol, session acknowledgement and wrapped identity fixtures passed');
+
+ /* iapHost.frame() replaced the same two lines of session arithmetic written out
+    at eight call sites, three of which are pedal writes. Pin it to the bytes
+    those sites produced: a 0x43 whose payload begins with the session id. */
+ {
+  const host=ctx.iapHost, F=ctx.IAPCodec.frame;
+  host.session=1;host.nextTransaction=7;
+  const data=[0xf0,0x52,0x00,0x5e,0x32,0x01,0xf7];
+  const byHand=F(0x43,7,[host.session>>8,host.session&255,...data]);
+  assert.deepEqual(Array.from(host.frame(data)),Array.from(byHand),
+                   'frame() must match the hand-built session frame byte for byte');
+  // The transaction advances exactly once per frame, as nextTransaction++ did.
+  assert.equal(host.nextTransaction,8);
+  // A captured session wins over the live one -- backup.js relies on that.
+  host.session=2;
+  assert.deepEqual(Array.from(host.frame(data,{session:1,transaction:7})),Array.from(byHand));
+  // No session is a refusal, not a frame addressed to null.
+  host.session=null;
+  assert.throws(()=>host.frame(data),/No data session/);
+
+  // forSession() must agree with the predicate it replaced.
+  host.session=3;
+  const old=p=>p.lingo===0&&p.data[0]*256+p.data[1]===host.session;
+  for(const p of [{lingo:0,cmd:0x42,data:[0,3,9]},{lingo:0,cmd:0x42,data:[0,4,9]},
+                  {lingo:1,cmd:0x42,data:[0,3,9]}])
+   assert.equal(host.forSession(p),old(p),`forSession disagreed on ${JSON.stringify(p)}`);
+  assert.equal(host.forSession(null),false);
+ }
+ console.log('Identification, advertised protocol, session acknowledgement, wrapped identity '
+   +'and session-frame equivalence passed');
 })().catch(e=>{console.error(e);process.exitCode=1;});

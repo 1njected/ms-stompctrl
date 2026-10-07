@@ -6,7 +6,15 @@
 import Foundation
 import IOBluetooth
 
-let addr = "AA-BB-CC-DD-EE-FF"
+/* The pedal's BD address is not in this source: it is a personal device
+   identifier, and the published copy carries a placeholder. Supply it as
+   MS100BT_ADDR, or find it with
+   `system_profiler SPBluetoothDataType | grep -A2 "ZOOM MS-100BT"`. */
+let addr = ProcessInfo.processInfo.environment["MS100BT_ADDR"] ?? "AA-BB-CC-DD-EE-FF"
+if addr == "AA-BB-CC-DD-EE-FF" {
+    FileHandle.standardError.write("set MS100BT_ADDR to the pedal's address first (see README)\n".data(using: .utf8)!)
+    exit(2)
+}
 let channelID = BluetoothRFCOMMChannelID(CommandLine.arguments.count > 1 ? UInt8(CommandLine.arguments[1]) ?? 1 : 1)
 let seconds = CommandLine.arguments.count > 2 ? (Double(CommandLine.arguments[2]) ?? 12.0) : 12.0
 

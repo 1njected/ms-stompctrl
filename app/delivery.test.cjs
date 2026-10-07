@@ -12,7 +12,9 @@
 const assert = require('node:assert/strict');
 
 global.IAPCodec = { Parser: function () { this.feed = () => {}; }, frame: () => [] };
-global.log = () => {};
+const __listeners = [];
+global.onStompFrame = fn => { __listeners.push(fn); return () => {}; };
+global.log = (k, v) => { for (const fn of __listeners) fn(k, v, k === 'rx' ? String(v).split(' ').map(x => parseInt(x, 16)) : null); };
 require('./install.js');
 const { delivery, fragmentAcks } = global.pedalCodec;
 

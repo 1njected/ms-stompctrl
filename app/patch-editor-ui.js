@@ -388,7 +388,7 @@
     add.title=`Install ${shown} on the pedal`;
     add.onclick=async()=>{
      if(g.iapHost?.session==null){
-      setNotice('Open the pedal session before installing an effect.');return update();
+      setNotice('Connect the pedal before installing an effect.');return update();
      }
      const row=[...overlay.querySelectorAll('.pe-install')];
      row.forEach(b=>{b.disabled=true;});
@@ -435,7 +435,7 @@
   // Superseded the moment the patch it described is no longer the patch on screen.
   if(notice&&noticeFor!==signature())clearNotice();
   if(notice)status.textContent=notice;
-  else if(g.iapHost?.session==null)status.textContent='Open the pedal session to write changes.';
+  else if(g.iapHost?.session==null)status.textContent='Connect the pedal to write changes.';
   else if(!changed)status.textContent='No changes yet.';
   /* A shortfall outranks the AUTO SAVE reminder. AUTO SAVE is a prerequisite
      that is usually already met; a missing effect means this write is going to
@@ -535,7 +535,7 @@
     const a=availability(),short=shortfall();
     const said=[short,a.reason].filter(Boolean).join(' ');
     const verdict=said?` ${said}`
-     :g.iapHost?.session==null?' Open the pedal session to write it.'
+     :g.iapHost?.session==null?' Connect the pedal to write it.'
      :` All ${info.effects} of its effects are on the pedal — press Write to pedal to install it.`;
     setNotice(`Loaded “${info.name||'untitled'}” from ${file.name}.${foreign}${verdict}`);
    }catch(e){setNotice(`Could not load ${file.name}: ${e.message}`);}

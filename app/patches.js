@@ -103,7 +103,7 @@
 
  /* Rung 1. The edit buffer only. */
  async function rewriteEditBuffer(){
-  if(g.iapHost?.session==null)throw Error('Open a data session first');
+  if(g.iapHost?.session==null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   const before=await g.patchBackup.readCurrent();
   g.log('patch_edit_buffer_read',{bytes:before.length,hex:hex(before.slice(0,16))+'…'});
   if(before[4]!==0x28)throw Error(`Expected a 0x28 reply, got 0x${before[4].toString(16)}`);
@@ -111,8 +111,7 @@
   // Send the reply straight back as a command. If 0x28 is symmetric -- the same
   // frame in both directions, as 0x08/0x09 are for slots -- this is a no-op.
   const frame=Uint8Array.from(check(Array.from(before)));
-  await g.stompWrite(g.IAPCodec.frame(0x43,g.iapHost.nextTransaction++,
-    [g.iapHost.session>>8,g.iapHost.session&255,...frame]),'patch');
+  await g.stompWrite(g.iapHost.frame(frame),'patch');
   await new Promise(r=>setTimeout(r,400));
 
   const after=await g.patchBackup.readCurrent();
@@ -137,7 +136,7 @@
     needs the edit-buffer layout that rung 1 reveals, and is a decoding step to
     do with that evidence in hand rather than blind. */
  async function storeEditBufferToSlot(slot){
-  if(g.iapHost?.session==null)throw Error('Open a data session first');
+  if(g.iapHost?.session==null)throw Error('No data session: this must run inside pedalLock.run(), which opens one');
   if(!Number.isInteger(slot)||slot<0||slot>49)throw Error('Slot must be 0-49');
   const read=async()=>{const p=await g.patchBackup.readSlot(slot);
    return p.sysexHex.split(' ').map(x=>parseInt(x,16));};
@@ -145,8 +144,7 @@
   g.log('patch_slot_read',{slot,bytes:before.length});
 
   const frame=Uint8Array.from(check([0xf0,0x52,0x00,0x5e,0x32,0x01,0x00,0x00,slot,0,0,0,0,0,0xf7]));
-  await g.stompWrite(g.IAPCodec.frame(0x43,g.iapHost.nextTransaction++,
-    [g.iapHost.session>>8,g.iapHost.session&255,...frame]),'patch');
+  await g.stompWrite(g.iapHost.frame(frame),'patch');
   await new Promise(r=>setTimeout(r,800));   // the pedal shows "Storing…"
 
   const after=await read();

@@ -100,25 +100,42 @@ function descriptor(data){
   const named=n=>secs.find(s=>s.name===n&&s.size);
   // .const appears several times, all but one of them empty placeholders.
   const konst=secs.find(s=>s.name==='.const'&&s.type===1&&s.size);
+  if(!konst)return null;
   const symtab=named('.symtab'),strtab=named('.strtab');
-  if(!konst||!symtab||!strtab)return null;
   let best=null;
-  for(let o=symtab.off;o+16<=symtab.off+symtab.size;o+=16){
-   const value=u32(o+4),size=u32(o+8);
-   if(!size||size%BLOCK||size<2*BLOCK)continue;
-   if(value<konst.addr||value>=konst.addr+konst.size)continue;
-   const at=konst.off+(value-konst.addr);
-   if(at+size>bytes.length)continue;
-   if(cstr(bytes,at,12)!=='OnOff')continue;
-   if(!best||value<best.at)best={at,size,value};
+  if(symtab&&strtab)
+   for(let o=symtab.off;o+16<=symtab.off+symtab.size;o+=16){
+    const value=u32(o+4),size=u32(o+8);
+    if(!size||size%BLOCK||size<2*BLOCK)continue;
+    if(value<konst.addr||value>=konst.addr+konst.size)continue;
+    const at=konst.off+(value-konst.addr);
+    if(at+size>bytes.length)continue;
+    if(cstr(bytes,at,12)!=='OnOff')continue;
+    if(!best||value<best.at)best={at,size,value};
+   }
+  /* STRIPPED BINARIES HAVE NO SYMBOL TABLE, and custom effects are built that
+     way: `Arrakis.ZDL` carries .text and .const and nothing else, so the search
+     above has nothing to search. Its descriptor is still there, so find it by
+     the same signature the symbol told us to expect -- block 0 is named
+     `OnOff` -- and walk from there.
+
+     Without a symbol there is no size, so the walk needs its own end. An empty
+     name is it: across all 217 ZOOM descriptors not one knob has a blank name
+     (the shortest is two characters, and the six "non-printable" ones are GEQ
+     band labels carrying a trailing 0x1f), while the first block past the end
+     of a struct reads as one. */
+  if(!best){
+   const at=findOnOff(bytes,konst.off,konst.off+konst.size);
+   if(at>=0)best={at,size:konst.off+konst.size-at,signature:true};
   }
   if(!best)return null;
   const out=[];
   for(let i=2*BLOCK;i+BLOCK<=best.size&&out.length<MAX_PARAMS;i+=BLOCK){
-   const at=best.at+i,max=u32(at+12);
+   const at=best.at+i,max=u32(at+12),name=cstr(bytes,at,12);
+   if(!name)break;                       // past the end of the struct
    // 0xffffffff where a max belongs marks the effect's own block, not a knob.
    if(max>0xfffffff)continue;
-   out.push({name:cstr(bytes,at,12),max,def:u32(at+16)});
+   out.push({name,max,def:u32(at+16)});
   }
   /* An empty list is an answer, not a failure: `ORANGELM.ZDL` has a descriptor
      with no knobs at all, and it is still an effect you can put in a slot --
@@ -128,6 +145,13 @@ function descriptor(data){
  }catch{return null;}
 }
 
+/* The ASCII bytes of "OnOff", on a word boundary: the struct is word-aligned
+   and the name is its first field. */
+const findOnOff=(b,from,to)=>{
+ for(let i=from;i+5<=to&&i+5<=b.length;i+=4)
+  if(b[i]===0x4f&&b[i+1]===0x6e&&b[i+2]===0x4f&&b[i+3]===0x66&&b[i+4]===0x66)return i;
+ return -1;
+};
 const indexOfElf=b=>{
  for(let i=0;i+4<=b.length;i++)
   if(b[i]===0x7f&&b[i+1]===0x45&&b[i+2]===0x4c&&b[i+3]===0x46)return i;

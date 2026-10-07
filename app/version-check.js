@@ -57,11 +57,30 @@ async function check(){
  try{tried=sessionStorage.getItem(TRIED_KEY);}catch{}
  if(!shouldReload(own,live,{busy,editing,tried}))return;
  try{sessionStorage.setItem(TRIED_KEY,live);}catch{}
+ await handBack();
  /* Refresh the cached copy of this page first. A plain reload inside the
     max-age window would be served the old HTML with the old tokens, and the
     new code would not arrive until the cache expired. */
  try{await fetch(location.href,{cache:'reload'});}catch{}
  location.reload();
+}
+
+/* Hand the pedal back before taking the page away, and WAIT for it.
+
+   The pedal keeps its iAP data session until something sends the 0x40 that ends
+   it, and a session the pedal still believes in is what makes the next connect
+   fail -- a state nothing host-side clears, only a power cycle
+   (docs/bluetooth.md, "Acked but never answered" and "Refusing sessions").
+   transport.js fires that 0x40 from `pagehide`/`beforeunload` best-effort,
+   because nothing async is guaranteed to finish while a page is dying.
+
+   This reload is not that case. It is ours, it has not started yet, and we can
+   simply close the port properly first -- the same path the Disconnect button
+   takes, 0x40 awaited. A reload drops the connection either way; the only
+   question was whether the pedal was ever told, and until now it was not. */
+async function handBack(){
+ if(!g.stompConnection?.connected&&g.iapHost?.session==null)return;
+ try{await g.closeStompPort?.();}catch{}
 }
 
 timer=setInterval(check,CHECK_EVERY_MS);

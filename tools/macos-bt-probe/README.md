@@ -6,6 +6,13 @@ connected, so every question below is unanswerable from inside the page.
 
     swiftc -O -framework IOBluetooth -o sdp-dump sdp-dump.swift
 
+All four need the pedal's BD address, which is **not** in this source -- it is a
+personal device identifier, so the published copy carries a placeholder and the
+tools refuse to run without being told:
+
+    export MS100BT_ADDR=$(system_profiler SPBluetoothDataType \
+      | grep -A1 "ZOOM MS-100BT" | grep Address | sed 's/.*: //' | tr ':' '-')
+
 | tool | question it answers |
 |---|---|
 | `sdp-dump [--refresh]` | what services/channels macOS has for the pedal; `--refresh` forces a **live** over-the-air SDP query |

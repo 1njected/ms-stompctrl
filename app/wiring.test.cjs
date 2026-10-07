@@ -32,6 +32,7 @@ const NAME_CASES = [
 global.indexedDB = {};
 global.localStorage = { getItem: () => null, setItem() {} };
 global.IAPCodec = { Parser: function () { this.feed = () => {}; }, frame: () => [] };
+global.onStompFrame = () => () => {};
 global.log = () => {};
 
 for (const f of ['flst.js', 'iap.js', 'backup.js', 'bundle.js', 'effect-store.js', 'install.js',

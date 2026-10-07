@@ -13,7 +13,7 @@
   if(section<last)await send(2,p.transaction,[0,0x15]);
   else {state.certificate=state.sections.flat();state.finalTransaction=p.transaction;originalLog('iap_auth_certificate',{bytes:state.certificate.length,hex:hex(state.certificate)});originalLog('iap_auth_state','Certificate captured; verification pending');if(global.iapSignature)global.iapSignature.start();}
  }).catch(e=>originalLog('iap_auth_error',String(e)));});
- log=function(kind,value){originalLog(kind,value);if(kind==='rx')parser.feed(value.split(' ').map(x=>parseInt(x,16)));};
+ onStompFrame((kind,value,bytes)=>{if(kind==='rx')parser.feed(bytes);});
  state.request=()=>{queue=queue.then(()=>send(0x14,0x100)).catch(e=>originalLog('iap_auth_error',String(e)));};
  originalLog('iap_auth_loaded','Certificate capture enabled');
 })(globalThis);

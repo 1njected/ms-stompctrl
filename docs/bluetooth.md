@@ -49,7 +49,28 @@ tools/macos-bt-probe/rfcomm-listen 1 12     # channel 1 is the iAP service
 If SDP succeeds and `rfcomm-listen` receives nothing, the fault is a session,
 not the radio, not Chrome, and not the app.
 
-**A pedal power cycle is the only thing measured to clear this reliably.**
+**`rfcomm-listen` on channel 1 is not a free observation. [V]** It takes the
+pedal's one host slot and, on a healthy link, **consumes the StartIDPS** —
+identification is the pedal's move and it makes that move once per link. The
+probe then exits without finishing identification, so the pedal can be left
+believing it has a host and the next Chrome connect opens the port and hears
+nothing: `silent_after_open`. Measured 2026-10-06 by doing exactly that to a
+working pedal. Use **channel 2** when you only need to touch the link; it is
+silent and costs no StartIDPS. Give channel 1 at least 15 s, too: the open can
+take 4 s and a shorter window looks like a failure that is not one.
+
+**Re-pairing is the only thing measured to clear this. [V]** macOS Bluetooth
+settings → the pedal → Forget This Device, then pair again with the pedal on
+`MENU → SETTINGS → Bluetooth → PAIRING`.
+
+Measured 2026-10-06, on a pedal that was healthy throughout: a live SDP query
+returned `status=0`, and `rfcomm-listen` opened **channel 1 by explicit channel
+number** in ~4 s and received StartIDPS — before and after a power cycle — while
+Chrome's `open()` timed out at 10,004 ms every time. Neither waking the
+Bluetooth link (holding channel 2 open) nor forcing a fresh SDP query changed
+Chrome's result. **Why re-pairing works is not established.** The difference
+between the two paths is that the probe opens by channel number while Chrome
+resolves the service by UUID, but that was not shown to be the cause.
 
 ### What does not work
 
@@ -59,7 +80,9 @@ Measured, not assumed:
 - Quitting and restarting Chrome
 - A full macOS restart — the state survived a reboot of both Mac and pedal
 - Releasing the ACL link (unblocks *other* hosts, not the local one)
-- Re-pairing — worked four times, then did not
+- ~~Re-pairing — worked four times, then did not~~ — **superseded 2026-10-06**:
+  re-pairing is the measured remedy (above). Those earlier failures are
+  unexplained and may be a different state.
 
 ### What the diagnosis is not
 

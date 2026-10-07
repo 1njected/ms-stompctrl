@@ -14,7 +14,36 @@ globalThis.__lastRxAt=0;
 // bury everything else. Failures are console.warn so they surface by default.
 const VERBOSE=/^(rx|tx|install_tx|inventory_tx|iap_rx|iap_tx|pedal_rx|list_read)$/;
 const TROUBLE=/(error|warn|abort|timeout|retransmit|busy)/;
-function log(kind,value){
+/* ONE FAN-OUT FOR RECEIVED FRAMES, instead of five modules wrapping `log`.
+
+   Every module that needed to see traffic used to reassign the global `log`,
+   capturing the previous one. That cost three things. Load order silently
+   became semantics; a listener that threw broke delivery for everyone further
+   down the chain; and every console line carried a stack of five `log` frames,
+   one per wrapper, which is what made a pasted console log so hard to read.
+
+   It also meant the bytes were converted to a hex string here and parsed back
+   SEVEN times -- once in each of backup, iap, iap-auth, iap-signature,
+   inventory and install (twice) -- splitting the string and running parseInt
+   over every byte, per listener, per frame. On a fifty-patch read or a chunked
+   effect install that is the hottest path in the app, doing the same work six
+   times over for nothing.
+
+   So the raw bytes travel with the event. Parser.feed() copies what it is given
+   (`this.buf.push(...bytes)`) rather than consuming it, so every listener can
+   share one array safely. Listeners fire in subscription order, which is load
+   order -- the same order the wrapper chain produced. */
+const frameListeners=[];
+/* Returns an unsubscribe. The alive() check in install.js wants to listen for
+   the length of one probe and then stop, which the old wrapper chain did by
+   restoring the previous `log` -- the only reason that chain was ever undone. */
+globalThis.onStompFrame=fn=>{
+ if(typeof fn!=='function')return()=>{};
+ frameListeners.push(fn);
+ return()=>{const i=frameListeners.indexOf(fn);if(i>=0)frameListeners.splice(i,1);};
+};
+
+function log(kind,value,raw){
  if(kind==='rx')globalThis.__lastRxAt=Date.now();
  const entry={time:new Date().toISOString(),kind,value};
  events.push(entry);
@@ -22,6 +51,14 @@ function log(kind,value){
  if(TROUBLE.test(kind))console.warn(line,value);
  else if(VERBOSE.test(kind))console.debug(line,value);
  else console.log(line,value);
+ if(!frameListeners.length)return;
+ /* Defensive: a caller that logs 'rx' without the bytes still gets them, parsed
+    once here rather than once per listener. */
+ const bytes=kind==='rx'?(raw||String(value).split(' ').map(x=>parseInt(x,16))):null;
+ for(const fn of frameListeners){
+  try{fn(kind,value,bytes);}
+  catch(e){console.warn('[stomp] frame_listener_error',e);}
+ }
 }
 globalThis.stompProtocolLog=events;
 // Telling "the pedal never got it" apart from "the pedal got it and went quiet".
@@ -114,7 +151,7 @@ async function openWithRetry(attempts=3){
   throw Error('The pedal is not connected to this Mac. Switch it on, or remove and re-pair it in Bluetooth settings.');
  }
  const primary={baudRate:115200,bufferSize:255,flowControl:'none'};
- let last=null;
+ let last=null,lastMs=0;
  /* The channel needs a gap after it was last closed. Measured 2026-09-12,
     reopening the same port: immediately after a close it failed in 10,004 ms
     (an SDP timeout); three seconds later it opened in 59 ms; eight seconds
@@ -126,25 +163,38 @@ async function openWithRetry(attempts=3){
   if(attempt>1){const wait=2000*(attempt-1);log('open_backoff',{attempt,wait});
    await new Promise(r=>setTimeout(r,wait));}
   if(abandoned()){log('open_abandoned',{attempt});throw Error('Connection cancelled.');}
-  try{await target.open(primary);if(attempt>1)log('open_recovered',{attempt});return;}
-  catch(e){last=e;log('open_retry',{attempt,error:String(e)});}
+  const started=Date.now();
+  try{await target.open(primary);if(attempt>1)log('open_recovered',{attempt,ms:Date.now()-started});return;}
+  catch(e){last=e;lastMs=Date.now()-started;log('open_retry',{attempt,ms:lastMs,error:String(e)});}
  }
  // Older Chrome builds reject flowControl; try once without it before giving up.
  if(abandoned()){log('open_abandoned',{final:true});throw Error('Connection cancelled.');}
  try{await target.open({baudRate:115200,bufferSize:255});log('open_recovered',{withoutFlowControl:true});return;}
  catch(e){log('flow_control_fallback',String(e));}
 
- /* Still failing after the backoff. The link itself is fine -- `connected` is
-    true, and on the same pedal the plain SPP port opens, reads and closes in the
-    same second while this one refuses. Say what actually works rather than
-    repeating the browser's generic message: waiting longer. Power-cycling is
-    the last resort, not the first, because every failure measured here cleared
-    on its own within seconds. */
+ /* HOW LONG THE OPEN TOOK IS THE DIAGNOSIS, and Chrome's exception does not
+    carry it: every failure is the same generic `NetworkError: Failed to open
+    serial port`, whatever the cause. So the attempts above are timed.
+
+    A ten-second failure is the RFCOMM open timing out. Measured 2026-10-06
+    against a pedal that was healthy throughout -- answering SDP, and serving
+    native RFCOMM on channel 1 by explicit channel number within ~4 s, before
+    and after a power cycle. Chrome timed out at 10,004 ms regardless. Waking
+    the Bluetooth link did not help, nor did refreshing the SDP cache; the only
+    remedy found was re-pairing. Why is not established, so this says what to do
+    and does not explain it. */
+ const timedOut=lastMs>=8000;
+ if(last?.name==='NetworkError'&&timedOut){
+  log('open_channel_refused',{ms:lastMs,service:target.getInfo?.().bluetoothServiceClassId});
+  throw Error('The pedal is answering Bluetooth but refusing data channels: the '+
+              `connection attempt timed out after ${Math.round(lastMs/1000)} s. `+
+              'Re-pair it — macOS Bluetooth settings, Forget This Device, then '+
+              'pair again with the pedal on its PAIRING screen.');
+ }
  if(last?.name==='NetworkError'&&target.connected!==false){
-  log('open_channel_busy',{service:target.getInfo?.().bluetoothServiceClassId});
-  throw Error('The pedal is connected but its data channel was not ready. It '+
-              'needs a few seconds between sessions — wait about ten and press '+
-              'Connect again. If it keeps failing, switch the pedal off and on.');
+  log('open_channel_busy',{ms:lastMs,service:target.getInfo?.().bluetoothServiceClassId});
+  throw Error('The pedal\'s data channel was refused immediately. Close any other '+
+              'tab of this app that still holds the pedal, then press Connect again.');
  }
  throw last;
 }
@@ -210,7 +260,7 @@ globalThis.stompWriteWindow=()=>{
 // The pedal's Apple accessory service, from its SDP record. Overridable for
 // probing another service -- the standard SPP record on channel 2, say.
 const SERVICE_UUID='00000000-deca-fade-deca-deafdecacaff';
-el('choose').onclick=async()=>{try{const uuid=(globalThis.stompServiceUuid??SERVICE_UUID).trim();const chosen=await navigator.serial.requestPort(uuid?{allowedBluetoothServiceClassIds:[uuid],filters:[{bluetoothServiceClassId:uuid}]}:{});port=chosen;log('selected',chosen.getInfo());const picked=(chosen.getInfo().bluetoothServiceClassId||'').toLowerCase();if(uuid&&picked&&picked!==uuid.toLowerCase()){log('selected_wrong_service',{picked,expected:uuid});port=null;throw Error('That is the pedal\'s plain serial port, which never answers. '+'Disconnect, press Connect again and choose the other entry for the pedal.');}await openWithRetry();if(port!==chosen){log('connect_abandoned',true);try{await chosen.close();}catch{}return;}opened=true;globalThis.stompConnection.connected=true;emit('connected',chosen.getInfo());log('opened',chosen.getInfo());el('identity').disabled=true;el('close').disabled=false;el('choose').disabled=true;reader=chosen.readable.getReader();let heard=false;setTimeout(()=>{if(opened&&!heard)log('silent_after_open',{hint:'Port open but the pedal has sent nothing. iAP identification is started by the pedal, so nothing we send will prompt it. Switch the pedal off and on, or reconnect and pick the other port entry.'});},6000);reading=(async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;heard=true;log('rx',hex(value));}}catch(e){log('read_error',String(e));}finally{reader.releaseLock();}})();}catch(e){log('connect_error',String(e));emit('error',{message:String(e)});}};
+el('choose').onclick=async()=>{try{const uuid=(globalThis.stompServiceUuid??SERVICE_UUID).trim();const chosen=await navigator.serial.requestPort(uuid?{allowedBluetoothServiceClassIds:[uuid],filters:[{bluetoothServiceClassId:uuid}]}:{});port=chosen;log('selected',chosen.getInfo());const picked=(chosen.getInfo().bluetoothServiceClassId||'').toLowerCase();if(uuid&&picked&&picked!==uuid.toLowerCase()){log('selected_wrong_service',{picked,expected:uuid});port=null;throw Error('That is the pedal\'s plain serial port, which never answers. '+'Disconnect, press Connect again and choose the other entry for the pedal.');}await openWithRetry();if(port!==chosen){log('connect_abandoned',true);try{await chosen.close();}catch{}return;}opened=true;globalThis.stompConnection.connected=true;emit('connected',chosen.getInfo());log('opened',chosen.getInfo());el('identity').disabled=true;el('close').disabled=false;el('choose').disabled=true;reader=chosen.readable.getReader();let heard=false;setTimeout(()=>{if(opened&&!heard)log('silent_after_open',{hint:'Port open but the pedal has sent nothing. iAP identification is started by the pedal, so nothing we send will prompt it. Switch the pedal off and on, or reconnect and pick the other port entry.'});},6000);reading=(async()=>{try{while(true){const {value,done}=await reader.read();if(done)break;heard=true;log('rx',hex(value),value);}}catch(e){log('read_error',String(e));}finally{reader.releaseLock();}})();}catch(e){log('connect_error',String(e));emit('error',{message:String(e)});}};
 el('identity').onclick=async()=>{try{const b=Uint8Array.from([240,126,0,6,1,247]);await stompWrite(b,'identity');log('tx',hex(b));}catch(e){log('write_error',String(e));}};
 let closing=false;
 /* Closing the port is not enough: the pedal keeps its iAP data session, and a

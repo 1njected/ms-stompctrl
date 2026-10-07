@@ -21,8 +21,10 @@ async function send(cmd,tr,data=[]){const b=IAPCodec.frame(cmd,tr,data);await st
 const parser=new IAPCodec.Parser(p=>{if(p.lingo!==0||p.cmd!==0x18)return;queue=queue.then(async()=>{
  if(!state.challenge)throw Error('Unsolicited signature');oldLog('iap_signature_rx',{transaction:p.transaction,hex:hex(p.data)});
  state.verified=await verify(iapAuth.certificate,p.data,state.challenge);state.checked=true;state.error=state.verified?null:'The pedal\'s signature did not verify.';oldLog('iap_signature_verified',{valid:state.verified,scope:'Proof of possession only; certificate chain and expiry not validated'});
- await send(0x19,p.transaction,[state.verified?0:1]);iapHost.enabled=true;if(state.verified&&iapHost.openSession)setTimeout(()=>iapHost.openSession(),100);document.getElementById('iap-status').textContent=state.verified?'iAP: accessory signature verified; ready to open data session':'iAP: signature verification failed';
+ await send(0x19,p.transaction,[state.verified?0:1]);iapHost.enabled=true;/* No session is opened here any more: operations take one when they need it
+    and give it back (iap.js withSession), so opening one on verification would
+    leave exactly the idle held session that costs a power cycle to clear. */document.getElementById('iap-status').textContent=state.verified?'iAP: accessory signature verified; ready to open data session':'iAP: signature verification failed';
  }).catch(e=>{state.checked=true;state.error=String(e&&e.message||e);oldLog('iap_signature_error',String(e));});});
-log=function(k,v){oldLog(k,v);if(k==='closed'){state.challenge=null;state.verified=false;state.checked=false;state.error=null;iapHost.enabled=true;parser.buf=[];}if(k==='rx')parser.feed(v.split(' ').map(x=>parseInt(x,16)));};
+onStompFrame(function(k,v,bytes){if(k==='closed'){state.challenge=null;state.verified=false;state.checked=false;state.error=null;iapHost.enabled=true;parser.buf=[];}if(k==='rx')parser.feed(bytes);});
 state.start=()=>{queue=queue.then(async()=>{if(!iapAuth.certificate)throw Error('No captured certificate');iapHost.enabled=false;state.verified=false;state.checked=false;state.error=null;state.challenge=Array.from(crypto.getRandomValues(new Uint8Array(20)));oldLog('iap_signature_challenge',hex(state.challenge));await send(0x16,iapAuth.finalTransaction??5,[0]);await send(0x17,0x101,[...state.challenge,0]);}).catch(e=>oldLog('iap_signature_error',String(e)));};
 })(globalThis);

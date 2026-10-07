@@ -14,10 +14,10 @@
   // retransmission repeats the whole packet, so this stays exact.
   let lastPayload = null, lastBytes = null, repeats = 0;
   const parser = new IAPCodec.Parser(p => {
-    if (p.lingo !== 0 || p.data[0] * 256 + p.data[1] !== iapHost.session) return;
+    if (!iapHost.forSession(p)) return;
     const bytes = p.data.join(',');
     if (p.transaction === lastPayload && bytes === lastBytes) {
-      if (++repeats === 3) old('link_one_way', { transaction: p.transaction, hint: 'The pedal keeps re-sending one frame, so our acknowledgements are not reaching it. Host-to-pedal writes are being buffered and dropped. Measured to recover on its own within a few seconds.' });
+      if (++repeats === 3) g.log('link_one_way', { transaction: p.transaction, hint: 'The pedal keeps re-sending one frame, so our acknowledgements are not reaching it. Host-to-pedal writes are being buffered and dropped. Measured to recover on its own within a few seconds.' });
       return;
     }
     lastPayload = p.transaction; lastBytes = bytes; repeats = 0;
@@ -61,8 +61,7 @@
     const done = receipts.get(p.transaction);
     if (done) done();
   });
-  const old = g.log;
-  g.log = (k, v) => { old(k, v); if (k === 'rx') { const b = v.split(' ').map(x => parseInt(x, 16)); receiptParser.feed(b.slice()); parser.feed(b); } };
+  g.onStompFrame((k, v, bytes) => { if (k === 'rx') { const b = bytes; receiptParser.feed(b.slice()); parser.feed(b); } });
   async function send(data) {
     return stompTransfer(()=>sendExclusive(data));
   }
@@ -99,16 +98,16 @@
     // data rather than a repeat. iAP1 R38; see docs/iap-audit.md.
     const post = delivery(), transaction = iapHost.nextTransaction++;
     post.sent(transaction);
-    const frame = IAPCodec.frame(0x43, transaction, [iapHost.session >> 8, iapHost.session & 255, ...data]);
+    const frame = iapHost.frame(data, { transaction });
     const sysex = data.map(x => x.toString(16).padStart(2, '0')).join(' ');
     let acked = false;
     try {
       for (let attempt = 1; attempt <= timing.deliveryWaits.length && acked === false; attempt++) {
-        old('inventory_tx', { transaction, attempt, sysex });
+        g.log('inventory_tx', { transaction, attempt, sysex });
         await stompWrite(frame, 'inventory');
         acked = await post.wait(timing.deliveryWaits[attempt - 1]);
-        if (acked === false) old('inventory_retransmit', { attempt, waited: timing.deliveryWaits[attempt - 1], sysex });
-        else if (attempt > 1) old('late_ack_recovered', { transaction, attempt });
+        if (acked === false) g.log('inventory_retransmit', { attempt, waited: timing.deliveryWaits[attempt - 1], sysex });
+        else if (attempt > 1) g.log('late_ack_recovered', { transaction, attempt });
       }
     } finally { post.release(); }
     if (acked === false) { clearTimeout(timer); pending = null; throw Error('Pedal did not take delivery of an inventory command'); }
@@ -139,7 +138,7 @@
       await send([240, 82, 0, 94, 0x60, 0x25, 0, 0, 0x2a, 0x2e, 0x2a, ...Array(10).fill(0), 247]);
       for (let i = 0; i < 120; i++) if (await send([240, 82, 0, 94, 0x60, 0x26, 247])) break;
       await send([240, 82, 0, 94, 0x60, 0x27, 247]);
-    } catch (e) { old('inventory_error', String(e)); }
+    } catch (e) { g.log('inventory_error', String(e)); }
     finally {
       // Native StompShare closes the search, unmutes audio, and releases the
       // FFS semaphore. Without this, a following effect install is ignored as
@@ -152,7 +151,7 @@
       // the first failure guaranteed the one that matters never ran -- which is
       // exactly the "busy filesystem" wedge the comment above warns about. Try
       // all three however badly the previous one went.
-      ]) { try { await send(data); } catch (e) { old('inventory_cleanup_error', String(e)); } }
+      ]) { try { await send(data); } catch (e) { g.log('inventory_cleanup_error', String(e)); } }
     }
     state.running = false; return state.files;
   };
