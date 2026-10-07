@@ -1,0 +1,37 @@
+name: StompCtrlMac
+options:
+  bundleIdPrefix: local.stompctrl
+  deploymentTarget:
+    macOS: '12.0'
+targets:
+  StompCtrlMac:
+    type: application
+    platform: macOS
+    sources:
+      - path: Sources
+      - path: web
+        type: folder
+        buildPhase: resources
+      - path: ../app
+        type: folder
+        buildPhase: resources
+    dependencies:
+      - sdk: IOBluetooth.framework
+      - sdk: WebKit.framework
+    info:
+      path: Generated-Info.plist
+      properties:
+        CFBundleDisplayName: MS StompCtrl
+        CFBundleShortVersionString: $(MARKETING_VERSION)
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
+        NSBluetoothAlwaysUsageDescription: Connect to your paired MS-100BT pedal to manage patches and effects.
+        NSBluetoothPeripheralUsageDescription: Connect to your paired MS-100BT pedal.
+        NSHighResolutionCapable: true
+    settings:
+      base:
+        SWIFT_VERSION: '5.0'
+        MARKETING_VERSION: '0.1.0'
+        CURRENT_PROJECT_VERSION: '1'
+        GENERATE_INFOPLIST_FILE: NO
+        ENABLE_APP_SANDBOX: NO
+        CODE_SIGN_STYLE: Automatic

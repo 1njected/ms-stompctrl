@@ -1,0 +1,73 @@
+name: macOS preview release
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version (X.Y.Z)'
+        required: true
+        default: '0.1.0'
+  push:
+    tags: ['macos-v*']
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+      - name: Install XcodeGen
+        run: brew install xcodegen
+      - name: Test native bridge and shared protocol
+        run: |
+          macosapp/tests/run-tests.sh
+          node --test app/iap.test.cjs app/iap-auth.test.cjs app/iap-signature.test.cjs app/session-lifecycle.test.cjs app/wiring.test.cjs
+      - name: Build universal preview
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+        run: |
+          version="$INPUT_VERSION"
+          if [[ "$GITHUB_REF" == refs/tags/macos-v* ]]; then
+            version="${GITHUB_REF_NAME#macos-v}"
+          fi
+          macosapp/scripts/release.sh "$version" "$GITHUB_RUN_NUMBER" "$RUNNER_TEMP/release"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: macOS-preview
+          path: |
+            ${{ runner.temp }}/release/*.zip
+            ${{ runner.temp }}/release/*.sha256
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: failure()
+        with:
+          name: macOS-build-log
+          path: ${{ runner.temp }}/release/build.log
+          if-no-files-found: ignore
+
+  draft-release:
+    if: startsWith(github.ref, 'refs/tags/macos-v')
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: macOS-preview
+          path: release
+      - name: Create draft prerelease
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RELEASE_TAG: ${{ github.ref_name }}
+        run: |
+          gh release create "$RELEASE_TAG" release/*.zip release/*.sha256 \
+            --verify-tag --draft --prerelease \
+            --title "MS StompCtrl for macOS ${RELEASE_TAG#macos-v} (preview)" \
+            --notes-file macosapp/RELEASE-NOTES.md

@@ -430,6 +430,7 @@
    if(effects.length!==raw.length)console.warn(`Skipped ${raw.length-effects.length} unusable catalog entries`);
    artUrls=await effectStore.artwork(reloadArtwork);
    libraryLoaded=true;
+   await refreshEffectStore();
    if(!effects.length){
     categorySelect.replaceChildren(new Option('All categories',''));
     renderEffects();
@@ -444,7 +445,6 @@
    const categories=[...new Set(effects.map(categoryOf))].sort();
    categorySelect.replaceChildren(new Option('All categories',''),...categories.map(c=>new Option(c,c)));
    effects.sort((a,b)=>a.filename.localeCompare(b.filename));
-   await refreshEffectStore();
    renderEffects();
   }catch(err){$('effect-count').textContent='Library unavailable';$('effect-list').textContent=err.message;}
  }
@@ -684,7 +684,7 @@
  // A session opening is no longer news the UI reports; it just refreshes.
  stompEvents.addEventListener('session',()=>{eventSession=true;update();});
  stompEvents.addEventListener('session-closed',()=>update());
- stompEvents.addEventListener('disconnected',()=>{eventSession=false;connectedAt=0;storage.hidden=true;setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
+ stompEvents.addEventListener('disconnected',()=>{$('choose').textContent='Connect pedal';$('choose').disabled=false;eventSession=false;connectedAt=0;storage.hidden=true;setInventoryStatus('Connect the pedal and reload to see what is installed.');update();});
  function renderInventoryProgress(){const count=(globalThis.pedalInventory?.files||[]).filter(f=>/\.ZDL$/i.test(f.filename)).length;setInventoryStatus(`Reading pedal effect inventory… ${count}`);}
  /* THE TICK PACES ITSELF.
 
