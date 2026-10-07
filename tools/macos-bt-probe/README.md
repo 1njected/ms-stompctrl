@@ -19,6 +19,9 @@ tools refuse to run without being told:
 | `rfcomm-listen <ch> [secs]` | can an RFCOMM channel be opened **by explicit number**, bypassing UUID lookup, and does the pedal send anything |
 | `bt-kick` | drop the ACL link without unpairing, then retry channel 1 |
 | `bt-release` | drop the ACL link and do **not** reconnect, so another host can take the pedal |
+| `bt-hold` | hold the baseband link up and nothing else (no RFCOMM channel, so the pedal's one channel stays free). Written to test whether that alone lets Chrome connect -- it does not; see docs/bluetooth.md |
+| `iap-listen` | listen for an accessory-INITIATED channel. Negative result: the pedal never knocks. Note macOS only accepts an inbound channel for a service it publishes, and this publishes none |
+| `iap-spike` | can a NATIVE transport reach an open ZOOM data session? Walks the same iAP1 handshake as `app/iap.js` -- identification, then `0x3F` on `jp.co.zoom.p1` -- and stops there. Reads and writes nothing else. |
 
 ## Measured 2026-09-13 evening
 

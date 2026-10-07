@@ -139,6 +139,13 @@ audited in `iap-audit.md`.
 5. Host sends `OpenDataSessionForProtocol` naming the advertised `jp.co.zoom.p1` index; pedal
    answers `DevACK`. Session ID 1.
 
+**Step 4 is a precondition for step 5, and skipping it fails silently. [V]** Measured 2026-10-07
+with a native client: `0x3F` sent straight after `EndIDPS` drew **no reply of any kind** — not a
+rejection, just silence, indistinguishable from a pedal that has stopped answering. Repeating the
+run with the certificate exchange and challenge in place, the same `0x3F` was answered in 34 ms.
+So a host that never authenticates the accessory cannot open a data session, and gets no diagnostic
+saying so. `docs/bluetooth.md` has the full transcript.
+
 Signature verification proves possession of the certificate's private key. It does **not** validate
 the Apple CA chain or expiry — this client does neither.
 

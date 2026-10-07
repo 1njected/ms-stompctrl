@@ -147,8 +147,9 @@ async function openWithRetry(attempts=3){
  // a 10 s SDP timeout followed by a generic NetworkError.
  // https://developer.chrome.com/blog/bluetooth-rfcomm-updates-web-serial
  if(target.connected===false){
-  log('open_device_not_connected',{hint:'The pedal is paired but not linked to this Mac. Switch it on, or re-pair it in Bluetooth settings.'});
-  throw Error('The pedal is not connected to this Mac. Switch it on, or remove and re-pair it in Bluetooth settings.');
+  log('open_device_not_connected',{hint:'Paired but not linked. macOS never auto-connects this pedal; only an open attempt raises the link.'});
+  throw Error('The pedal is paired but not connected to this Mac. Switch it on and '+
+              'bring it in range, then press Connect again.');
  }
  const primary={baudRate:115200,bufferSize:255,flowControl:'none'};
  let last=null,lastMs=0;
@@ -179,17 +180,25 @@ async function openWithRetry(attempts=3){
     A ten-second failure is the RFCOMM open timing out. Measured 2026-10-06
     against a pedal that was healthy throughout -- answering SDP, and serving
     native RFCOMM on channel 1 by explicit channel number within ~4 s, before
-    and after a power cycle. Chrome timed out at 10,004 ms regardless. Waking
-    the Bluetooth link did not help, nor did refreshing the SDP cache; the only
-    remedy found was re-pairing. Why is not established, so this says what to do
-    and does not explain it. */
+    and after a power cycle, reaching a data session in 1.8 s. Chrome timed out
+    at 10,004 ms regardless, because a failed open costs a fixed ten seconds and
+    there is no appearance signal to trigger on -- `connect` fires only once
+    something has already connected the device. It matches the unfixed
+    openRFCOMMChannelAsync regression reported since Monterey (Apple Developer
+    Forums 697032).
+
+    DO NOT advise re-pairing. It is not a remedy -- it only ever appeared to be
+    one because pairing leaves the pedal freshly available -- and it REVOKES this
+    site's Web Serial permission: measured, getPorts() went from 2 granted ports
+    to 0. docs/bluetooth.md records the evidence. */
  const timedOut=lastMs>=8000;
  if(last?.name==='NetworkError'&&timedOut){
   log('open_channel_refused',{ms:lastMs,service:target.getInfo?.().bluetoothServiceClassId});
-  throw Error('The pedal is answering Bluetooth but refusing data channels: the '+
-              `connection attempt timed out after ${Math.round(lastMs/1000)} s. `+
-              'Re-pair it — macOS Bluetooth settings, Forget This Device, then '+
-              'pair again with the pedal on its PAIRING screen.');
+  throw Error('The connection attempt timed out after '+
+              `${Math.round(lastMs/1000)} s. The pedal is answering; macOS is not handing `+
+              'the channel to the browser, which is a known macOS limitation and not '+
+              'a fault in the pedal. Re-pairing does not help, and makes this site '+
+              'forget the pedal. docs/bluetooth.md has the detail.');
  }
  if(last?.name==='NetworkError'&&target.connected!==false){
   log('open_channel_busy',{ms:lastMs,service:target.getInfo?.().bluetoothServiceClassId});
