@@ -88,11 +88,11 @@ async function exchange(data,match,timeout=8000){
  let acked=false;
  try{
   for(let attempt=1;attempt<=3&&acked===false;attempt++){
-   old('install_tx',{transaction:tr,sysex:hex(data),attempt,timeout});
+   g.log('install_tx',{transaction:tr,sysex:hex(data),attempt,timeout});
    await stompWrite(frame,'command');
    acked=await post.wait(2500);
-   if(acked===false){old('fragment_ack_timeout',{transaction:tr});old('command_retransmit',{sysex:hex(data),attempt});}
-   else if(attempt>1)old('late_ack_recovered',{transaction:tr,attempt,sysex:hex(data)});
+   if(acked===false){g.log('fragment_ack_timeout',{transaction:tr});g.log('command_retransmit',{sysex:hex(data),attempt});}
+   else if(attempt>1)g.log('late_ack_recovered',{transaction:tr,attempt,sysex:hex(data)});
   }
  }finally{post.release();}
  if(acked===false)throw Error(`Pedal did not take delivery of ${hex(data)}`);
@@ -135,11 +135,11 @@ async function exchangeFragmented(data,match,timeout=30000){
    let acked=false;
    try{
     for(let attempt=1;attempt<=3&&acked===false;attempt++){
-     old('install_tx',{transaction:tr,fragment:true,offset:off,bytes:part.length,attempt,timeout});
+     g.log('install_tx',{transaction:tr,fragment:true,offset:off,bytes:part.length,attempt,timeout});
      await stompWrite(frame,'fragment');
      acked=await post.wait(4000);
-     if(acked===false)old('fragment_retransmit',{offset:off,bytes:part.length,attempt});
-     else if(attempt>1)old('late_ack_recovered',{transaction:tr,attempt,offset:off});
+     if(acked===false)g.log('fragment_retransmit',{offset:off,bytes:part.length,attempt});
+     else if(attempt>1)g.log('late_ack_recovered',{transaction:tr,attempt,offset:off});
     }
    }finally{post.release();}
    if(acked===false)throw Error(`Pedal did not take delivery of a ${part.length}-byte fragment at offset ${off}`);
@@ -157,7 +157,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
  // and the write stalled for 30 s regardless.
  const writeAnswer=f=>f[4]===0x60&&((f[5]===4&&f[6]===0x23)||f[5]===3);const fsAck=()=>exchange([240,82,0,94,0x60,5,0,247],is(3));
  async function statusExchange(data,match,label){const f=await exchange(data,match);const status=f[6];if(status!==0)throw Error(`${label||'Pedal filesystem operation'} failed (status ${status})`);return f;}
- async function acquire(){let last=1;for(let attempt=1;attempt<=8;attempt++){const f=await exchange([240,82,0,94,0x60,6,247],is(5));last=f[6];if(last===0)return f;old('install_busy',{attempt,status:last});await new Promise(r=>setTimeout(r,350*attempt));}throw Error(`Pedal filesystem busy (status ${last})`);}
+ async function acquire(){let last=1;for(let attempt=1;attempt<=8;attempt++){const f=await exchange([240,82,0,94,0x60,6,247],is(5));last=f[6];if(last===0)return f;g.log('install_busy',{attempt,status:last});await new Promise(r=>setTimeout(r,350*attempt));}throw Error(`Pedal filesystem busy (status ${last})`);}
  // ---- the pedal's effect list, read-only for now ---------------------------
  // A written .ZDL is not shown by the pedal until FLST_SEQ.ZDT names it; until
  // then it sits on "Now loading".  Reading it first, and writing nothing, keeps
@@ -205,8 +205,8 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
                bytes:f.slice(30,35).reduce((n,v,j)=>n+v*2**(7*j),0)});
    f=await exchange([240,82,0,94,0x60,0x26,247],entryOrEnd,15000);
   }
-  try{await exchange([240,82,0,94,0x60,0x27,247],is(3),15000);}catch(e){old('find_close_warn',String(e));}
-  old('install_enumerated',{files:files.length});
+  try{await exchange([240,82,0,94,0x60,0x27,247],is(3),15000);}catch(e){g.log('find_close_warn',String(e));}
+  g.log('install_enumerated',{files:files.length});
   return files;
  }
 
@@ -229,10 +229,10 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
     if((crc(raw)>>>0)!==stored)throw Error('Effect list read failed its CRC check');
     if(raw.length!==want)throw Error(`Effect list chunk was ${raw.length} bytes, expected ${want}`);
     out.push(...raw);
-    old('list_read',{got:out.length,of:size});
+    g.log('list_read',{got:out.length,of:size});
    }
   }finally{
-   try{await exchange([240,82,0,94,0x60,0x21,0,0,0,0,0,247],is(3));}catch(e){old('list_close_warn',String(e));}
+   try{await exchange([240,82,0,94,0x60,0x21,0,0,0,0,0,247],is(3));}catch(e){g.log('list_close_warn',String(e));}
   }
   return Uint8Array.from(out);
  }
@@ -247,7 +247,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
   const before=await readEffectList();
   g.__lastEffectList=before;
   const res=FlstCodec.insert(before,name,category);
-  old('list_insert',{filename:name,effectId:effectId.toString(16),category,
+  g.log('list_insert',{filename:name,effectId:effectId.toString(16),category,
                      changed:res.changed,entries:FlstCodec.entries(res.bytes).length});
   if(!res.changed)return {listed:true,changed:false,category,reason:res.reason};
   await writeEffectList(res.bytes);
@@ -290,7 +290,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
    const before=await readEffectList();
    g.__lastEffectList=before;                       // restore point for this session
    const res=FlstCodec.insert(before,name,category);
-   old('list_insert',{filename:name,effectId:effectId.toString(16),category,
+   g.log('list_insert',{filename:name,effectId:effectId.toString(16),category,
                       changed:res.changed,entries:FlstCodec.entries(res.bytes).length});
    if(!res.changed)return {listed:true,changed:false,category,reason:res.reason};
    await writeEffectList(res.bytes);
@@ -335,21 +335,21 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
    const before=await readEffectList();
    g.__lastEffectList=before;                       // restore point for this session
    const res=FlstCodec.remove(before,name);
-   old('list_remove',{filename:name,changed:res.changed,reason:res.reason,
+   g.log('list_remove',{filename:name,changed:res.changed,reason:res.reason,
                       entries:FlstCodec.entries(res.bytes).length});
    if(res.changed)await writeEffectList(res.bytes);
    unlisted=res.changed;
    // Only now is the file unreferenced by anything the pedal reads.
    await identity();
    const f=await exchange(deleteFrame(name),is(3));
-   old('file_deleted',{filename:name,result:resultOf(f)});
+   g.log('file_deleted',{filename:name,result:resultOf(f)});
    // The enumeration both clears the display and verifies the delete, so the
    // result is checked against the pedal rather than against its status byte.
    try{files=await enumerateDirectory();removed=!files.some(x=>x.filename.toUpperCase()===name);}
-   catch(e){old('teardown_warn',{step:'directory enumeration',error:String(e)});verifyError=String(e);}
+   catch(e){g.log('teardown_warn',{step:'directory enumeration',error:String(e)});verifyError=String(e);}
   }finally{
-   try{await exchange([240,82,0,94,0x60,1,1,247],is(5));}catch(e){old('teardown_warn',{step:'file mode end',error:String(e)});}
-   try{await exchange([240,82,0,94,0x61,6,247],f=>f[4]===0&&f[5]===0);}catch(e){old('teardown_warn',{step:'audio open',error:String(e)});}
+   try{await exchange([240,82,0,94,0x60,1,1,247],is(5));}catch(e){g.log('teardown_warn',{step:'file mode end',error:String(e)});}
+   try{await exchange([240,82,0,94,0x61,6,247],f=>f[4]===0&&f[5]===0);}catch(e){g.log('teardown_warn',{step:'audio open',error:String(e)});}
    await exchange([240,82,0,94,0x60,7,247],is(5));
   }
   // Raised after the semaphore is released, so a failure never leaves it held.
@@ -374,7 +374,7 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
    const total=dec5(f,11)>>>0,free=dec5(f,16)>>>0;
    // A misread frame would show as nonsense rather than a plausible number.
    if(!total||free>total)throw Error(`Unexpected disk reply: ${hex(f)}`);
-   old('disk_space',{total,free,used:total-free});
+   g.log('disk_space',{total,free,used:total-free});
    return {total,free,used:total-free};
   }finally{
    try{await exchange([240,82,0,94,0x60,1,0,247],is(5));}catch{}
@@ -444,18 +444,18 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
   let listedError=null;
   try{
    const listed=await updateEffectList(name,raw);
-   old('install_listed',listed);
-  }catch(e){old('install_list_warn',String(e));listedError=e;}
+   g.log('install_listed',listed);
+  }catch(e){g.log('install_list_warn',String(e));listedError=e;}
 
   // The pedal keeps showing "Now loading" until the directory is enumerated,
   // and the native app does this while still IN file mode, before 60 01.
-  try{await enumerateDirectory();}catch(e){old('teardown_warn',{step:'directory enumeration',error:String(e)});}
+  try{await enumerateDirectory();}catch(e){g.log('teardown_warn',{step:'directory enumeration',error:String(e)});}
 
   // Native install teardown ends 60 01 01, 61 06, 60 07.  Note the parameter:
   // the read-only capture ends 60 01 00, but every install in the native
   // capture uses 60 01 01.
-  try{await exchange([240,82,0,94,0x60,1,1,247],is(5));}catch(e){old('teardown_warn',{step:'file mode end',error:String(e)});}
-  try{await exchange([240,82,0,94,0x61,6,247],f=>f[4]===0&&f[5]===0);}catch(e){old('teardown_warn',{step:'audio open',error:String(e)});}
+  try{await exchange([240,82,0,94,0x60,1,1,247],is(5));}catch(e){g.log('teardown_warn',{step:'file mode end',error:String(e)});}
+  try{await exchange([240,82,0,94,0x61,6,247],f=>f[4]===0&&f[5]===0);}catch(e){g.log('teardown_warn',{step:'audio open',error:String(e)});}
   /* The release used to be the one teardown step that could fail the install,
      because it alone was unwrapped. That turned a completed install into a
      reported failure, and the reported failure ran abortInstall against a pedal
@@ -470,13 +470,13 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
      abortInstall retries the release anyway. */
   let released=true;
   try{await exchange([240,82,0,94,0x60,7,247],is(5));}
-  catch(e){released=false;old('teardown_warn',{step:'semaphore release',error:String(e)});}
+  catch(e){released=false;g.log('teardown_warn',{step:'semaphore release',error:String(e)});}
   // Every install reports its own backpressure, pass or fail, so the numbers for
   // the run that failed are in the log without anyone having to ask for them.
   // readyMs in the seconds means the pedal stopped granting RFCOMM credit and
   // our bytes never left the Mac; readyMs near zero means they did leave and the
   // pedal dropped them.  See docs/plan.md section 5.3.
-  try{old('write_stats',writeWindow?.());}catch{}
+  try{g.log('write_stats',writeWindow?.());}catch{}
   // Raised after the semaphore is released, so a failure never leaves it held.
   if(listedError)throw Error(`Effect written, but the pedal's effect list could not be updated (${listedError.message}). The pedal will not show it until this succeeds.`);
   return {filename:effect.filename,released};
@@ -497,14 +497,14 @@ const is=(cmd,sub)=>f=>f[4]===0x60&&f[5]===cmd&&(!sub||f[6]===sub);
     and one more failure must not stop the rest of the teardown. */
  async function abortInstall(name=null){
   const step=async(data,match,label)=>{
-   try{await exchange(data,match,8000);}catch(e){old('abort_warn',{step:label,error:String(e)});}
+   try{await exchange(data,match,8000);}catch(e){g.log('abort_warn',{step:label,error:String(e)});}
   };
   const any=f=>f[4]===0||f[5]===3||f[5]===5;
   await step([240,82,0,94,0x60,0x21,0,0,0,0,0,247],any,'close file');
   await step([240,82,0,94,0x60,9,247],any,'flush');
   if(name)await step(deleteFrame(name),any,`delete partial ${name}`);
   // Enumeration clears "Now loading", and the native app does it in file mode.
-  try{await enumerateDirectory();}catch(e){old('abort_warn',{step:'enumerate',error:String(e)});}
+  try{await enumerateDirectory();}catch(e){g.log('abort_warn',{step:'enumerate',error:String(e)});}
   await step([240,82,0,94,0x60,1,1,247],is(5),'leave file mode');
   await step([240,82,0,94,0x61,6,247],f=>f[4]===0&&f[5]===0,'unmute');
   await step([240,82,0,94,0x60,7,247],is(5),'release');
@@ -555,9 +555,9 @@ const exclusive=(label,fn,opts)=>g.pedalLock.run(label,()=>g.stompTransfer(fn),o
 g.pedalInstaller={
  register:e=>exclusive(`registering ${e?.filename||'an effect'}`,()=>registerEffect(e)),
  disk:(opts={})=>exclusive('reading the pedal\u2019s free space',()=>diskSpace(),opts),
- remove:name=>exclusive(`deleting ${name}`,async()=>{try{return await removeEffect(name);}catch(e){old('delete_abort',String(e));await abortInstall();throw e;}}),
+ remove:name=>exclusive(`deleting ${name}`,async()=>{try{return await removeEffect(name);}catch(e){g.log('delete_abort',String(e));await abortInstall();throw e;}}),
  previewList:e=>exclusive('reading the effect list',()=>previewList(e)),
  alive:()=>exclusive('checking the pedal',()=>alive()),
- install:effect=>exclusive(`installing ${effect?.filename||'an effect'}`,async()=>{try{return await writeFile(effect);}catch(e){old('install_abort',String(e));await abortInstall(effect.filename);throw e;}})
+ install:effect=>exclusive(`installing ${effect?.filename||'an effect'}`,async()=>{try{return await writeFile(effect);}catch(e){g.log('install_abort',String(e));await abortInstall(effect.filename);throw e;}})
 };
 })(globalThis);
