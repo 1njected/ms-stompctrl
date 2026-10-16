@@ -13,7 +13,8 @@
 import UIKit
 import WebKit
 
-final class WebHost: UIViewController, WKScriptMessageHandler, AccessoryDelegate, WKNavigationDelegate {
+final class WebHost: UIViewController, WKScriptMessageHandler, WKScriptMessageHandlerWithReply,
+                     AccessoryDelegate, WKNavigationDelegate {
     private var webView: WKWebView!
     private let accessory = Accessory()
 
@@ -28,6 +29,9 @@ final class WebHost: UIViewController, WKScriptMessageHandler, AccessoryDelegate
         let config = WKWebViewConfiguration()
         config.setURLSchemeHandler(handler, forURLScheme: AssetSchemeHandler.scheme)
         config.userContentController.add(self, name: "stomp")
+        // A second handler, with replies, for requests the page awaits an
+        // answer to. "stomp" stays fire-and-forget as transport-ea.js expects.
+        config.userContentController.addScriptMessageHandler(self, contentWorld: .page, name: "stompZoom")
         // The page is ours and reads local files only; no reason to fetch out.
         config.defaultWebpagePreferences.allowsContentJavaScript = true
 
@@ -75,6 +79,20 @@ final class WebHost: UIViewController, WKScriptMessageHandler, AccessoryDelegate
             save(base64: body["base64"] as? String ?? "", as: filename)
         default:
             break
+        }
+    }
+
+    func userContentController(_ controller: WKUserContentController,
+                               didReceive message: WKScriptMessage,
+                               replyHandler: @escaping (Any?, String?) -> Void) {
+        guard message.frameInfo.isMainFrame,
+              message.frameInfo.request.url?.scheme == AssetSchemeHandler.scheme,
+              let body = message.body as? [String: Any],
+              let action = body["action"] as? String else { return replyHandler(nil, "Invalid request.") }
+        switch action {
+        case "catalog": ZoomCatalog.list(replyHandler)
+        case "package": ZoomCatalog.package(body["directory"] as? String ?? "", replyHandler)
+        default: replyHandler(nil, "Unknown action.")
         }
     }
 

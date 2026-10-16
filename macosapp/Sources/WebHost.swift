@@ -72,6 +72,8 @@ final class WebHost: NSViewController, WKScriptMessageHandlerWithReply, WKNaviga
                 do { try data.write(to: url, options: .atomic); replyHandler(true, nil) }
                 catch { replyHandler(nil, error.localizedDescription) }
             }
+        case "zoomCatalog": ZoomCatalog.list(replyHandler)
+        case "zoomPackage": ZoomCatalog.package(body["directory"] as? String ?? "", replyHandler)
         default: replyHandler(nil, "Unknown bridge action.")
         }
     }

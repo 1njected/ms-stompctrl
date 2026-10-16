@@ -29,6 +29,10 @@
   addEventListener:(...args)=>port.addEventListener(...args),
   removeEventListener:(...args)=>port.removeEventListener(...args)
  }});
+ // effect-store.js downloadFromZoom; the page cannot reach ZOOM itself (no CORS).
+ globalThis.stompHostZoom={base:'https://www.zoom.co.jp/archive/stomp_share/Stomps/',
+  catalog:()=>request('zoomCatalog'),
+  fetchPackage:async directory=>Uint8Array.from(atob(await request('zoomPackage',{directory})),c=>c.charCodeAt(0))};
  globalThis.stompHostSave=async(filename,blob)=>{
   const bytes=new Uint8Array(await blob.arrayBuffer());
   let binary='';for(let i=0;i<bytes.length;i+=8192)binary+=String.fromCharCode(...bytes.subarray(i,i+8192));

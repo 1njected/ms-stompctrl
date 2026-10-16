@@ -195,6 +195,13 @@ if(bridge&&bridge.save)global.stompHostSave=async(filename,blob)=>{
  await bridge.save(filename,btoa(text));
 };
 
+/* effect-store.js downloadFromZoom. The page cannot reach ZOOM itself (no
+   CORS); WebHost fetches through its own reply-style handler. */
+const zoom=global.webkit?.messageHandlers?.stompZoom;
+if(zoom)global.stompHostZoom={base:'https://www.zoom.co.jp/archive/stomp_share/Stomps/',
+ catalog:()=>zoom.postMessage({action:'catalog'}),
+ fetchPackage:async directory=>Uint8Array.from(atob(await zoom.postMessage({action:'package',directory})),c=>c.charCodeAt(0))};
+
 let inboundTransaction=0x200;
 /* Swift calls this with a hex string; the mock passes bytes. */
 global.stompNativeReceive=data=>{

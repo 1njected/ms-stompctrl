@@ -297,6 +297,12 @@ from ZOOM's public archive and builds an FX archive; importing it stores
 everything in this browser only. **Reload from pedal** enumerates what is
 installed and reads the free space.
 
+The iOS and macOS apps show **Download from ZOOM** in the script's place. A
+browser cannot fetch from ZOOM (the server sends no CORS headers), but the
+native host can: each publishes `stompHostZoom`, and
+`effectStore.downloadFromZoom` runs the script's loop in the page and imports
+the result as an archive. The button appears only where that hook exists.
+
 ## Tests
 
 Plain Node, no dependencies:

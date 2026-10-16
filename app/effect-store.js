@@ -96,7 +96,11 @@
     anywhere, images anywhere, and an index.json or manifest.json at any depth. */
  async function importArchive(zip,onProgress=()=>{}){
   onProgress('Reading archive…');
-  const entries=await zipEntries(zip);
+  return importEntries(await zipEntries(zip),onProgress);
+ }
+ /* The archive's contents once unzipped, wherever they came from: a file the
+    person picked, or downloadFromZoom assembling the same layout in memory. */
+ async function importEntries(entries,onProgress=()=>{},source='archive import'){
   const zdls=entries.filter(x=>/\.zdl$/i.test(x.name));
   const images=entries.filter(x=>/\.(png|jpe?g|webp)$/i.test(x.name));
   const indexEntry=entries.find(x=>/(^|\/)index\.json$/i.test(x.name))
@@ -108,7 +112,7 @@
    const name=effectName(item.name);
    try{const {id,version}=describe(item.data,name);
     effects.push({key:key(id,version),id,version,filename:name,bytes:item.data.byteLength,
-                  data:item.data,source:'archive import',storedAt:new Date().toISOString()});}
+                  data:item.data,source,storedAt:new Date().toISOString()});}
    catch{skipped.push(name);}
    if(i%25===0)onProgress(`Reading effects… ${i+1} of ${zdls.length}`);
   }
@@ -134,6 +138,64 @@
   remember(await all());
   await artwork(true);        // rebuild now; never leave a stale or empty cache
   return {effects:effects.length,artwork:art.length,catalogued,skipped};
+ }
+
+ /* download-effects.py, for a host that can reach ZOOM's server itself.
+
+    A browser cannot: the server sends no CORS headers, which is why the script
+    exists. The iOS and macOS apps fetch natively and publish stompHostZoom --
+    catalog() lists the packages, fetchPackage(directory) returns one package's
+    bytes -- and everything after the fetch happens here, so the result is the
+    archive the script would have written, imported the way an archive is.
+
+    The loop mirrors the script on purpose: the same image preference, artwork
+    named by the effect ID inside the binary, one image per ID with the first in
+    sorted order winning, and the same index.json shape. */
+ const IMAGE_NAMES=['thumbnail.png','image_on.png','image_on@2x.png','image_off.png'];
+ const PARALLEL=4;
+ async function downloadFromZoom(onProgress=()=>{}){
+  const host=g.stompHostZoom;
+  if(!host)throw Error('Downloading from ZOOM needs the iOS or macOS app.');
+  onProgress('Fetching the ZOOM catalog…');
+  const listed=await host.catalog();
+  if(!listed?.length)throw Error('The ZOOM catalog is empty.');
+  // Fetched a few at a time, but kept in catalog order so the artwork that
+  // wins a shared effect ID is the one the script would have chosen.
+  const results=new Array(listed.length);let next=0,done=0;
+  async function worker(){
+   while(next<listed.length){
+    const i=next++,item=listed[i];
+    try{
+     const files=await zipEntries(await host.fetchPackage(item.directory));
+     const zdl=files.find(f=>/\.zdl$/i.test(f.name));
+     if(!zdl)throw Error('no .ZDL in package');
+     const {id,version}=describe(zdl.data,item.zdl);
+     let image=null;
+     for(const wanted of IMAGE_NAMES)if((image=files.find(f=>basename(f.name).toLowerCase()===wanted)))break;
+     results[i]={item,id,version,data:zdl.data,image:image?.data||null};
+    }catch(e){results[i]={item,error:e.message};}
+    onProgress(`Downloading effects… ${++done} of ${listed.length}`);
+   }
+  }
+  await Promise.all(Array.from({length:Math.min(PARALLEL,listed.length)},worker));
+
+  const entries=[],index={},failed=[],source=g.stompHostZoom.base||'ZOOM StompShare';
+  for(const r of results){
+   if(r.error){failed.push(`${r.item.name||r.item.directory}: ${r.error}`);continue;}
+   entries.push({name:r.item.zdl,data:r.data});
+   let artwork=null;
+   if(r.image){
+    artwork=`artwork/${r.id}.png`;
+    if(!entries.some(e=>e.name===artwork))entries.push({name:artwork,data:r.image});
+   }
+   (index[r.id]??=[]).push({effectId:r.id,filename:r.item.zdl,version:r.version,
+    bytes:r.data.byteLength,artwork,name:r.item.name??null,source:`${source}${r.item.directory}.zip`});
+  }
+  if(!Object.keys(index).length)throw Error(`No effects could be downloaded from ZOOM. ${failed[0]||''}`.trim());
+  entries.push({name:'index.json',data:new TextEncoder().encode(JSON.stringify(
+   {formatVersion:1,effects:index,installedVersionsVerified:false},null,2)+'\n')});
+  const result=await importEntries(entries,onProgress,'ZOOM download');
+  return {...result,failed};
  }
 
  /* The catalog the Effects page renders.
@@ -230,5 +292,5 @@
   setTimeout(()=>URL.revokeObjectURL(url),1000);
  }
 
- g.effectStore={all,add,exportZip,extractZdl,extractZdls,importArchive,catalog,artwork,binary,clear,remember,zipEntries,effectName};
+ g.effectStore={all,add,exportZip,extractZdl,extractZdls,importArchive,importEntries,downloadFromZoom,catalog,artwork,binary,clear,remember,zipEntries,effectName};
 })(globalThis);

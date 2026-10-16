@@ -643,6 +643,25 @@
    if(offering)offerInstall(lastImported);
   }catch(e){$('effect-action-status').textContent=e.message;}
   finally{$('effects-upload').disabled=false;$('effects-upload').value='';}};
+ /* The native apps fetch from ZOOM themselves, so there the helper script --
+    which needs a computer with Python, and which a WKWebView cannot save --
+    gives way to a button that does the same job in place. */
+ if(globalThis.stompHostZoom){
+  for(const id of ['zoom-download','fx-help-zoom'])$(id).hidden=false;
+  for(const id of ['helper-script','fx-help-script'])$(id).hidden=true;
+  $('zoom-download').onclick=async()=>{
+   const button=$('zoom-download'),status=$('effect-action-status');
+   button.disabled=true;$('effects-upload').disabled=true;
+   $('effect-install-offer').replaceChildren();
+   try{
+    const r=await effectStore.downloadFromZoom(text=>{status.textContent=text;});
+    await loadCatalog(true);
+    status.textContent=`Downloaded ${r.effects} effect${r.effects===1?'':'s'} and ${r.artwork} image${r.artwork===1?'':'s'} from ZOOM.`+
+     (r.failed.length?` ${r.failed.length} could not be fetched: ${r.failed.slice(0,3).join('; ')}${r.failed.length>3?'…':''}`:'')+
+     ' Nothing has been sent to the pedal yet — find an effect in the catalog below and press Install to pedal.';
+   }catch(e){status.textContent=e.message;}
+   finally{button.disabled=false;$('effects-upload').disabled=false;}};
+ }
  if($('fx-file'))$('fx-file').onchange=async()=>{const file=$('fx-file').files[0];if(!file)return;try{const b=new Uint8Array(await file.arrayBuffer()),v=new DataView(b.buffer),ascii=(a,z)=>new TextDecoder().decode(b.slice(a,z));if(b.length<76||ascii(4,8)!=='SIZE'||ascii(20,24)!=='INFO')throw Error('This file is not a recognized ZDL effect.');const a=v.getUint32(12,true),n=v.getUint32(16,true);if(b.length!==20+a+n||ascii(20+a,24+a)!=='\x7fELF')throw Error('The ZDL file is incomplete or has an invalid structure.');$('fx-preview').textContent=`${file.name} · v${ascii(68,76).split('\0')[0]} · ${(b.length/1024).toFixed(1)} KB · ID ${v.getUint32(64,true).toString(16).padStart(8,'0')}`;}catch(e){$('fx-preview').textContent=e.message;}};
  /* The four getting-started cards are a wall on a phone -- taller than the
     catalog they introduce -- so they start closed and the heading carries a
