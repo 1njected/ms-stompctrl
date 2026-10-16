@@ -17,6 +17,8 @@ Artwork is named by the effect ID read from the binary itself, at ZDL offset
 Needs nothing else. The catalog index is fetched from ZOOM if it is not already
 beside the script, so this works from any directory with no StompShare copy.
 """
+from __future__ import annotations
+
 import io
 import json
 import plistlib
